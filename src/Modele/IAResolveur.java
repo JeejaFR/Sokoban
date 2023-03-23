@@ -113,19 +113,21 @@ class IAResolveur extends IA {
             SequenceListe<ArrayList<Position>> caissesDep = caissesDeplacables(posPousseurPossible, caisses);
             if(!caissesDep.estVide()){
                 ArrayList<Position> caisseCouranteDep = caissesDep.extraitTete();
-                if(nb_caisses_sur_but==2){
-                    //System.out.println("2 buts atteints");
-                    //afficheCaisses(caisses);
-                }
                 byte[][] caissesNew = pousserCaisse(caisseCouranteDep, caisses);
                 PositionPoids posPousseurNew = new PositionPoids(caisseCouranteDep.get(0).getL(), caisseCouranteDep.get(0).getC(), 0);
                 if(!estInstance(posPousseurNew.getPos(), caissesNew, instancesPossibles)){
                     if(!estBut(caisseCouranteDep.get(0)) && estBut(caisseCouranteDep.get(1))){
                         nb_caisses_sur_but++;
-                        System.out.println("La caisse "+caisseCouranteDep.get(0).affiche()+" est maintenant sur le but en "+caisseCouranteDep.get(1).affiche());
-                        System.out.println("Buts atteints : "+nb_caisses_sur_but);
-                        afficheCaisses(caissesNew);
-                        System.out.println("--------------------------------------------");
+                        if(nb_caisses_sur_but==2) {
+                            afficheCaisses(caisses);
+                            System.out.println("Caisse poussée, nb_buts : " + nb_caisses_sur_but);
+                            afficheCaisses(caissesNew);
+                            System.out.println("===============================================");
+                        }
+                        //System.out.println("La caisse "+caisseCouranteDep.get(0).affiche()+" est maintenant sur le but en "+caisseCouranteDep.get(1).affiche());
+                        //System.out.println("Buts atteints : "+nb_caisses_sur_but);
+                        //afficheCaisses(caissesNew);
+                        //System.out.println("--------------------------------------------");
                     }else{
                         if(estBut(caisseCouranteDep.get(0)) && !estBut(caisseCouranteDep.get(1))){
                             nb_caisses_sur_but--;
