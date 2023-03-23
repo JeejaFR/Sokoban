@@ -67,7 +67,7 @@ public class Configuration {
 		chargerProprietes(defaut, in, "defaut.cfg");
 		// Il faut attendre le dernier moment pour utiliser le logger
 		// car celui-ci s'initialise avec les propriétés
-		String message = "Fichier de propriétés defaut.cfg chargé";
+		//String message = "Fichier de propriétés defaut.cfg chargé";
 		String nom = System.getProperty("user.home") + File.separator + ".sokoban";
 		try {
 			in = new FileInputStream(nom);

@@ -101,7 +101,7 @@ public class InterfaceGraphique implements Runnable, InterfaceUtilisateur, Obser
 
 		// Titre
 		boiteTexte.add(creerLabel("Sokoban"));
-
+		boiteTexte.add(creerLabel("Caisses restantes : " + (j.niveau().getNbButs()-j.niveau().getNbCaissesSurBut())));
 		// Remplissage de l'espace entre le titre et les boutons
 		boiteTexte.add(Box.createGlue());
 
@@ -151,7 +151,9 @@ public class InterfaceGraphique implements Runnable, InterfaceUtilisateur, Obser
 		chrono.start();
 
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		frame.setSize(500, 300);
+		frame.setSize(1280, 720);
+		//centrer la fenetre
+		frame.setLocationRelativeTo(null);
 		frame.setVisible(true);
 	}
 

@@ -51,23 +51,22 @@ public class AdaptateurClavier extends KeyAdapter {
 			case KeyEvent.VK_DOWN:
 				control.toucheClavier("Down");
 				break;
-			case KeyEvent.VK_U:
+			case KeyEvent.VK_Q:
 				control.toucheClavier("Undo");
 				break;
-			case KeyEvent.VK_R:
+			case KeyEvent.VK_D:
 				control.toucheClavier("Redo");
 				break;
-			case KeyEvent.VK_Q:
-			case KeyEvent.VK_A:
+			case KeyEvent.VK_ESCAPE:
 				control.toucheClavier("Quit");
 				break;
 			case KeyEvent.VK_P:
 				control.toucheClavier("Pause");
 				break;
-			case KeyEvent.VK_I:
+			case KeyEvent.VK_R:
 				control.toucheClavier("IA");
 				break;
-			case KeyEvent.VK_ESCAPE:
+			case KeyEvent.VK_F1:
 				control.toucheClavier("Full");
 				break;
 		}

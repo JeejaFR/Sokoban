@@ -48,11 +48,11 @@ public class Niveau extends Historique<Coup> implements Cloneable {
 		return cases;
 	}
 
-	int getNbCaissesSurBut() {
+	public int getNbCaissesSurBut() {
 		return nbCaissesSurBut;
 	}
 
-	int getNbButs() {
+	public int getNbButs() {
 		return nbButs;
 	}
 
