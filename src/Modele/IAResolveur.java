@@ -141,7 +141,7 @@ class IAResolveur extends IA {
                         chemin.insereQueue(posPousseurNew.getPos());
                         System.out.println("=========================== Toutes les caisses sont sur les buts ===========================");
                         afficheCaisses(caissesNew);
-                        System.exit(0);
+                        //System.exit(0);
                         return new PoidsChemins(0, chemin);
                     }else{
                         //System.out.println("Toutes les caisses ne sont pas sur les buts");
