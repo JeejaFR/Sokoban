@@ -11,7 +11,7 @@ import java.awt.*;
 import java.io.InputStream;
 
 public class NiveauGraphique extends JComponent implements Observateur {
-	Image pousseur, mur, sol, caisse, but, caisseSurBut;
+	Image pousseur, mur, sol, caisse, but, caisseSurBut,caisse_bloquee,caisse_bloquee_temp;
 	Jeu j;
 	int largeurCase;
 	int hauteurCase;
@@ -30,6 +30,8 @@ public class NiveauGraphique extends JComponent implements Observateur {
 		caisse = lisImage("Caisse");
 		but = lisImage("But");
 		caisseSurBut = lisImage("Caisse_sur_but");
+		caisse_bloquee = lisImage("Caisse_bloquee");
+		caisse_bloquee_temp = lisImage("Caisse_bloquee_temp");
 
 		pousseurs = new Image[4][4];
 		for (int d = 0; d < pousseurs.length; d++)
@@ -107,8 +109,17 @@ public class NiveauGraphique extends JComponent implements Observateur {
 					int marque = n.marque(ligne, colonne);
 					if (n.aBut(ligne, colonne))
 						tracer(drawable, caisseSurBut, x, y, largeurCase, hauteurCase);
-					else
-						tracer(drawable, caisse, x, y, largeurCase, hauteurCase);
+					else{
+						if(n.aCaisseBloquee(ligne, colonne)){
+							tracer(drawable,caisse_bloquee, x, y, largeurCase, hauteurCase);
+						}
+						else{
+							if(n.aCaisseBloqueeTemp(ligne, colonne))
+								tracer(drawable,caisse_bloquee_temp, x, y, largeurCase, hauteurCase);
+							else
+								tracer(drawable, caisse, x, y, largeurCase, hauteurCase);
+						}
+					}
 					if (marque > 0)
 						tracerCroix(drawable, marque, x, y, largeurCase, hauteurCase);
 				}else if (n.aCroix(ligne, colonne)) {
