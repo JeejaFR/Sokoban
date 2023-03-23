@@ -192,7 +192,7 @@ class IAResolveur extends IA {
         Position pCaisse;
         pCaisse = getPosCaisse(p.l+1, p.c, caisses);//si la caisse est en-dessous du pousseur
         if(pCaisse != null){
-            if(!estCaseHorsMap(pCaisse.l+1, pCaisse.c) && estCaseLibre(pCaisse.l+1, pCaisse.c, caisses) && !estCaseBloquante(pCaisse.l+1, pCaisse.c, supprimeCaisse(pCaisse, caisses))){
+            if(!estCaseHorsMap(pCaisse.l+1, pCaisse.c) && estCaseLibre(pCaisse.l+1, pCaisse.c, caisses) && !estCaseBloquante_V2(pCaisse.l,pCaisse.c,pCaisse.l+1, pCaisse.c, supprimeCaisse(pCaisse, caisses))){
                 caisseDeplacee.add(pCaisse);
                 caisseDeplacee.add(new Position(pCaisse.l+1, pCaisse.c));
                 caissesDep.insereQueue(caisseDeplacee);
@@ -201,7 +201,7 @@ class IAResolveur extends IA {
         pCaisse = null;
         pCaisse = getPosCaisse(p.l-1, p.c, caisses);//si la caisse est au-dessus du pousseur
         if(pCaisse != null){
-            if(!estCaseHorsMap(pCaisse.l-1, pCaisse.c) && estCaseLibre(pCaisse.l-1, pCaisse.c, caisses) && !estCaseBloquante(pCaisse.l-1, pCaisse.c, supprimeCaisse(pCaisse, caisses))){
+            if(!estCaseHorsMap(pCaisse.l-1, pCaisse.c) && estCaseLibre(pCaisse.l-1, pCaisse.c, caisses) && !estCaseBloquante_V2(pCaisse.l,pCaisse.c,pCaisse.l-1, pCaisse.c, supprimeCaisse(pCaisse, caisses))){
                 caisseDeplacee.clear();
                 caisseDeplacee.add(pCaisse);
                 caisseDeplacee.add(new Position(pCaisse.l-1, pCaisse.c));
@@ -211,7 +211,7 @@ class IAResolveur extends IA {
         pCaisse = null;
         pCaisse = getPosCaisse(p.l, p.c+1, caisses);//si la caisse est à droite du pousseur
         if(pCaisse != null){
-            if(!estCaseHorsMap(pCaisse.l, pCaisse.c+1) && estCaseLibre(pCaisse.l, pCaisse.c+1, caisses) && !estCaseBloquante(pCaisse.l, pCaisse.c+1, supprimeCaisse(pCaisse, caisses))){
+            if(!estCaseHorsMap(pCaisse.l, pCaisse.c+1) && estCaseLibre(pCaisse.l, pCaisse.c+1, caisses) && !estCaseBloquante_V2(pCaisse.l,pCaisse.c,pCaisse.l, pCaisse.c+1, supprimeCaisse(pCaisse, caisses))){
                 caisseDeplacee.clear();
                 caisseDeplacee.add(pCaisse);
                 caisseDeplacee.add(new Position(pCaisse.l, pCaisse.c+1));
@@ -221,7 +221,7 @@ class IAResolveur extends IA {
         pCaisse = null;
         pCaisse = getPosCaisse(p.l, p.c-1, caisses);//si la caisse est à gauche du pousseur
         if(pCaisse != null){
-            if(!estCaseHorsMap(pCaisse.l, pCaisse.c-1) && estCaseLibre(pCaisse.l, pCaisse.c-1, caisses) && !estCaseBloquante(pCaisse.l, pCaisse.c-1, supprimeCaisse(pCaisse, caisses))){
+            if(!estCaseHorsMap(pCaisse.l, pCaisse.c-1) && estCaseLibre(pCaisse.l, pCaisse.c-1, caisses) && !estCaseBloquante_V2(pCaisse.l,pCaisse.c,pCaisse.l, pCaisse.c-1, supprimeCaisse(pCaisse, caisses))){
                 caisseDeplacee.clear();
                 caisseDeplacee.add(pCaisse);
                 caisseDeplacee.add(new Position(pCaisse.l, pCaisse.c-1));
@@ -338,7 +338,7 @@ class IAResolveur extends IA {
             //System.out.println("estCaseLibre : "+(!estCaseHorsMap(pCaisse.l+1, pCaisse.c)&&estCaseLibre(pCaisse.l+1, pCaisse.c, caisses)));
             //System.out.println("estCaseBloquante : "+estCaseBloquante(pCaisse.l+1, pCaisse.c, caisses));
             //System.out.println("estCaseHorsMap : "+estCaseHorsMap(pCaisse.l+1, pCaisse.c));
-            if(!estCaseHorsMap(pCaisse.l+1, pCaisse.c) && estCaseLibre(pCaisse.l+1, pCaisse.c, caisses) && !estCaseBloquante(pCaisse.l+1, pCaisse.c, supprimeCaisse(pCaisse, caisses))){
+            if(!estCaseHorsMap(pCaisse.l+1, pCaisse.c) && estCaseLibre(pCaisse.l+1, pCaisse.c, caisses) && !estCaseBloquante_V2(pCaisse.l,pCaisse.c,pCaisse.l+1, pCaisse.c, supprimeCaisse(pCaisse, caisses))){
                 return true;
             }
         }
@@ -349,7 +349,7 @@ class IAResolveur extends IA {
             //System.out.println("estCaseLibre : "+(!estCaseHorsMap(pCaisse.l-1, pCaisse.c)&&estCaseLibre(pCaisse.l-1, pCaisse.c, caisses)));
             //System.out.println("estCaseBloquante : "+estCaseBloquante(pCaisse.l-1, pCaisse.c, caisses));
             //System.out.println("estCaseHorsMap : "+estCaseHorsMap(pCaisse.l-1, pCaisse.c));
-            if(!estCaseHorsMap(pCaisse.l-1, pCaisse.c) && estCaseLibre(pCaisse.l-1, pCaisse.c, caisses) && !estCaseBloquante(pCaisse.l-1, pCaisse.c, supprimeCaisse(pCaisse, caisses))){
+            if(!estCaseHorsMap(pCaisse.l-1, pCaisse.c) && estCaseLibre(pCaisse.l-1, pCaisse.c, caisses) && !estCaseBloquante_V2(pCaisse.l,pCaisse.c,pCaisse.l-1, pCaisse.c, supprimeCaisse(pCaisse, caisses))){
                 return true;
             }
         }
@@ -360,7 +360,7 @@ class IAResolveur extends IA {
             //System.out.println("estCaseLibre : "+(!estCaseHorsMap(pCaisse.l, pCaisse.c+1)&&estCaseLibre(pCaisse.l, pCaisse.c+1, caisses)));
             //System.out.println("estCaseBloquante : "+estCaseBloquante(pCaisse.l, pCaisse.c+1, caisses));
             //System.out.println("estCaseHorsMap : "+estCaseHorsMap(pCaisse.l, pCaisse.c+1));
-            if(!estCaseHorsMap(pCaisse.l, pCaisse.c+1) && estCaseLibre(pCaisse.l, pCaisse.c+1, caisses) && !estCaseBloquante(pCaisse.l, pCaisse.c+1, supprimeCaisse(pCaisse, caisses))){
+            if(!estCaseHorsMap(pCaisse.l, pCaisse.c+1) && estCaseLibre(pCaisse.l, pCaisse.c+1, caisses) && !estCaseBloquante_V2(pCaisse.l,pCaisse.c,pCaisse.l, pCaisse.c+1, supprimeCaisse(pCaisse, caisses))){
                 return true;
             }
         }
@@ -371,7 +371,7 @@ class IAResolveur extends IA {
             //System.out.println("estCaseLibre : "+(!estCaseHorsMap(pCaisse.l, pCaisse.c-1)&&estCaseLibre(pCaisse.l, pCaisse.c-1, caisses)));
             //System.out.println("estCaseBloquante : "+estCaseBloquante(pCaisse.l, pCaisse.c-1, caisses));
             //System.out.println("estCaseHorsMap : "+estCaseHorsMap(pCaisse.l, pCaisse.c-1));
-            if(!estCaseHorsMap(pCaisse.l, pCaisse.c-1) && estCaseLibre(pCaisse.l, pCaisse.c-1, caisses) && !estCaseBloquante(pCaisse.l, pCaisse.c-1, supprimeCaisse(pCaisse, caisses))){
+            if(!estCaseHorsMap(pCaisse.l, pCaisse.c-1) && estCaseLibre(pCaisse.l, pCaisse.c-1, caisses) && !estCaseBloquante_V2(pCaisse.l,pCaisse.c,pCaisse.l, pCaisse.c-1, supprimeCaisse(pCaisse, caisses))){
                 return true;
             }
         }
@@ -454,7 +454,6 @@ class IAResolveur extends IA {
     }
 
     boolean estCaseLibre(int l, int c, byte[][] caisses){
-        //afficheCaisse(caisses);
         if(!aMur(l,c) && getPosCaisse(l,c,caisses)==null){
             return true;
         }else{
@@ -463,6 +462,7 @@ class IAResolveur extends IA {
     }
 
     boolean aMur(int l, int c) {
+        if(estCaseHorsMap(l,c)) return true;
         return (carte[l][c] & MUR) != 0;
     }
 
@@ -573,4 +573,273 @@ class IAResolveur extends IA {
             System.out.println();
         }
     }
+
+    //////////////////////////////////////////////////////////////////////
+    /////////////////////////// CASE BLOQUANTE ///////////////////////////
+    //////////////////////////////////////////////////////////////////////
+
+    public boolean aBut(int l, int c) {
+        return (carte[l][c] & BUT) != 0;
+    }
+
+    public boolean aCaisseBloquee(int l, int c,byte[][] caisses){
+        return (caisses[l][c] & CAISSE_BLOQUEE) != 0;
+    }
+
+    boolean aMurAutour(int l,int c){
+        return aMur(l+1,c)||aMur(l-1,c)||aMur(l,c+1)||aMur(l,c-1);
+    }
+    boolean aBloqueeAutour(int l, int c){
+        return aCaisseBloquee(l+1,c,caisses)||aCaisseBloquee(l-1,c,caisses)||aCaisseBloquee(l,c+1,caisses)||aCaisseBloquee(l,c-1,caisses);
+    }
+    boolean aAccesBut(int l, int c,byte[][] caisses){
+        int i=0;
+        boolean gauche=false,droite=false,bas=false,haut=false;
+        while(!aMur(l,c+i) && droite==false && !aCaisseBloquee(l,c+i,caisses)) { // à droite
+            if (!estCaseHorsMap(l, c - 1)) { // pas sur
+                if (aBut(l, c + i) && carte[l][c - 1] != MUR) droite = true;
+            }
+            i++;
+        }
+        i=0;
+        while(!aMur(l,c-i) && gauche==false && !aCaisseBloquee(l,c-i,caisses)){ // à gauche
+            if(!estCaseHorsMap(l,c+1)){ // pas sur
+                if(aBut(l,c-i) && carte[l][c+1]!=MUR) gauche = true;
+            }
+            i++;
+        }
+        i=0;
+        while(!aMur(l-i,c) && haut==false && !aCaisseBloquee(l-i,c,caisses)){ // en haut
+            if(!estCaseHorsMap(l+1,c)){ // pas sur
+                if(aBut(l-i,c) && carte[l+1][c]!=MUR) haut = true;
+            }
+            i++;
+        }
+        i=0;
+        while(!aMur(l+i,c) && droite==false && !aCaisseBloquee(l+i,c,caisses)){ // en bas
+            if(!estCaseHorsMap(l-1,c)){// pas sur
+                if(aBut(l+i,c) && carte[l-1][c]!=MUR) bas = true;
+            }
+            i++;
+        }
+        i=0;
+        return gauche||droite||bas||haut;
+    }
+    boolean bloqueeVerticalDroit(int l,int c, int nord, byte[][] caisses){
+        if(aAccesBut(l,c,caisses)) return false;
+        if(aMur(l,c)) return true;
+        int i=0;
+        if(nord==1){
+            while(!aMur(l,c+i) && !aCaisseBloquee(l,c+i,caisses)){
+                if(estCaseHorsMap(l,c-1) || estCaseHorsMap(l+1,c+i)) return true;
+                if(estCaseHorsMap(l-1,c+i)){
+                    if(aBut(l,c+i) && carte[l][c-1]!=MUR && carte[l+1][c+i]!=MUR) return false;
+                }else{
+                    if((estCaseLibre(l-1,c+i,caisses)|| aBut(l,c+i)||caisses[l-1][c+i]==CAISSE)&& carte[l][c-1]!=MUR && carte[l+1][c+i]!=MUR) return false;
+                }
+                i++;
+            }
+            return true;
+        }else{
+            while(!aMur(l,c+i) && !aCaisseBloquee(l,c+i,caisses)){
+                if(estCaseHorsMap(l,c-1) || estCaseHorsMap(l-1,c+i)) return true;
+                if(estCaseHorsMap(l+1,c+i)){
+                    if(aBut(l,c+i) && carte[l][c-1]!=MUR && carte[l-1][c+i]!=MUR) return false;
+                }
+                else{
+                    if((estCaseLibre(l+1,c+i,caisses)|| aBut(l,c+i)||caisses[l+1][c+i]==CAISSE)&& carte[l][c-1]!=MUR && carte[l-1][c+i]!=MUR) return false;
+                }
+                i++;
+            }
+            return true;
+        }
+    }
+    boolean bloqueeVerticalGauche(int l,int c, int nord,byte[][] caisses){
+        int i=0;
+        if(aAccesBut(l,c,caisses)) return false;
+        if(aMur(l,c)) return true;
+        if(nord==1){
+            while(!aMur(l,c-i) && !aCaisseBloquee(l,c-i,caisses)){
+                if(estCaseHorsMap(l,c+1) || estCaseHorsMap(l+1,c-i)) return true;
+                if(estCaseHorsMap(l-1,c-i)){
+                    if(aBut(l,c-i) && carte[l][c+1]!=MUR && carte[l+1][c-i]!=MUR) return false;
+                }else{
+                    if((estCaseLibre(l-1,c-i,caisses)|| aBut(l,c-i)||caisses[l-1][c-i]==CAISSE)&& carte[l][c+1]!=MUR && carte[l+1][c-i]!=MUR) return false;
+                }
+                i++;
+            }
+            return true;
+        }else{
+            while(!aMur(l,c-i) && !aCaisseBloquee(l,c-i,caisses)){
+                if(estCaseHorsMap(l,c+1) || estCaseHorsMap(l-1,c-i)) return true;
+                if(estCaseHorsMap(l+1,c-i)){
+                    if(aBut(l,c-i) && carte[l][c+1]!=MUR && carte[l-1][c-i]!=MUR) return false;
+                }else{
+                    if((estCaseLibre(l+1,c-i,caisses) || aBut(l,c-i)||caisses[l+1][c-i]==CAISSE)&& carte[l][c+1]!=MUR && carte[l-1][c-i]!=MUR) return false;
+                }
+                i++;
+            }
+            return true;
+        }
+    }
+    boolean bloqueeHorizontalHaut(int l, int c, int ouest,byte[][] caisses){
+        int i=0;
+        if(aAccesBut(l,c,caisses)) return false;
+        if(aMur(l,c)) return true;
+        if(ouest==1){
+            while(!aMur(l-i,c) && !aCaisseBloquee(l-i,c,caisses)){
+                if(estCaseHorsMap(l+1,c) || estCaseHorsMap(l-i,c+1)) return true;
+                if(estCaseHorsMap(l-i,c-1)){
+                    if(aBut(l-i,c) && carte[l+1][c]!=MUR && carte[l-i][c+1]!=MUR) return false;
+                }else{
+                    if((estCaseLibre(l-i,c-1,caisses)||aBut(l-i,c)||caisses[l-i][c-1]==CAISSE) && carte[l+1][c]!=MUR && carte[l-i][c+1]!=MUR) return false;
+                }
+                i++;
+            }
+            return true;
+        }else{
+            while(!aMur(l-i,c) && !aCaisseBloquee(l-i,c,caisses)){
+                if(estCaseHorsMap(l+1,c) || estCaseHorsMap(l-i,c-1)) return true;
+                if(estCaseHorsMap(l-i,c+1)){
+                    if(aBut(l-i,c) && carte[l+1][c]!=MUR && carte[l-i][c-1]!=MUR) return false;
+                }else{
+                    if((estCaseLibre(l-i,c+1,caisses) || aBut(l-i,c)||caisses[l-i][c+1]==CAISSE)&& carte[l+1][c]!=MUR && carte[l-i][c-1]!=MUR) return false;
+                }
+                i++;
+            }
+            return true;
+        }
+    }
+    boolean bloqueeHorizontalBas(int l, int c, int ouest,byte[][] caisses){
+        int i=0;
+        if(aAccesBut(l,c,caisses)) return false;
+        if(aMur(l,c)) return true;
+        if(ouest==1){
+            while(!aMur(l+i,c) && !aCaisseBloquee(l+i,c,caisses)){
+                if(estCaseHorsMap(l-1,c) || estCaseHorsMap(l+i,c+1)) return true;
+                if(estCaseHorsMap(l+i,c-1)){
+                    if(aBut(l+i,c) && carte[l-1][c]!=MUR && carte[l+i][c+1]!=MUR) return false;
+                }
+                else{
+                    if((estCaseLibre(l+i,c-1,caisses) || aBut(l+i,c)||caisses[l+i][c-1]==CAISSE)&& carte[l-1][c]!=MUR && carte[l+i][c+1]!=MUR) return false;
+                }
+
+                i++;
+            }
+            return true;
+        }else{
+            while(!aMur(l+i,c) && !aCaisseBloquee(l+i,c,caisses)){
+                if(estCaseHorsMap(l-1,c) || estCaseHorsMap(l+i,c-1)) return true;
+                if(estCaseHorsMap(l+i,c+1)){
+                    if(aBut(l+i,c) && carte[l-1][c]!=MUR && carte[l+i][c-1]!=MUR) return false;
+                }else{
+                    if((estCaseLibre(l+i,c+1,caisses) || aBut(l+i,c)||caisses[l+i][c+1]==CAISSE)&& carte[l-1][c]!=MUR && carte[l+i][c-1]!=MUR) return false;
+                }
+                i++;
+            }
+            return true;
+        }
+    }
+    boolean gestionPlusieurTemp(int l, int c,byte[][] caisses){
+        if(estCaisseBloqueeTemp(l+1,c,caisses)&&!aMurAutour(l+1,c)) return false;
+        if(estCaisseBloqueeTemp(l-1,c,caisses)&&!aMurAutour(l-1,c)) return false;
+        if(estCaisseBloqueeTemp(l,c+1,caisses)&&!aMurAutour(l,c+1)) return false;
+        if(estCaisseBloqueeTemp(l,c-1,caisses)&&!aMurAutour(l,c-1)) return false;
+
+        return estCaisseBloqueeTemp(l,c+1,caisses) || estCaisseBloqueeTemp(l,c-1,caisses) || estCaisseBloqueeTemp(l+1,c,caisses) || estCaisseBloqueeTemp(l-1,c,caisses); // || cases[l][c+1]==CAISSE_BLOQUEE || cases[l][c-1]==CAISSE_BLOQUEE || cases[l+1][c]==CAISSE_BLOQUEE || cases[l-1][c]==CAISSE_BLOQUEE;
+    }
+
+    boolean estCaisseBloquee(int l, int c,byte[][] caisses){
+        if(aMur(l,c) || estCaseLibre(l,c,caisses)) return false;
+        if(!aBut(l,c)) {
+            // CAS CAISSE TEMPORAIRE
+            if(estCaisseBloqueeTemp(l,c,caisses)){
+                if(!aMurAutour(l,c)) return false;//&&!aBloqueeAutour(l,c)) return false;
+                return gestionPlusieurTemp(l,c,caisses);
+            }
+
+            // CAS CONDUITS
+            if(aMur(l-1,c)&&aMur(l+1,c)) return (bloqueeVerticalDroit(l,c,0,caisses)||bloqueeVerticalDroit(l,c,1,caisses)) && (bloqueeVerticalGauche(l,c,0,caisses)||bloqueeVerticalGauche(l,c,1,caisses)); //conduit horizontale
+            if(aMur(l,c-1)&&aMur(l,c+1)) return (bloqueeHorizontalBas(l,c,0,caisses)||bloqueeHorizontalBas(l,c,1,caisses)) && (bloqueeHorizontalHaut(l,c,0,caisses)||bloqueeHorizontalHaut(l,c,1,caisses)); //conduit verical
+
+            // CAS GENERALS
+            if(aMur(l-1,c)) return bloqueeVerticalDroit(l,c,1,caisses)&&bloqueeVerticalGauche(l,c,1,caisses); // mur dessus de la caisse
+            if(aMur(l+1,c)) return bloqueeVerticalDroit(l,c,0,caisses)&&bloqueeVerticalGauche(l,c,0,caisses); // mur dessous de la caisse
+            if(aMur(l,c-1)) return bloqueeHorizontalHaut(l,c,1,caisses)&&bloqueeHorizontalBas(l,c,1,caisses); // mur a gauche de la caisse
+            if(aMur(l,c+1)) return bloqueeHorizontalHaut(l,c,0,caisses)&&bloqueeHorizontalBas(l,c,0,caisses); // mur a droite de la caisse
+        }
+        return false;
+    }
+    boolean estCaisseBloqueeTemp(int l,int c,byte[][] caisses){
+        if(estCaseHorsMap(l,c)) return false;
+        if(caisses[l][c]!=CAISSE && caisses[l][c]!=CAISSE_BLOQUEE_TEMP && carte[l][c]!=MUR && caisses[l][c]!=VIDE) return false;
+        if(aMur(l,c)) return false;
+        if(estCaseLibre(l,c,caisses))return false;
+        if(!aBut(l,c)){
+            if(!estCaseLibre(l-1,c,caisses) && (!estCaseLibre(l,c-1,caisses) || !estCaseLibre(l,c+1,caisses))){
+                if(aMur(l-1,c) && (aMur(l,c-1)||(aMur(l,c+1)))) return false;
+                return true;
+            }
+            if(!estCaseLibre(l+1,c,caisses) && (!estCaseLibre(l,c-1,caisses) || !estCaseLibre(l,c+1,caisses))){
+                if(aMur(l+1,c) && (aMur(l,c-1)||(aMur(l,c+1)))) return false;
+                return true;
+            }
+        }
+        return false;
+    }
+
+    boolean estCaseBloquante_V2(int l_initial, int c_initial, int l, int c,byte[][] caisses){
+        if(aMur(l,c)) return true;
+
+        byte[][] saveCaisses = caisses;
+        //System.out.println("l: "+l+" c: "+c+" cases[l][c]: "+ cases[l][c]);
+        saveCaisses[l][c] = CAISSE;
+        saveCaisses[l_initial][c_initial] = VIDE;
+        actualiseToutesCaisses(saveCaisses);
+
+        if(estCaisseBloquee(l,c,saveCaisses)){
+            return true;
+        }
+        return false;
+    }
+    public boolean aCaisse(int l, int c,byte[][] caisses){
+        return (caisses[l][c] & CAISSE) != 0  || (caisses[l][c] & CAISSE_BLOQUEE_TEMP) != 0; // || (cases[l][c] & CAISSE_BLOQUEE) != 0;
+    }
+    void actualiseUneCaisse(int l, int c,byte[][] caisses){
+        if (aCaisse(l,c,caisses)){
+            //if(cases[l][c]==CAISSE_BLOQUEE) return;
+            if(aBut(l,c)){
+                return;
+            }
+            if (estCaisseBloquee(l,c,caisses)){
+                caisses[l][c] = CAISSE_BLOQUEE; //FAUDRA TERMINER L'INSTANCE ! A FAIRE
+                return;
+            }
+            if (estCaisseBloqueeTemp(l,c,caisses)) {
+                caisses[l][c] = CAISSE_BLOQUEE_TEMP;
+                return;
+            }
+            caisses[l][c] = CAISSE;
+        }
+    }
+
+    public void actualiseToutesCaisses(byte[][] caisses){
+        for(int l=0;l<caisses.length;l++){
+            for(int c=0;c<caisses[0].length;c++){
+                actualiseUneCaisse(l,c,caisses);
+            }
+        }
+    }
+    void actualiseCaisses(int l, int c,byte[][] caisses){
+        actualiseUneCaisse(l+1,c,caisses);
+        actualiseUneCaisse(l-1,c,caisses);
+        actualiseUneCaisse(l,c+1,caisses);
+        actualiseUneCaisse(l,c-1,caisses);
+    }
+
+
+
+
+
+
 }

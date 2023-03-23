@@ -378,7 +378,7 @@ public class Niveau extends Historique<Coup> implements Cloneable {
 		}
 		i=0;
 		while(!aMur(l+i,c) && droite==false && !aCaisseBloquee(l+i,c)){ // en bas
-			if(aBut(l+i,c) && cases[l+i][c]!=MUR && cases[l+i][c]!=CAISSE_BLOQUEE) bas = true;
+			if(aBut(l+i,c) && cases[l-1][c]!=MUR && cases[l+i][c]!=CAISSE_BLOQUEE) bas = true;
 			i++;
 		}
 		i=0;
