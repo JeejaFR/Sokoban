@@ -74,10 +74,10 @@ public class Configuration {
 			prop = new Properties(defaut);
 			chargerProprietes(prop, in, nom);
 			//logger().info(message);
-			logger().info("Fichier de propriétés " + nom + " chargé");
+			//logger().info("Fichier de propriétés " + nom + " chargé");
 		} catch (FileNotFoundException e) {
 			prop = defaut;
-			logger().info(message);
+			//logger().info(message);
 		}
 		typeSequences = lis("Sequences");
 	}

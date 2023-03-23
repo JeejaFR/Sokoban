@@ -7,6 +7,7 @@ public class Niveau extends Historique<Coup> implements Cloneable {
 	static final int POUSSEUR = 2;
 	static final int CAISSE = 4;
 	static final int BUT = 8;
+	static final int CROIX = 128;
 	int l, c;
 	int[][] cases;
 	int[][] cases_originales;
@@ -318,5 +319,13 @@ public class Niveau extends Historique<Coup> implements Cloneable {
 			}
 			System.out.println();
 		}
+	}
+
+	public void setCroix(int l, int c){
+		cases[l][c] |= CROIX;
+	}
+
+	public boolean aCroix(int l, int c){
+		return (cases[l][c] & CROIX) != 0;
 	}
 }

@@ -34,6 +34,7 @@ import java.util.logging.Logger;
 public abstract class IA {
 	private Jeu jeu;
 	Niveau niveau;
+	Niveau nivOriginal;
 
 	public static IA nouvelle(Jeu j) {
 		IA resultat = null;
@@ -63,6 +64,7 @@ public abstract class IA {
 
 	public final Sequence<Coup> elaboreCoups() {
 		niveau = jeu.niveau().clone();
+		nivOriginal = jeu.niveau();
 		return joue();
 	}
 

@@ -111,6 +111,9 @@ public class NiveauGraphique extends JComponent implements Observateur {
 						tracer(drawable, caisse, x, y, largeurCase, hauteurCase);
 					if (marque > 0)
 						tracerCroix(drawable, marque, x, y, largeurCase, hauteurCase);
+				}else if (n.aCroix(ligne, colonne)) {
+					int marque = n.marque(ligne, colonne);
+					tracerCroix(drawable, marque, x, y, largeurCase, hauteurCase);
 				}
 			}
 	}

@@ -75,7 +75,7 @@ class IAResolveur extends IA {
             }
             while(!chemins.estVide()){
                 Position pos = chemins.extraitTete();
-                System.out.println(pos.affiche());
+                //System.out.println(pos.affiche());
                 int dl = pos.getL() - posPousseur.getL();
                 int dc = pos.getC() - posPousseur.getC();
                 coup = niveau.deplace(dl, dc);
@@ -105,7 +105,8 @@ class IAResolveur extends IA {
                 posCourante = cheminCourant.extraitTete();//dernière position du chemin k
                 chemin.insereQueue(posCourante);
             }
-            //System.out.println("Chemin numéro "+k+" Position courante : " + posCourante.affiche());
+            //nivOriginal.setCroix(posCourante.getL()+1, posCourante.getC()+1);
+            //System.out.println("Chemin "+k+" Position courante : " + posCourante.affiche());
             k++;
             posPousseurPossible = new PositionPoids(posCourante.getL(), posCourante.getC(), 0);
             //niveau.setCroix(posPousseurPossible.getL()+1, posPousseurPossible.getC()+1);
@@ -114,10 +115,13 @@ class IAResolveur extends IA {
                 ArrayList<Position> caisseCouranteDep = caissesDep.extraitTete();
                 byte[][] caissesNew = pousserCaisse(caisseCouranteDep, caisses);
                 PositionPoids posPousseurNew = new PositionPoids(caisseCouranteDep.get(0).getL(), caisseCouranteDep.get(0).getC(), 0);
-                //System.out.println("Caisse poussée, posPousseur : " + posPousseurNew.affiche());
                 if(!estInstance(posPousseurNew.getPos(), caissesNew, instancesPossibles)){
                     if(!estBut(caisseCouranteDep.get(0)) && estBut(caisseCouranteDep.get(1))){
+                        afficheCaisses(caissesNew);
                         nb_caisses_sur_but++;
+                        System.out.println("Nb caisses sur but : "+nb_caisses_sur_but);
+                        System.out.println("La caisse "+caisseCouranteDep.get(0).affiche()+" est maintenant sur le but en "+caisseCouranteDep.get(1).affiche());
+                        System.out.println("Pousseur en "+posPousseurNew.getPos().affiche());
                     }else{
                         if(estBut(caisseCouranteDep.get(0)) && !estBut(caisseCouranteDep.get(1))){
                             nb_caisses_sur_but--;
@@ -126,8 +130,9 @@ class IAResolveur extends IA {
                     ajouterInstance(posPousseurNew.getPos(), caissesNew, instancesPossibles);
                     if(nb_caisses_sur_but == nb_caisses){
                         chemin.insereQueue(posPousseurNew.getPos());
-                        //System.out.println("=========================== Toutes les caisses sont sur les buts ===========================");
-                        //System.exit(0);
+                        System.out.println("=========================== Toutes les caisses sont sur les buts ===========================");
+                        afficheCaisses(caissesNew);
+                        System.exit(0);
                         return new PoidsChemins(0, chemin);
                     }else{
                         //System.out.println("Toutes les caisses ne sont pas sur les buts");
