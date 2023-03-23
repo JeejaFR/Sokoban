@@ -40,8 +40,8 @@ public class Sokoban {
 
 	public static void main(String[] args) {
 		InputStream in;
-		in = Configuration.ouvre("Niveaux/Original.txt");
-		Configuration.info("Niveaux trouvés");
+		in = Configuration.ouvre("Niveaux/niveaux.txt");
+		//Configuration.info("Niveaux trouvés");
 
 		LecteurNiveaux l = new LecteurNiveaux(in);
 		Jeu j = new Jeu(l);

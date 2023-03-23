@@ -90,4 +90,9 @@ public class Jeu extends Observable {
 		metAJour();
 		return cp;
 	}
+
+	public void reinitialiseNiveau() {
+		n.reinitialiseNiveau();
+		metAJour();
+	}
 }

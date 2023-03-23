@@ -153,12 +153,19 @@ public class ControleurMediateur implements CollecteurEvenements {
 			case "Next":
 				prochain();
 				break;
+			case "Reinitialise":
+				reinitialise();
+				break;
 			case "Full":
 				vue.toggleFullscreen();
 				break;
 			default:
 				System.out.println("Touche inconnue : " + touche);
 		}
+	}
+
+	private void reinitialise() {
+		jeu.reinitialiseNiveau();
 	}
 
 	public void prochain() {

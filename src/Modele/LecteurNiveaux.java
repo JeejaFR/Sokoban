@@ -65,6 +65,7 @@ public class LecteurNiveaux {
 					i++;
 				}
 			}
+			n.setOriginal();
 			return ligne.substring(0, dernier + 1);
 		} else {
 			return null;

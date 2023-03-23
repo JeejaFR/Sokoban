@@ -9,6 +9,7 @@ public class Niveau extends Historique<Coup> implements Cloneable {
 	static final int BUT = 8;
 	int l, c;
 	int[][] cases;
+	int[][] cases_originales;
 	String nom;
 	int pousseurL, pousseurC;
 	int nbButs;
@@ -260,5 +261,62 @@ public class Niveau extends Historique<Coup> implements Cloneable {
 
 	public int nbPoussees() {
 		return nbPoussees;
+	}
+
+	public void setOriginal() {
+		cases_originales = new int[l][c];
+		for(int i=0; i<l; i++)
+			for(int j=0; j<c; j++)
+				cases_originales[i][j] = cases[i][j];
+	}
+	public void reinitialiseNiveau() {
+		nbButs = 0;
+		nbCaissesSurBut = 0;
+		nbPas = 0;
+		nbPoussees = 0;
+		for(int i=0; i<l; i++) {
+			for (int j = 0; j < c; j++) {
+				cases[i][j] = cases_originales[i][j];
+				if (aPousseur(i, j)) {
+					pousseurL = i;
+					pousseurC = j;
+				}
+				if(aBut(i, j)) {
+					nbButs++;
+				}
+				if(aCaisse(i, j) && aBut(i, j)) {
+					nbCaissesSurBut++;
+				}
+			}
+		}
+	}
+
+	public void afficheNiveau(){
+		for(int i=0; i<l; i++) {
+			for (int j = 0; j < c; j++) {
+				if(aMur(i, j)) {
+					System.out.print("#");
+				}
+				else if(aPousseur(i, j) && aBut(i, j)) {
+					System.out.print("+");
+				}
+				else if(aPousseur(i, j)) {
+					System.out.print("@");
+				}
+				else if(aCaisse(i, j) && aBut(i, j)) {
+					System.out.print("*");
+				}
+				else if(aCaisse(i, j)) {
+					System.out.print("$");
+				}
+				else if(aBut(i, j)) {
+					System.out.print(".");
+				}
+				else {
+					System.out.print(" ");
+				}
+			}
+			System.out.println();
+		}
 	}
 }

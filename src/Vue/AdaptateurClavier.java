@@ -66,6 +66,12 @@ public class AdaptateurClavier extends KeyAdapter {
 			case KeyEvent.VK_R:
 				control.toucheClavier("IA");
 				break;
+			case KeyEvent.VK_F2:
+				control.toucheClavier("Next");
+				break;
+			case KeyEvent.VK_F5:
+				control.toucheClavier("Reinitialise");
+				break;
 			case KeyEvent.VK_F1:
 				control.toucheClavier("Full");
 				break;
