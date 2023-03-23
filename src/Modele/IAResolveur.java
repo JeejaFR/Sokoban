@@ -88,6 +88,9 @@ class IAResolveur extends IA {
     }
 
     public PoidsChemins calcul_chemin(PositionPoids posPousseur, byte[][] caisses, int nb_caisses_sur_but){
+        /*System.out.println("//////////// en bas ////////////////");
+        afficheCaisses(caisses);
+        System.out.println("//////////// en haut ////////////////");*/
         profondeur++;
         //System.out.println("Profondeur : " + profondeur);
         //System.out.println("Nb instances : " + nb_instances);
@@ -113,21 +116,21 @@ class IAResolveur extends IA {
             SequenceListe<ArrayList<Position>> caissesDep = caissesDeplacables(posPousseurPossible, caisses);
             if(!caissesDep.estVide()){
                 ArrayList<Position> caisseCouranteDep = caissesDep.extraitTete();
+                if(nb_caisses_sur_but==2){
+                    //System.out.println("2 buts atteints");
+                    //afficheCaisses(caisses);
+                }
                 byte[][] caissesNew = pousserCaisse(caisseCouranteDep, caisses);
                 PositionPoids posPousseurNew = new PositionPoids(caisseCouranteDep.get(0).getL(), caisseCouranteDep.get(0).getC(), 0);
                 if(!estInstance(posPousseurNew.getPos(), caissesNew, instancesPossibles)){
+                    nb_caisses_sur_but = nbCaisseSurBut(caisses);
                     if(!estBut(caisseCouranteDep.get(0)) && estBut(caisseCouranteDep.get(1))){
                         nb_caisses_sur_but++;
-                        if(nb_caisses_sur_but==2) {
-                            afficheCaisses(caisses);
-                            System.out.println("Caisse poussée, nb_buts : " + nb_caisses_sur_but);
-                            afficheCaisses(caissesNew);
-                            System.out.println("===============================================");
-                        }
-                        //System.out.println("La caisse "+caisseCouranteDep.get(0).affiche()+" est maintenant sur le but en "+caisseCouranteDep.get(1).affiche());
-                        //System.out.println("Buts atteints : "+nb_caisses_sur_but);
-                        //afficheCaisses(caissesNew);
-                        //System.out.println("--------------------------------------------");
+                        System.out.println("La caisse "+caisseCouranteDep.get(0).affiche()+" est maintenant sur le but en "+caisseCouranteDep.get(1).affiche());
+                        System.out.println("Buts atteints : "+nb_caisses_sur_but);
+                        System.out.println("position joueur : "+posCourante.l + " c: "+posPousseur.c);
+                        afficheCaisses(caissesNew);
+                        System.out.println("--------------------------------------------");
                     }else{
                         if(estBut(caisseCouranteDep.get(0)) && !estBut(caisseCouranteDep.get(1))){
                             nb_caisses_sur_but--;
@@ -161,6 +164,18 @@ class IAResolveur extends IA {
 
     public boolean estBut(Position p){
         return (carte[p.l][p.c] & BUT) != 0;
+    }
+
+    public int nbCaisseSurBut(byte[][] caisses){
+        int nbCaisseBut = 0;
+        for(int i=0;i<caisses.length;i++){
+            for(int j=0;j<caisses[0].length;j++){
+                if(caisses[i][j] == CAISSE && carte[i][j]==BUT){
+                    nbCaisseBut++;
+                }
+            }
+        }
+        return nbCaisseBut;
     }
 
     public byte[][] pousserCaisse(ArrayList<Position> caisse, byte[][] caisses){
