@@ -35,6 +35,8 @@ public interface Sequence<E> {
 
 	E extraitTete();
 
+	E extraitQueue();
+
 	boolean estVide();
 
 	Iterateur<E> iterateur();

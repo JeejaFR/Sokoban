@@ -9,7 +9,7 @@ import java.util.*;
 import static Modele.Niveau.*;
 
 class IAResolveur extends IA {
-    private HashMap<String, byte[][]> instancesPossibles;
+    private HashMap<String, byte[][]> instances;
     private int[][] carte;
     private byte[][] caisses;
     private PositionPoids posPousseur;
@@ -22,7 +22,6 @@ class IAResolveur extends IA {
     private static final int INFINI = Integer.MAX_VALUE;
 
     public IAResolveur() {
-
     }
     public void niveauToCarte(Niveau n){
         int[][] cases = n.getCases();
@@ -58,16 +57,14 @@ class IAResolveur extends IA {
         int dL = 0, dC = 0;
         int nouveauL = 0;
         int nouveauC = 0;
-        instancesPossibles = new HashMap<>();
+        instances = new HashMap<>();
         nb_instances = 0;
-        profondeur = 0;
         nb_instances_pareilles = 0;
         nb_buts = 0;
         nb_caisses = 0;
         niveauToCarte(niveau);
 
-        PoidsChemins poidsChemins = calcul_chemin(posPousseur, caisses, 0);
-        SequenceListe<Position> chemins = poidsChemins.getChemins();
+        SequenceListe<Position> chemins = calcul_chemin(posPousseur, caisses, 0);
 
         if(chemins != null && !chemins.estVide()){
             if(!chemins.estVide()){//on supprime la première case qui contient la position actuelle du pousseur
@@ -87,79 +84,50 @@ class IAResolveur extends IA {
         return resultat;
     }
 
-    public PoidsChemins calcul_chemin(PositionPoids posPousseur, byte[][] caisses, int nb_caisses_sur_but){
-        /*System.out.println("//////////// en bas ////////////////");
-        afficheCaisses(caisses);
-        System.out.println("//////////// en haut ////////////////");*/
-        profondeur++;
-        //System.out.println("Profondeur : " + profondeur);
-        //System.out.println("Nb instances : " + nb_instances);
-        //System.out.println("Nb instances pareilles : " + nb_instances_pareilles);
+    public SequenceListe<Position> calcul_chemin(PositionPoids posPousseur, byte[][] caisses, int nb_caisses_sur_but){
         PositionPoids posPousseurPossible;
         Position posCourante = null;
         SequenceListe<Position> chemin = new SequenceListe<Position>();
-        SequenceListe<SequenceListe<Position>> chemins = Dijkstra(posPousseur, caisses);
-        //System.out.println("Chemins possibles : " + chemins.getTaille());
-        int k = 1;
-        while(!chemins.estVide()){
-            SequenceListe<Position> cheminCourant = chemins.extraitTete();//chemin k
-            //System.out.println("Chemin numéro "+k+" : " + cheminCourant.getTaille());
-            while(!cheminCourant.estVide()){
-                posCourante = cheminCourant.extraitTete();//dernière position du chemin k
-                chemin.insereQueue(posCourante);
-            }
-            //nivOriginal.setCroix(posCourante.getL()+1, posCourante.getC()+1);
-            //System.out.println("Chemin "+k+" Position courante : " + posCourante.affiche());
-            k++;
-            posPousseurPossible = new PositionPoids(posCourante.getL(), posCourante.getC(), 0);
-            //niveau.setCroix(posPousseurPossible.getL()+1, posPousseurPossible.getC()+1);
-            SequenceListe<ArrayList<Position>> caissesDep = caissesDeplacables(posPousseurPossible, caisses);
-            if(!caissesDep.estVide()){
-                ArrayList<Position> caisseCouranteDep = caissesDep.extraitTete();
-                if(nb_caisses_sur_but==2){
-                    //System.out.println("2 buts atteints");
-                    //afficheCaisses(caisses);
-                }
-                byte[][] caissesNew = pousserCaisse(caisseCouranteDep, caisses);
-                PositionPoids posPousseurNew = new PositionPoids(caisseCouranteDep.get(0).getL(), caisseCouranteDep.get(0).getC(), 0);
-                if(!estInstance(posPousseurNew.getPos(), caissesNew, instancesPossibles)){
-                    nb_caisses_sur_but = nbCaisseSurBut(caisses);
-                    if(!estBut(caisseCouranteDep.get(0)) && estBut(caisseCouranteDep.get(1))){
-                        nb_caisses_sur_but++;
-                        System.out.println("La caisse "+caisseCouranteDep.get(0).affiche()+" est maintenant sur le but en "+caisseCouranteDep.get(1).affiche());
-                        System.out.println("Buts atteints : "+nb_caisses_sur_but);
-                        System.out.println("position joueur : "+posCourante.l + " c: "+posPousseur.c);
-                        afficheCaisses(caissesNew);
-                        System.out.println("--------------------------------------------");
-                    }else{
-                        if(estBut(caisseCouranteDep.get(0)) && !estBut(caisseCouranteDep.get(1))){
-                            nb_caisses_sur_but--;
+        SequenceListe<ArrayList<Position>> caissesDep = new SequenceListe<ArrayList<Position>>();
+        ArrayList<Position> caisseCouranteDep = new ArrayList<Position>();
+        SequenceListe<Position> cheminCourant = new SequenceListe<Position>();
+        LinkedList <SequenceListe<SequenceListe<Position>>> queue = new LinkedList <SequenceListe<SequenceListe<Position>>>();
+
+        SequenceListe<SequenceListe<Position>> cheminsTete = Dijkstra(posPousseur, caisses);
+        queue.add(cheminsTete);
+
+        while(!queue.isEmpty()){
+            cheminsTete = queue.poll();
+            for(int i = 0; i < cheminsTete.taille(); i++) {
+                cheminCourant = cheminsTete.extraitTete();//on extrait le chemin courant
+                posPousseurPossible = new PositionPoids(cheminCourant.extraitQueue().getL(), cheminCourant.extraitQueue().getC(), 0);
+                caissesDep = caissesDeplacables(posPousseurPossible, caisses);
+                if(!caissesDep.estVide()){
+                    caisseCouranteDep = caissesDep.extraitTete();
+                    byte[][] caissesNew = pousserCaisse(caisseCouranteDep, caisses);
+                    PositionPoids posPousseurNew = new PositionPoids(caisseCouranteDep.get(0).getL(), caisseCouranteDep.get(0).getC(), 0);
+                    if(!estInstance(posPousseurNew.getPos(), caissesNew, instances)){
+                        nb_caisses_sur_but = nbCaisseSurBut(caisses);
+                        if(!estBut(caisseCouranteDep.get(0)) && estBut(caisseCouranteDep.get(1))){
+                            nb_caisses_sur_but++;
+                        }else{
+                            if(estBut(caisseCouranteDep.get(0)) && !estBut(caisseCouranteDep.get(1))){
+                                nb_caisses_sur_but--;
+                            }
+                        }
+                        cheminsTete = Dijkstra(posPousseurNew, caissesNew);
+                        queue.add(cheminsTete);
+                        ajouterInstance(posPousseurNew.getPos(), caissesNew, instances);
+                        if(nb_caisses_sur_but == nb_caisses){
+                            chemin.insereQueue(posPousseurNew.getPos());
+                            System.out.println("=========================== Toutes les caisses sont sur les buts ===========================");
+                            return chemin;
                         }
                     }
-                    ajouterInstance(posPousseurNew.getPos(), caissesNew, instancesPossibles);
-                    if(nb_caisses_sur_but == nb_caisses){
-                        chemin.insereQueue(posPousseurNew.getPos());
-                        System.out.println("=========================== Toutes les caisses sont sur les buts ===========================");
-                        afficheCaisses(caissesNew);
-                        //System.exit(0);
-                        return new PoidsChemins(0, chemin);
-                    }else{
-                        //System.out.println("Toutes les caisses ne sont pas sur les buts");
-                        PoidsChemins suivant = new PoidsChemins(chemin, calcul_chemin(posPousseurNew, caissesNew, nb_caisses_sur_but));
-                        if(suivant.getPoids()==0){
-                            return suivant;
-                        }
-                    }
-                }else{
-                    nb_instances_pareilles++;
-                    //System.out.println("Instance déjà rencontrée");
-                    //System.exit(0);
                 }
             }
         }
-
-        //System.out.println("Pas de chemin possible");
-        return new PoidsChemins(1, null);
+        return chemin;
     }
 
     public boolean estBut(Position p){

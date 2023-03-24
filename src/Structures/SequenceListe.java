@@ -28,6 +28,7 @@ package Structures;
 
 public class SequenceListe<E> implements Sequence<E> {
 	Maillon<E> tete, queue;
+	private int taille = 0;
 
 	@Override
 	public void insereQueue(E element) {
@@ -38,6 +39,7 @@ public class SequenceListe<E> implements Sequence<E> {
 			queue.suivant = m;
 			queue = m;
 		}
+		taille++;
 	}
 
 	@Override
@@ -48,6 +50,7 @@ public class SequenceListe<E> implements Sequence<E> {
 		} else {
 			tete = m;
 		}
+		taille++;
 	}
 
 	@Override
@@ -59,12 +62,32 @@ public class SequenceListe<E> implements Sequence<E> {
 		if (tete == null) {
 			queue = null;
 		}
+		taille--;
 		return resultat;
 	}
+
+	public E extraitQueue(){//à tester
+		E resultat;
+		// Exception si tete == null (sequence vide)
+		resultat = queue.element;
+		Maillon<E> m = tete;
+		while (m.suivant != queue) {
+			m = m.suivant;
+		}
+		queue = m;
+		queue.suivant = null;
+		taille--;
+		return resultat;
+	}
+
 
 	@Override
 	public boolean estVide() {
 		return tete == null;
+	}
+
+	public int taille() {
+		return taille;
 	}
 
 	@Override

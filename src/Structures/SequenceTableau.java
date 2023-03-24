@@ -79,6 +79,15 @@ public class SequenceTableau<E> implements Sequence<E> {
 	}
 
 	@Override
+	public E extraitQueue() {
+		// Resultat invalide si la sequence est vide
+		@SuppressWarnings("unchecked")
+		E resultat = (E) elements[(debut + taille - 1) % elements.length];
+		taille--;
+		return resultat;
+	}
+
+	@Override
 	public boolean estVide() {
 		return taille == 0;
 	}
