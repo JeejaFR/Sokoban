@@ -37,7 +37,6 @@ public class SequenceListe<E> implements Sequence<E> {
 			tete = queue = m;
 		} else {
 			queue.suivant = m;
-			queue = m;
 		}
 		taille++;
 	}
@@ -66,19 +65,28 @@ public class SequenceListe<E> implements Sequence<E> {
 		return resultat;
 	}
 
-	public E extraitQueue(){//à tester
-		E resultat;
-		// Exception si tete == null (sequence vide)
-		resultat = queue.element;
-		Maillon<E> m = tete;
-		while (m.suivant != queue) {
-			m = m.suivant;
+	public E extraitQueue(){
+		if(queue == null){
+			return null;
+		}else if(tete == queue){// il y a un seul élément dans la liste
+			E element = queue.element;
+			tete = queue = null;
+			taille--;
+			return element;
+		}else{
+			// il y a plusieurs éléments dans la liste
+			Maillon<E> precedent = tete;
+			while(precedent.suivant != queue){
+				precedent = precedent.suivant;
+			}
+			E element = queue.element;
+			queue = precedent;
+			queue.suivant = null;
+			taille--;
+			return element;
 		}
-		queue = m;
-		queue.suivant = null;
-		taille--;
-		return resultat;
 	}
+
 
 
 	@Override
