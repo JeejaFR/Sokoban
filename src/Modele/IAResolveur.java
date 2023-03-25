@@ -37,6 +37,7 @@ class IAResolveur extends IA {
                 }else if((cases[i][j] & BUT) != 0){
                     carte[i - 1][j - 1] = cases[i][j];
                     this.nb_buts++;
+                    System.out.println("nb_buts : "+nb_buts);
                 } else if ((cases[i][j] & CAISSE) != 0) {
                     carte[i - 1][j - 1] = VIDE;
                     this.nb_caisses++;
@@ -89,8 +90,7 @@ class IAResolveur extends IA {
     }
 
     public ArrayList<ArbreChemins> calcul_chemin(Position posPousseur, byte[][] caisses){
-        int nb_caisses_sur_but = nbCaissesSurBut(caisses);
-        if(nb_caisses_sur_but != nb_caisses){
+        if(nb_buts!= nb_caisses){
             Configuration.erreur("Niveau impossible à résoudre : le nombre de caisses est différent du nombre de buts.");
             return null;
         }
@@ -117,7 +117,7 @@ class IAResolveur extends IA {
                     byte[][] caissesNew = pousserCaisse(caisseDeplCourante, caisses);
                     Position posPousseurNew = new Position(caisseDeplCourante.get(0).getL(), caisseDeplCourante.get(0).getC());
                     if(!estInstance(posPousseurNew, caissesNew, instances)){
-                        nb_caisses_sur_but = nbCaissesSurBut(caissesNew);
+                        int nb_caisses_sur_but = nbCaissesSurBut(caissesNew);
                         if(nb_caisses_sur_but == nb_caisses){
                             System.out.println("=========================== Toutes les caisses sont sur les buts ===========================");
                             ArbreChemins arbreCourant = new ArbreChemins(null, cheminsTete.getPere());
@@ -308,7 +308,7 @@ class IAResolveur extends IA {
                 caseSuivante = parcourtDistances(new Position(caseSuivante.getL(), caseSuivante.getC()), distance);
                 chemin.insereTete(new Position(caseSuivante.getL(), caseSuivante.getC()));
             }
-            sequenceChemins.ajoutChemin(chemin);
+            sequenceChemins.ajoutChemin(chemin);//"this.cheminPousseurCaisses" is null
             sequenceChemins.ajoutCaisses(caisses);
             chemin = new SequenceListe<>();
         }
