@@ -65,12 +65,13 @@ class IAResolveur extends IA {
         nb_buts = 0;
         nb_caisses = 0;
         niveauToCarte(niveau);
-        afficheCarte(carte);
+        if(nb_buts!= nb_caisses){
+            Configuration.erreur("Niveau impossible à résoudre : le nombre de caisses est différent du nombre de buts.");
+            return null;
+        }
 
         System.out.println("PosPousseur: " + posPousseur.affiche());
-
         ArrayList<ArbreChemins> chemins = calcul_chemin(posPousseur, caisses);
-
         /*
         if(chemins != null){
             while(!chemins.isEmpty()){
@@ -90,10 +91,6 @@ class IAResolveur extends IA {
     }
 
     public ArrayList<ArbreChemins> calcul_chemin(Position posPousseur, byte[][] caisses){
-        if(nb_buts!= nb_caisses){
-            Configuration.erreur("Niveau impossible à résoudre : le nombre de caisses est différent du nombre de buts.");
-            return null;
-        }
         Position posCourante = null;
         ArrayList<ArbreChemins> chemin = new ArrayList<ArbreChemins>();
         SequenceListe<ArrayList<Position>> caissesDepl = new SequenceListe<ArrayList<Position>>();
