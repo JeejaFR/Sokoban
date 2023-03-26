@@ -1,15 +1,15 @@
 package Modele;
 
 public class ArbreChemins {
-    private CheminInstance courant;
+    private Instance courant;
     private ArbreChemins pere;
 
-    public ArbreChemins(CheminInstance courant, ArbreChemins pere){
+    public ArbreChemins(Instance courant, ArbreChemins pere){
         this.courant = courant;
         this.pere = pere;
     }
 
-    public CheminInstance getCourant(){
+    public Instance getCourant(){
         return courant;
     }
 
