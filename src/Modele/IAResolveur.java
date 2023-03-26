@@ -75,11 +75,14 @@ class IAResolveur extends IA {
             SequenceListe<Position> chemin = chemins.get(i).getChemin();
             while(!chemin.estVide()){
                 Position pos = chemin.extraitTete();
+                System.out.println("pos: " + pos.affiche());
+                /*
                 int dl = pos.getL() - posPousseur.getL();
                 int dc = pos.getC() - posPousseur.getC();
                 coup = niveau.deplace(dl, dc);
                 resultat.insereQueue(coup);
                 posPousseur = pos;
+                 */
             }
         }
         return resultat;
@@ -124,19 +127,18 @@ class IAResolveur extends IA {
                     Position posPousseurNew = caisseDeplCourante.get(0);//position de la caisse avant qu'elle soit poussée
                     if(!estInstance(posPousseurNew, caissesNew, instances)){
                         int nb_caisses_sur_but = nbCaissesSurBut(caissesNew);
+
                         if(nb_caisses_sur_but == nb_caisses){
                             System.out.println("=========================== Toutes les caisses sont sur les buts ===========================");
                             instanceCourante = new Instance(posPousseurNew, caissesNew);//instance de victoire
-                            int k=0;
                             while(!instanceCourante.estInstance(instanceDepart)){
-                                System.out.println(k);
-                                k++;
                                 arbreCourant = new ArbreChemins(instanceCourante, cheminCourant, cheminsTete);
                                 chemin.add(arbreCourant);
                                 instanceCourante = arbreCourant.getPere().getCourant();
                                 cheminCourant = arbreCourant.getPere().getChemin();
                             }
                             chemin.add(arbreCourant);
+                            //inverse le chemin
                             ArrayList<ArbreChemins> cheminInverse = new ArrayList<ArbreChemins>();
                             for(int j = chemin.size()-1; j >= 0; j--){
                                 cheminInverse.add(chemin.get(j));
