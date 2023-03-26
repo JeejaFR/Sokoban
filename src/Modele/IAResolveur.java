@@ -70,21 +70,19 @@ class IAResolveur extends IA {
         System.out.println("PosPousseur: " + posPousseur.affiche());
         ArrayList<ArbreChemins> chemins = calcul_chemin(posPousseur, caisses);
         System.out.println("chemins.size() : "+chemins.size());
-        return null;
-/*
+
         for(int i=0; i<chemins.size(); i++){
-            Instance courant = chemins.get(i).getCourant();
-            Position pos = courant.getPosPousseur();
-            //System.out.println(pos.affiche());
-            int dl = pos.getL() - posPousseur.getL();
-            int dc = pos.getC() - posPousseur.getC();
-            coup = niveau.deplace(dl, dc);
-            resultat.insereQueue(coup);
-            posPousseur = pos;
+            SequenceListe<Position> chemin = chemins.get(i).getChemin();
+            while(!chemin.estVide()){
+                Position pos = chemin.extraitTete();
+                int dl = pos.getL() - posPousseur.getL();
+                int dc = pos.getC() - posPousseur.getC();
+                coup = niveau.deplace(dl, dc);
+                resultat.insereQueue(coup);
+                posPousseur = pos;
+            }
         }
         return resultat;
-
- */
     }
 
     public ArrayList<ArbreChemins> calcul_chemin(Position posPousseur, byte[][] caisses){
@@ -95,11 +93,12 @@ class IAResolveur extends IA {
         SequenceListe<Position> cheminCourant = new SequenceListe<Position>();
         LinkedList<ArbreChemins> queue = new LinkedList <ArbreChemins>();
         ArbreChemins arbreCourant = null;
+        Instance instanceCourante = null;
 
         ajouterInstance(posPousseur, caisses, instances);
-        Instance instanceCourante = new Instance(posPousseur, caisses);
+        Instance instanceDepart = new Instance(posPousseur, caisses);
 
-        ArbreChemins cheminsTete = new ArbreChemins(instanceCourante, null);
+        ArbreChemins cheminsTete = new ArbreChemins(instanceDepart, null, null);
 
         queue.add(cheminsTete);
 
@@ -129,12 +128,13 @@ class IAResolveur extends IA {
                             System.out.println("=========================== Toutes les caisses sont sur les buts ===========================");
                             instanceCourante = new Instance(posPousseurNew, caissesNew);//instance de victoire
                             int k=0;
-                            while(!instanceCourante.estInstance(instanceCourante)){
+                            while(!instanceCourante.estInstance(instanceDepart)){
                                 System.out.println(k);
                                 k++;
-                                arbreCourant = new ArbreChemins(instanceCourante, cheminsTete);
+                                arbreCourant = new ArbreChemins(instanceCourante, cheminCourant, cheminsTete);
                                 chemin.add(arbreCourant);
                                 instanceCourante = arbreCourant.getPere().getCourant();
+                                cheminCourant = arbreCourant.getPere().getChemin();
                             }
                             chemin.add(arbreCourant);
                             ArrayList<ArbreChemins> cheminInverse = new ArrayList<ArbreChemins>();
@@ -145,7 +145,7 @@ class IAResolveur extends IA {
                         }else{
                             ajouterInstance(posPousseurNew, caissesNew, instances);
                             instanceCourante = new Instance(posPousseurNew, caissesNew);
-                            queue.add(new ArbreChemins(instanceCourante, cheminsTete));
+                            queue.add(new ArbreChemins(instanceCourante, cheminCourant, cheminsTete));
                         }
                     }
                 }//pas de solution pour ce chemin
