@@ -87,7 +87,13 @@ public class SequenceListe<E> implements Sequence<E> {
 		}
 	}
 
+	public E getTete(){
+		return tete.element;
+	}
 
+	public E getQueue(){
+		return queue.element;
+	}
 
 	@Override
 	public boolean estVide() {
