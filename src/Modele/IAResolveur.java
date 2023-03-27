@@ -119,6 +119,7 @@ class IAResolveur extends IA {
                 cheminCourant = cheminsPousseurCaisse.getChemins().get(i);//on récupère le chemin courant SequenceListe<Position>
                 cheminCourant.extraitTete();//la tête est la position du pousseur au départ
 
+
                 posPousseur = cheminCourant.getQueue();//dernière position du chemin courant
                 caissesDepl = caissesDeplacables(posPousseur, caisses);//SequenceListe<ArrayList<Position>>
 
