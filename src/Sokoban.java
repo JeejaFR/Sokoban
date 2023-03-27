@@ -27,19 +27,21 @@
 
 import Controleur.ControleurMediateur;
 import Global.Configuration;
+import Modele.IA;
 import Modele.Jeu;
 import Modele.LecteurNiveaux;
 import Structures.SequenceListe;
 import Vue.CollecteurEvenements;
 import Vue.InterfaceGraphique;
 import Vue.InterfaceTextuelle;
-
 import java.io.InputStream;
 
 public class Sokoban {
 	final static String typeInterface = Configuration.lisChaine("Interface");
 
 	public static void main(String[] args) {
+
+
 		InputStream in;
 		in = Configuration.ouvre("Niveaux/niveaux.txt");
 		//Configuration.info("Niveaux trouvés");
@@ -57,5 +59,6 @@ public class Sokoban {
 			default:
 				Configuration.erreur("Interface inconnue");
 		}
+
 	}
 }
