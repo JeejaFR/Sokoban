@@ -67,8 +67,9 @@ class IAResolveur extends IA {
         ArrayList<SequenceListe<Position>> chemins = calcul_chemin(posPousseur, caisses);
         System.out.println("chemins.size() : "+chemins.size());
 
-        for(int i=0; i<chemins.size(); i++){
+        for(int i=0; i<chemins.size()-1; i++){
             SequenceListe<Position> chemin = chemins.get(i);
+            chemin.extraitTete();
             while(!(chemin == null) && !chemin.estVide()){
                 Position pos = chemin.extraitTete();
                 System.out.println("pos: " + pos.affiche());
@@ -84,6 +85,7 @@ class IAResolveur extends IA {
     }
 
     public ArrayList<SequenceListe<Position>> calcul_chemin(Position posPousseur, byte[][] caisses){
+        int compteur = 0;
         Position posCourante = null;
         ArrayList<SequenceListe<Position>> chemin = new ArrayList<SequenceListe<Position>>();
         SequenceListe<ArrayList<Position>> caissesDepl = new SequenceListe<ArrayList<Position>>();
@@ -101,6 +103,10 @@ class IAResolveur extends IA {
         queue.add(arbreCheminsTete);
 
         while(!queue.isEmpty()){
+            compteur++;
+            System.out.println("compteur: " + compteur);
+            System.out.println("instances différentes : " + nb_instances);
+            System.out.println("instances identiques : " + nb_instances_pareilles);
             arbreCheminsTete = queue.poll();//ArbreChemins
 
             //récupère l'instance courante qui contient la position du pousseur et les caisses
@@ -113,9 +119,8 @@ class IAResolveur extends IA {
             //pour chaque chemin possible du pousseur à une caisse
             for(int i = 0; i < cheminsPousseurCaisse.getChemins().size(); i++){
                 cheminCourant = cheminsPousseurCaisse.getChemins().get(i);//on récupère le chemin courant SequenceListe<Position>
-                cheminCourant.extraitTete();//la tête est la position du pousseur au départ
 
-                posPousseur = cheminCourant.getQueue();//dernière position du chemin courant
+                posPousseur = cheminCourant.getQueue();//dernière position du chemin courant (position du pousseur à côté de la caisse)
                 caissesDepl = caissesDeplacables(posPousseur, caisses);//SequenceListe<ArrayList<Position>>
 
                 while(!caissesDepl.estVide()){
@@ -123,6 +128,7 @@ class IAResolveur extends IA {
                     byte[][] caissesNew = pousserCaisse(caisseDeplCourante, caisses);
                     Position posPousseurNew = caisseDeplCourante.get(0);//position de la caisse avant qu'elle soit poussée
                     if(!estInstance(posPousseurNew, caissesNew, instances)){
+                        nb_instances++;
                         cheminCourant.insereQueue(posPousseurNew);//on ajoute la nouvelle position du pousseur après avoir poussé la caisse
                         instanceCourante = new Instance(posPousseurNew, caissesNew);
                         int nb_caisses_sur_but = nbCaissesSurBut(caissesNew);
@@ -142,6 +148,7 @@ class IAResolveur extends IA {
                             queue.add(new ArbreChemins(instanceCourante, cheminCourant, arbreCheminsTete));
                         }
                     }
+                    nb_instances_pareilles++;
                 }//pas de solution pour ce chemin
             }
             //System.out.println("nb instances: " + nb_instances);
@@ -280,6 +287,8 @@ class IAResolveur extends IA {
             //extrait le sommet de distance minimale
             PositionPoids p = queue.extrait();
             if(estAdjacentCaisse(p, caisses)){
+                //System.out.println("Pousseur : " + p.affiche());
+                //afficheDistances(distance);
                 caissesAccessibles.insereTete(new Position(p.getL(), p.getC()));
             }
             SequenceListe<PositionPoids> casesAccessibles = casesAccessibles(p, caisses);//renvoie les cases accessibles à côté du pousseur
