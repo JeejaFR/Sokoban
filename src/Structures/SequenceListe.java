@@ -33,10 +33,11 @@ public class SequenceListe<E> implements Sequence<E> {
 	@Override
 	public void insereQueue(E element) {
 		Maillon<E> m = new Maillon<>(element, null);
-		if (queue == null) {
+		if (tete == null) {
 			tete = queue = m;
 		} else {
 			queue.suivant = m;
+			queue = m;
 		}
 		taille++;
 	}
