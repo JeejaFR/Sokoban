@@ -477,7 +477,6 @@ class IAResolveur extends IA {
     }
 
     public void ajouterInstance(Position p, byte[][] caisses, HashMap<String, byte[][]> instances){
-        nb_instances++;
         byte[][] instanceCopie = copieByte(caisses);
         instanceCopie[p.getL()][p.getC()] = POUSSEUR ;
         String posPousseur = p.getL() + "," + p.getC();
