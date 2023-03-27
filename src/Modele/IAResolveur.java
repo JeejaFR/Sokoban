@@ -53,10 +53,6 @@ class IAResolveur extends IA {
     public Sequence<Coup> joue() {
         Sequence<Coup> resultat = Configuration.nouvelleSequence();
         Coup coup = null;
-        boolean mur = true;
-        int dL = 0, dC = 0;
-        int nouveauL = 0;
-        int nouveauC = 0;
         instances = new HashMap<>();
         nb_instances = 0;
         nb_instances_pareilles = 0;
@@ -119,7 +115,6 @@ class IAResolveur extends IA {
                 cheminCourant = cheminsPousseurCaisse.getChemins().get(i);//on récupère le chemin courant SequenceListe<Position>
                 cheminCourant.extraitTete();//la tête est la position du pousseur au départ
 
-
                 posPousseur = cheminCourant.getQueue();//dernière position du chemin courant
                 caissesDepl = caissesDeplacables(posPousseur, caisses);//SequenceListe<ArrayList<Position>>
 
@@ -129,11 +124,11 @@ class IAResolveur extends IA {
                     Position posPousseurNew = caisseDeplCourante.get(0);//position de la caisse avant qu'elle soit poussée
                     if(!estInstance(posPousseurNew, caissesNew, instances)){
                         cheminCourant.insereQueue(posPousseurNew);//on ajoute la nouvelle position du pousseur après avoir poussé la caisse
+                        instanceCourante = new Instance(posPousseurNew, caissesNew);
                         int nb_caisses_sur_but = nbCaissesSurBut(caissesNew);
 
                         if(nb_caisses_sur_but == nb_caisses){
                             System.out.println("=========================== Toutes les caisses sont sur les buts ===========================");
-                            instanceCourante = new Instance(posPousseurNew, caissesNew);//instance de victoire
                             while(!instanceCourante.estInstance(instanceDepart)){
                                 arbreCourant = new ArbreChemins(instanceCourante, cheminCourant, arbreCheminsTete);
                                 chemin.add(cheminCourant);
@@ -144,7 +139,6 @@ class IAResolveur extends IA {
                             return chemin;
                         }else{
                             ajouterInstance(posPousseurNew, caissesNew, instances);
-                            instanceCourante = new Instance(posPousseurNew, caissesNew);
                             queue.add(new ArbreChemins(instanceCourante, cheminCourant, arbreCheminsTete));
                         }
                     }

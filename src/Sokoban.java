@@ -41,27 +41,6 @@ public class Sokoban {
 
 	public static void main(String[] args) {
 		InputStream in;
-		String chaine;
-		SequenceListe<String> s = new SequenceListe<String>();
-		s.insereQueue("chaine1");
-		s.insereQueue("chaine2");
-		s.insereQueue("chaine3");
-		s.insereQueue("chaine4");
-		s.insereQueue("chaine5");
-		s.insereQueue("chaine6");
-		chaine = s.extraitTete();
-		System.out.println(chaine);
-		chaine = s.extraitQueue();
-		System.out.println(chaine);
-		chaine = s.extraitQueue();
-		System.out.println(chaine);
-		chaine = s.extraitTete();
-		System.out.println(chaine);
-		chaine = s.extraitTete();
-		System.out.println(chaine);
-		chaine = s.extraitTete();
-		System.out.println(chaine);
-		/*
 		in = Configuration.ouvre("Niveaux/niveaux.txt");
 		//Configuration.info("Niveaux trouvés");
 
@@ -78,6 +57,5 @@ public class Sokoban {
 			default:
 				Configuration.erreur("Interface inconnue");
 		}
-		 */
 	}
 }
