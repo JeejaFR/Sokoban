@@ -37,7 +37,7 @@ public class SequenceListe<E> implements Sequence<E> {
 			tete = queue = m;
 		} else {
 			queue.suivant = m;
-			queue = m;
+			queue = queue.suivant;
 		}
 		taille++;
 	}

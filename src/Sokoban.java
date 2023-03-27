@@ -51,9 +51,9 @@ public class Sokoban {
 		s.insereQueue("chaine6");
 		chaine = s.extraitTete();
 		System.out.println(chaine);
-		chaine = s.extraitTete();
+		chaine = s.extraitQueue();
 		System.out.println(chaine);
-		chaine = s.extraitTete();
+		chaine = s.extraitQueue();
 		System.out.println(chaine);
 		chaine = s.extraitTete();
 		System.out.println(chaine);
