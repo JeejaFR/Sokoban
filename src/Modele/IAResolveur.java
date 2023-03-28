@@ -67,9 +67,10 @@ class IAResolveur extends IA {
         ArrayList<SequenceListe<Position>> chemins = calcul_chemin(posPousseur, caisses);
         System.out.println("chemins.size() : "+chemins.size());
 
-        for(int i=0; i<chemins.size()-1; i++){
+        for(int i=0; i<chemins.size(); i++){
             SequenceListe<Position> chemin = chemins.get(i);
-            chemin.extraitTete();
+            System.out.println("chemin.taille() : "+chemin.taille());
+            chemin.extraitTete();//on enlève la position du pousseur puisqu'il est déjà à cette position
             while(!(chemin == null) && !chemin.estVide()){
                 Position pos = chemin.extraitTete();
                 //System.out.println("pos: " + pos.affiche());
@@ -135,7 +136,8 @@ class IAResolveur extends IA {
                                 cheminCourant = arbreCourant.getPere().getChemin();
                                 arbreCourant = arbreCourant.getPere();
                             }
-                            chemin.add(cheminCourant);
+                            //cheminCourant est maintenant null, puisque c'est le chemin null qui a été ajouté en premier
+                            //return chemin;
                             ArrayList<SequenceListe<Position>> cheminInverse = new ArrayList<SequenceListe<Position>>();
                             for(int j=chemin.size()-1; j>=0; j--){
                                 cheminInverse.add(chemin.get(j));
