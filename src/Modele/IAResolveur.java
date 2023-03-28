@@ -34,14 +34,17 @@ class IAResolveur extends IA {
             for (int j = 1; j < c + 1; j++) {
                 if (((cases[i][j] & MUR) != 0 || (cases[i][j] & VIDE) != 0)) {
                     carte[i - 1][j - 1] = cases[i][j];
-                }else if((cases[i][j] & BUT) != 0){
+                }
+                if((cases[i][j] & BUT) != 0){
                     carte[i - 1][j - 1] = cases[i][j];
                     this.nb_buts++;
-                } else if ((cases[i][j] & CAISSE) != 0) {
+                }
+                if ((cases[i][j] & CAISSE) != 0) {
                     carte[i - 1][j - 1] = VIDE;
                     this.nb_caisses++;
                     this.caisses[i - 1][j - 1] = CAISSE;
-                } else if ((cases[i][j] & POUSSEUR) != 0) {
+                }
+                if((cases[i][j] & POUSSEUR) != 0) {
                     carte[i - 1][j - 1] = VIDE;
                     posPousseur = new Position(i - 1, j - 1);
                 }
@@ -65,11 +68,9 @@ class IAResolveur extends IA {
         }
         System.out.println("PosPousseur: " + posPousseur.affiche());
         ArrayList<SequenceListe<Position>> chemins = calcul_chemin(posPousseur, caisses);
-        System.out.println("chemins.size() : "+chemins.size());
 
         for(int i=0; i<chemins.size(); i++){
             SequenceListe<Position> chemin = chemins.get(i);
-            System.out.println("chemin.taille() : "+chemin.taille());
             chemin.extraitTete();//on enlève la position du pousseur puisqu'il est déjà à cette position
             while(!(chemin == null) && !chemin.estVide()){
                 Position pos = chemin.extraitTete();
@@ -97,7 +98,6 @@ class IAResolveur extends IA {
 
         ajouterInstance(posPousseur, caisses, instances);
         Instance instanceDepart = new Instance(posPousseur, caisses);
-
         ArbreChemins arbreCheminsTete = new ArbreChemins(instanceDepart, null, null);
 
         queue.add(arbreCheminsTete);
@@ -135,9 +135,7 @@ class IAResolveur extends IA {
                                 instanceCourante = arbreCourant.getPere().getCourant();
                                 cheminCourant = arbreCourant.getPere().getChemin();
                                 arbreCourant = arbreCourant.getPere();
-                            }
-                            //cheminCourant est maintenant null, puisque c'est le chemin null qui a été ajouté en premier
-                            //return chemin;
+                            }//cheminCourant est maintenant null, puisque c'est le chemin null qui a été ajouté en premier
                             ArrayList<SequenceListe<Position>> cheminInverse = new ArrayList<SequenceListe<Position>>();
                             for(int j=chemin.size()-1; j>=0; j--){
                                 cheminInverse.add(chemin.get(j));
@@ -338,6 +336,9 @@ class IAResolveur extends IA {
             //System.out.println("estCaseLibre : "+(!estCaseHorsMap(pCaisse.l+1, pCaisse.c)&&estCaseLibre(pCaisse.l+1, pCaisse.c, caisses)));
             //System.out.println("estCaseBloquante : "+estCaseBloquante(pCaisse.l+1, pCaisse.c, caisses));
             //System.out.println("estCaseHorsMap : "+estCaseHorsMap(pCaisse.l+1, pCaisse.c));
+            if(estCaseBloquante_V2(pCaisse.l,pCaisse.c,pCaisse.l+1, pCaisse.c, supprimeCaisse(pCaisse, caisses))){
+                //afficheCaisses(caisses);
+            }
             if(!estCaseHorsMap(pCaisse.l+1, pCaisse.c) && estCaseLibre(pCaisse.l+1, pCaisse.c, caisses) && !estCaseBloquante_V2(pCaisse.l,pCaisse.c,pCaisse.l+1, pCaisse.c, supprimeCaisse(pCaisse, caisses))){
                 return true;
             }
@@ -349,6 +350,9 @@ class IAResolveur extends IA {
             //System.out.println("estCaseLibre : "+(!estCaseHorsMap(pCaisse.l-1, pCaisse.c)&&estCaseLibre(pCaisse.l-1, pCaisse.c, caisses)));
             //System.out.println("estCaseBloquante : "+estCaseBloquante(pCaisse.l-1, pCaisse.c, caisses));
             //System.out.println("estCaseHorsMap : "+estCaseHorsMap(pCaisse.l-1, pCaisse.c));
+            if(estCaseBloquante_V2(pCaisse.l,pCaisse.c,pCaisse.l-1, pCaisse.c, supprimeCaisse(pCaisse, caisses))){
+                //afficheCaisses(caisses);
+            }
             if(!estCaseHorsMap(pCaisse.l-1, pCaisse.c) && estCaseLibre(pCaisse.l-1, pCaisse.c, caisses) && !estCaseBloquante_V2(pCaisse.l,pCaisse.c,pCaisse.l-1, pCaisse.c, supprimeCaisse(pCaisse, caisses))){
                 return true;
             }
@@ -360,6 +364,9 @@ class IAResolveur extends IA {
             //System.out.println("estCaseLibre : "+(!estCaseHorsMap(pCaisse.l, pCaisse.c+1)&&estCaseLibre(pCaisse.l, pCaisse.c+1, caisses)));
             //System.out.println("estCaseBloquante : "+estCaseBloquante(pCaisse.l, pCaisse.c+1, caisses));
             //System.out.println("estCaseHorsMap : "+estCaseHorsMap(pCaisse.l, pCaisse.c+1));
+            if(estCaseBloquante_V2(pCaisse.l,pCaisse.c,pCaisse.l, pCaisse.c+1, supprimeCaisse(pCaisse, caisses))){
+                //afficheCaisses(caisses);
+            }
             if(!estCaseHorsMap(pCaisse.l, pCaisse.c+1) && estCaseLibre(pCaisse.l, pCaisse.c+1, caisses) && !estCaseBloquante_V2(pCaisse.l,pCaisse.c,pCaisse.l, pCaisse.c+1, supprimeCaisse(pCaisse, caisses))){
                 return true;
             }
@@ -371,6 +378,9 @@ class IAResolveur extends IA {
             //System.out.println("estCaseLibre : "+(!estCaseHorsMap(pCaisse.l, pCaisse.c-1)&&estCaseLibre(pCaisse.l, pCaisse.c-1, caisses)));
             //System.out.println("estCaseBloquante : "+estCaseBloquante(pCaisse.l, pCaisse.c-1, caisses));
             //System.out.println("estCaseHorsMap : "+estCaseHorsMap(pCaisse.l, pCaisse.c-1));
+            if(estCaseBloquante_V2(pCaisse.l,pCaisse.c,pCaisse.l, pCaisse.c-1, supprimeCaisse(pCaisse, caisses))){
+                //afficheCaisses(caisses);
+            }
             if(!estCaseHorsMap(pCaisse.l, pCaisse.c-1) && estCaseLibre(pCaisse.l, pCaisse.c-1, caisses) && !estCaseBloquante_V2(pCaisse.l,pCaisse.c,pCaisse.l, pCaisse.c-1, supprimeCaisse(pCaisse, caisses))){
                 return true;
             }
@@ -518,6 +528,7 @@ class IAResolveur extends IA {
             }
             System.out.println();
         }
+        System.out.println("-----------");
     }
 
     public Position getPosCaisse(int l, int c, byte[][] caisses){
