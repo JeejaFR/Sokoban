@@ -30,11 +30,13 @@ import Global.Configuration;
 import Modele.IA;
 import Modele.Jeu;
 import Modele.LecteurNiveaux;
+import Modele.Position;
 import Structures.SequenceListe;
 import Vue.CollecteurEvenements;
 import Vue.InterfaceGraphique;
 import Vue.InterfaceTextuelle;
 import java.io.InputStream;
+import java.util.ArrayList;
 
 public class Sokoban {
 	final static String typeInterface = Configuration.lisChaine("Interface");
@@ -44,7 +46,33 @@ public class Sokoban {
 
 		InputStream in;
 		in = Configuration.ouvre("Niveaux/niveaux.txt");
-		//Configuration.info("Niveaux trouvés");
+
+		ArrayList<SequenceListe<Position>> cheminFinal = new ArrayList<SequenceListe<Position>>();
+		SequenceListe<Position> chemin = new SequenceListe<Position>();
+		/*
+		//démare le calcul du temps (61 ms en moyenne)
+		long startTime = System.currentTimeMillis();
+		for(int k=0; k<10000; k++) {
+			for (int i = 0; i < 100; i++) {
+				chemin = new SequenceListe<Position>();
+				Position p = new Position((int) (Math.random() * 20), (int) (Math.random() * 20));
+				chemin.insereTete(p);
+			}
+			cheminFinal.add(chemin);
+		}
+		long endTime = System.currentTimeMillis();
+		System.out.println("Temps d'exécution : " + (endTime - startTime) + " ms");
+		// on inverse cheminFinal
+		startTime = System.currentTimeMillis();
+		ArrayList<SequenceListe<Position>> cheminInverse = new ArrayList<SequenceListe<Position>>();
+		for(int i=cheminFinal.size()-1; i>=0; i--){
+			cheminInverse.add(cheminFinal.get(i));
+		}
+		endTime = System.currentTimeMillis();
+		System.out.println("Temps d'exécution inversion : " + (endTime - startTime) + " ms");
+		//affiche la taille de la liste
+		System.out.println("Taille de la liste : " + cheminInverse.size());
+		*/
 
 		LecteurNiveaux l = new LecteurNiveaux(in);
 		Jeu j = new Jeu(l);
@@ -59,6 +87,5 @@ public class Sokoban {
 			default:
 				Configuration.erreur("Interface inconnue");
 		}
-
 	}
 }
