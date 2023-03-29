@@ -88,6 +88,23 @@ public class SequenceListe<E> implements Sequence<E> {
 		}
 	}
 
+	public void melangeAleatoire(){//mélange la liste aléatoirement
+		SequenceListe<E> listeMelangee = new SequenceListe<>();
+		//on ajoute des éléments de manière aléatoire dans la nouvelle liste
+		while(!this.estVide()){
+			int alea = (int)(Math.random() * 2);
+			if(alea == 0){
+				listeMelangee.insereTete(this.extraitTete());
+			}else{
+				listeMelangee.insereQueue(this.extraitTete());
+			}
+		}
+		//on remet les éléments dans la liste d'origine
+		while(!listeMelangee.estVide()){
+			this.insereQueue(listeMelangee.extraitTete());
+		}
+	}
+
 	public E getTete(){
 		return tete.element;
 	}
