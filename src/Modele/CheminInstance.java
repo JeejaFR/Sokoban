@@ -6,30 +6,27 @@ import java.util.ArrayList;
 
 public class CheminInstance {
 
-    private ArrayList<SequenceListe<Position>> cheminPousseurCaisses;
+    private SequenceListe<SequenceListe<Position>> cheminPousseurCaisses;
     private byte[][] caisses;
 
     public CheminInstance(){
-        cheminPousseurCaisses = new ArrayList<SequenceListe<Position>>();
+        cheminPousseurCaisses = new SequenceListe<SequenceListe<Position>>();
     }
 
-    public void ajoutChemin(SequenceListe<Position> chemin){
-        cheminPousseurCaisses.add(chemin);
+    public void ajoutCheminQueue(SequenceListe<Position> chemin){
+        cheminPousseurCaisses.insereQueue(chemin);
+    }
+
+    public void ajoutCheminTete(SequenceListe<Position> chemin){
+        cheminPousseurCaisses.insereTete(chemin);
     }
 
     public void ajoutCaisses(byte[][] caisses){
         this.caisses = caisses;
     }
 
-    public ArrayList<SequenceListe<Position>> getChemins() {
+    public SequenceListe<SequenceListe<Position>> getChemins() {
         return cheminPousseurCaisses;
-    }
-
-    public void afficheChemins(){
-        for(int i = 0; i < cheminPousseurCaisses.size(); i++){
-            System.out.println("Chemin "+i);
-            cheminPousseurCaisses.get(i).toString();
-        }
     }
 
     public byte[][] getCaisses() {
@@ -37,6 +34,6 @@ public class CheminInstance {
     }
 
     public int getNbChemins() {
-        return cheminPousseurCaisses.size();
+        return cheminPousseurCaisses.taille();
     }
 }
