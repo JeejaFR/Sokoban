@@ -38,16 +38,20 @@ class IAResolveur extends IA {
                 if (((cases[i][j] & MUR) != 0 || (cases[i][j] & VIDE) != 0)) {
                     carte[i - 1][j - 1] = cases[i][j];
                 }
-                if((cases[i][j] & BUT) != 0){
-                    carte[i - 1][j - 1] = cases[i][j];
+                else if((cases[i][j] & BUT) != 0){
+                    carte[i - 1][j - 1] = BUT;
+                    if ((cases[i][j] & CAISSE) != 0){
+                        this.nb_caisses++;
+                        this.caisses[i - 1][j - 1] = CAISSE;
+                    }
                     this.nb_buts++;
                 }
-                if ((cases[i][j] & CAISSE) != 0) {
+                else if ((cases[i][j] & CAISSE) != 0) {
                     carte[i - 1][j - 1] = VIDE;
                     this.nb_caisses++;
                     this.caisses[i - 1][j - 1] = CAISSE;
                 }
-                if((cases[i][j] & POUSSEUR) != 0) {
+                else if((cases[i][j] & POUSSEUR) != 0) {
                     carte[i - 1][j - 1] = VIDE;
                     posPousseur = new Position(i - 1, j - 1);
                 }
@@ -669,10 +673,6 @@ class IAResolveur extends IA {
     /////////////////////////// CASE BLOQUANTE ///////////////////////////
     //////////////////////////////////////////////////////////////////////
 
-    public boolean aBut(int l, int c) {
-        return (carte[l][c] & BUT) != 0;
-    }
-
     public boolean aCaisseBloquee(int l, int c,byte[][] caisses){
         return (caisses[l][c] & CAISSE_BLOQUEE) != 0;
     }
@@ -688,28 +688,28 @@ class IAResolveur extends IA {
         boolean gauche=false,droite=false,bas=false,haut=false;
         while(!aMur(l,c+i) && droite==false && !aCaisseBloquee(l,c+i,caisses)) { // à droite
             if (!estCaseHorsMap(l, c - 1)) { // pas sur
-                if (aBut(l, c + i) && carte[l][c - 1] != MUR) droite = true;
+                if (estBut(new Position(l,c+i)) && carte[l][c - 1] != MUR) droite = true;
             }
             i++;
         }
         i=0;
         while(!aMur(l,c-i) && gauche==false && !aCaisseBloquee(l,c-i,caisses)){ // à gauche
             if(!estCaseHorsMap(l,c+1)){ // pas sur
-                if(aBut(l,c-i) && carte[l][c+1]!=MUR) gauche = true;
+                if(estBut(new Position(l,c-i)) && carte[l][c+1]!=MUR) gauche = true;
             }
             i++;
         }
         i=0;
         while(!aMur(l-i,c) && haut==false && !aCaisseBloquee(l-i,c,caisses)){ // en haut
             if(!estCaseHorsMap(l+1,c)){ // pas sur
-                if(aBut(l-i,c) && carte[l+1][c]!=MUR) haut = true;
+                if(estBut(new Position(l-i,c)) && carte[l+1][c]!=MUR) haut = true;
             }
             i++;
         }
         i=0;
         while(!aMur(l+i,c) && droite==false && !aCaisseBloquee(l+i,c,caisses)){ // en bas
             if(!estCaseHorsMap(l-1,c)){// pas sur
-                if(aBut(l+i,c) && carte[l-1][c]!=MUR) bas = true;
+                if(estBut(new Position(l+i,c)) && carte[l-1][c]!=MUR) bas = true;
             }
             i++;
         }
@@ -724,9 +724,9 @@ class IAResolveur extends IA {
             while(!aMur(l,c+i) && !aCaisseBloquee(l,c+i,caisses)){
                 if(estCaseHorsMap(l,c-1) || estCaseHorsMap(l+1,c+i)) return true;
                 if(estCaseHorsMap(l-1,c+i)){
-                    if(aBut(l,c+i) && carte[l][c-1]!=MUR && carte[l+1][c+i]!=MUR) return false;
+                    if(estBut(new Position(l,c+i)) && carte[l][c-1]!=MUR && carte[l+1][c+i]!=MUR) return false;
                 }else{
-                    if((estCaseLibre(l-1,c+i,caisses)|| aBut(l,c+i)||caisses[l-1][c+i]==CAISSE)&& carte[l][c-1]!=MUR && carte[l+1][c+i]!=MUR) return false;
+                    if((estCaseLibre(l-1,c+i,caisses)|| estBut(new Position(l,c+i))||caisses[l-1][c+i]==CAISSE)&& carte[l][c-1]!=MUR && carte[l+1][c+i]!=MUR) return false;
                 }
                 i++;
             }
@@ -735,10 +735,10 @@ class IAResolveur extends IA {
             while(!aMur(l,c+i) && !aCaisseBloquee(l,c+i,caisses)){
                 if(estCaseHorsMap(l,c-1) || estCaseHorsMap(l-1,c+i)) return true;
                 if(estCaseHorsMap(l+1,c+i)){
-                    if(aBut(l,c+i) && carte[l][c-1]!=MUR && carte[l-1][c+i]!=MUR) return false;
+                    if(estBut(new Position(l,c+i)) && carte[l][c-1]!=MUR && carte[l-1][c+i]!=MUR) return false;
                 }
                 else{
-                    if((estCaseLibre(l+1,c+i,caisses)|| aBut(l,c+i)||caisses[l+1][c+i]==CAISSE)&& carte[l][c-1]!=MUR && carte[l-1][c+i]!=MUR) return false;
+                    if((estCaseLibre(l+1,c+i,caisses)|| estBut(new Position(l,c+i))||caisses[l+1][c+i]==CAISSE)&& carte[l][c-1]!=MUR && carte[l-1][c+i]!=MUR) return false;
                 }
                 i++;
             }
@@ -753,9 +753,9 @@ class IAResolveur extends IA {
             while(!aMur(l,c-i) && !aCaisseBloquee(l,c-i,caisses)){
                 if(estCaseHorsMap(l,c+1) || estCaseHorsMap(l+1,c-i)) return true;
                 if(estCaseHorsMap(l-1,c-i)){
-                    if(aBut(l,c-i) && carte[l][c+1]!=MUR && carte[l+1][c-i]!=MUR) return false;
+                    if(estBut(new Position(l,c-i)) && carte[l][c+1]!=MUR && carte[l+1][c-i]!=MUR) return false;
                 }else{
-                    if((estCaseLibre(l-1,c-i,caisses)|| aBut(l,c-i)||caisses[l-1][c-i]==CAISSE)&& carte[l][c+1]!=MUR && carte[l+1][c-i]!=MUR) return false;
+                    if((estCaseLibre(l-1,c-i,caisses)|| estBut(new Position(l,c-i))||caisses[l-1][c-i]==CAISSE)&& carte[l][c+1]!=MUR && carte[l+1][c-i]!=MUR) return false;
                 }
                 i++;
             }
@@ -764,9 +764,9 @@ class IAResolveur extends IA {
             while(!aMur(l,c-i) && !aCaisseBloquee(l,c-i,caisses)){
                 if(estCaseHorsMap(l,c+1) || estCaseHorsMap(l-1,c-i)) return true;
                 if(estCaseHorsMap(l+1,c-i)){
-                    if(aBut(l,c-i) && carte[l][c+1]!=MUR && carte[l-1][c-i]!=MUR) return false;
+                    if(estBut(new Position(l,c-i)) && carte[l][c+1]!=MUR && carte[l-1][c-i]!=MUR) return false;
                 }else{
-                    if((estCaseLibre(l+1,c-i,caisses) || aBut(l,c-i)||caisses[l+1][c-i]==CAISSE)&& carte[l][c+1]!=MUR && carte[l-1][c-i]!=MUR) return false;
+                    if((estCaseLibre(l+1,c-i,caisses) || estBut(new Position(l,c-i))||caisses[l+1][c-i]==CAISSE)&& carte[l][c+1]!=MUR && carte[l-1][c-i]!=MUR) return false;
                 }
                 i++;
             }
@@ -781,9 +781,9 @@ class IAResolveur extends IA {
             while(!aMur(l-i,c) && !aCaisseBloquee(l-i,c,caisses)){
                 if(estCaseHorsMap(l+1,c) || estCaseHorsMap(l-i,c+1)) return true;
                 if(estCaseHorsMap(l-i,c-1)){
-                    if(aBut(l-i,c) && carte[l+1][c]!=MUR && carte[l-i][c+1]!=MUR) return false;
+                    if(estBut(new Position(l-i,c)) && carte[l+1][c]!=MUR && carte[l-i][c+1]!=MUR) return false;
                 }else{
-                    if((estCaseLibre(l-i,c-1,caisses)||aBut(l-i,c)||caisses[l-i][c-1]==CAISSE) && carte[l+1][c]!=MUR && carte[l-i][c+1]!=MUR) return false;
+                    if((estCaseLibre(l-i,c-1,caisses)||estBut(new Position(l-i,c))||caisses[l-i][c-1]==CAISSE) && carte[l+1][c]!=MUR && carte[l-i][c+1]!=MUR) return false;
                 }
                 i++;
             }
@@ -792,9 +792,9 @@ class IAResolveur extends IA {
             while(!aMur(l-i,c) && !aCaisseBloquee(l-i,c,caisses)){
                 if(estCaseHorsMap(l+1,c) || estCaseHorsMap(l-i,c-1)) return true;
                 if(estCaseHorsMap(l-i,c+1)){
-                    if(aBut(l-i,c) && carte[l+1][c]!=MUR && carte[l-i][c-1]!=MUR) return false;
+                    if(estBut(new Position(l-i,c)) && carte[l+1][c]!=MUR && carte[l-i][c-1]!=MUR) return false;
                 }else{
-                    if((estCaseLibre(l-i,c+1,caisses) || aBut(l-i,c)||caisses[l-i][c+1]==CAISSE)&& carte[l+1][c]!=MUR && carte[l-i][c-1]!=MUR) return false;
+                    if((estCaseLibre(l-i,c+1,caisses) || estBut(new Position(l-i,c))||caisses[l-i][c+1]==CAISSE)&& carte[l+1][c]!=MUR && carte[l-i][c-1]!=MUR) return false;
                 }
                 i++;
             }
@@ -809,10 +809,10 @@ class IAResolveur extends IA {
             while(!aMur(l+i,c) && !aCaisseBloquee(l+i,c,caisses)){
                 if(estCaseHorsMap(l-1,c) || estCaseHorsMap(l+i,c+1)) return true;
                 if(estCaseHorsMap(l+i,c-1)){
-                    if(aBut(l+i,c) && carte[l-1][c]!=MUR && carte[l+i][c+1]!=MUR) return false;
+                    if(estBut(new Position(l+i,c)) && carte[l-1][c]!=MUR && carte[l+i][c+1]!=MUR) return false;
                 }
                 else{
-                    if((estCaseLibre(l+i,c-1,caisses) || aBut(l+i,c)||caisses[l+i][c-1]==CAISSE)&& carte[l-1][c]!=MUR && carte[l+i][c+1]!=MUR) return false;
+                    if((estCaseLibre(l+i,c-1,caisses) || estBut(new Position(l+i,c))||caisses[l+i][c-1]==CAISSE)&& carte[l-1][c]!=MUR && carte[l+i][c+1]!=MUR) return false;
                 }
 
                 i++;
@@ -822,9 +822,9 @@ class IAResolveur extends IA {
             while(!aMur(l+i,c) && !aCaisseBloquee(l+i,c,caisses)){
                 if(estCaseHorsMap(l-1,c) || estCaseHorsMap(l+i,c-1)) return true;
                 if(estCaseHorsMap(l+i,c+1)){
-                    if(aBut(l+i,c) && carte[l-1][c]!=MUR && carte[l+i][c-1]!=MUR) return false;
+                    if(estBut(new Position(l+i,c)) && carte[l-1][c]!=MUR && carte[l+i][c-1]!=MUR) return false;
                 }else{
-                    if((estCaseLibre(l+i,c+1,caisses) || aBut(l+i,c)||caisses[l+i][c+1]==CAISSE)&& carte[l-1][c]!=MUR && carte[l+i][c-1]!=MUR) return false;
+                    if((estCaseLibre(l+i,c+1,caisses) || estBut(new Position(l+i,c))||caisses[l+i][c+1]==CAISSE)&& carte[l-1][c]!=MUR && carte[l+i][c-1]!=MUR) return false;
                 }
                 i++;
             }
@@ -842,7 +842,7 @@ class IAResolveur extends IA {
 
     boolean estCaisseBloquee(int l, int c,byte[][] caisses){
         if(aMur(l,c) || estCaseLibre(l,c,caisses)) return false;
-        if(!aBut(l,c)) {
+        if(!estBut(new Position(l,c))) {
             // CAS CAISSE TEMPORAIRE
             if(estCaisseBloqueeTemp(l,c,caisses)){
                 if(!aMurAutour(l,c)) return false;//&&!aBloqueeAutour(l,c)) return false;
@@ -866,7 +866,7 @@ class IAResolveur extends IA {
         if(caisses[l][c]!=CAISSE && caisses[l][c]!=CAISSE_BLOQUEE_TEMP && carte[l][c]!=MUR && caisses[l][c]!=VIDE) return false;
         if(aMur(l,c)) return false;
         if(estCaseLibre(l,c,caisses))return false;
-        if(!aBut(l,c)){
+        if(!estBut(new Position(l,c))){
             if(!estCaseLibre(l-1,c,caisses) && (!estCaseLibre(l,c-1,caisses) || !estCaseLibre(l,c+1,caisses))){
                 if(aMur(l-1,c) && (aMur(l,c-1)||(aMur(l,c+1)))) return false;
                 return true;
@@ -899,7 +899,7 @@ class IAResolveur extends IA {
     void actualiseUneCaisse(int l, int c,byte[][] caisses){
         if (aCaisse(l,c,caisses)){
             //if(cases[l][c]==CAISSE_BLOQUEE) return;
-            if(aBut(l,c)){
+            if(estBut(new Position(l,c))){
                 return;
             }
             if (estCaisseBloquee(l,c,caisses)){
