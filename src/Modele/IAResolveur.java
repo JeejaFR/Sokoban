@@ -60,10 +60,9 @@ class IAResolveur extends IA {
         Sequence<Coup> resultat = Configuration.nouvelleSequence();
         Coup coup = null;
         ArrayList<SequenceListe<Position>> chemins = null;
-/*
+
         instances = new HashMap<>();
         nb_instances = 0;
-        nb_instances_pareilles = 0;
         nb_buts = 0;
         nb_caisses = 0;
         niveauToCarte(niveau);
@@ -72,9 +71,9 @@ class IAResolveur extends IA {
             return null;
         }
         chemins = calcul_chemin(posPousseur, caisses);
-        //size :
         System.out.println("chemins.size() : " + chemins.size());
-*/
+
+        /*
         int taille_totale_file = 0;
         int duree_totale_Dijkstra = 0;
         int nb_fois_Dijkstra_total = 0;
@@ -128,6 +127,7 @@ class IAResolveur extends IA {
         System.out.println("temps total moyen : " + temps_total_total_moyen + " ms");
         System.out.println("nb moyen instances : " + nb_instances_total_moyen);
         System.exit(0);
+         */
 
         for(int i=0; i<chemins.size(); i++){
             SequenceListe<Position> chemin = chemins.get(i);
@@ -174,7 +174,7 @@ class IAResolveur extends IA {
             SequenceListe<SequenceListe<Position>> cheminsPousseurCaisse = Dijkstra(posPousseur, caisses);
 
             //pour chaque chemin possible du pousseur à une caisse
-            //System.out.println("cheminsPousseurCaisse.taille() : " + cheminsPousseurCaisse.taille());
+            System.out.println("cheminsPousseurCaisse.taille() : " + cheminsPousseurCaisse.taille());
             while(!cheminsPousseurCaisse.estVide()){
                 cheminCourant = cheminsPousseurCaisse.extraitTete();//on récupère le chemin courant SequenceListe<Position>
 
@@ -307,7 +307,7 @@ class IAResolveur extends IA {
             PositionPoids p = queue.extrait();
 
             //mise à jour des caisses déplaçables
-            caisses_deplacables_temp = caissesDeplacables_v2(p.getPos(), caisses);//liste les caisses déplaçables depuis la position p
+            caisses_deplacables_temp = caissesDeplacables(p.getPos(), caisses);//liste les caisses déplaçables depuis la position p
             //contient la position p, la position de la caisse, et la future position de la caisse
             while(!caisses_deplacables_temp.estVide()){
                 ArrayList<Position> caisse = caisses_deplacables_temp.extraitTete();
@@ -345,6 +345,7 @@ class IAResolveur extends IA {
                 endTime = System.currentTimeMillis();
                 duration += (endTime - startTime);
                 nb_total_chemins += sequenceChemins.taille();
+                afficheDistances(distance);
                 return sequenceChemins;
             }
             chemin.insereTete(new Position(caseSuivante.getL(), caseSuivante.getC()));
@@ -363,11 +364,11 @@ class IAResolveur extends IA {
         endTime = System.currentTimeMillis();
         duration += (endTime - startTime);
         nb_total_chemins += sequenceChemins.taille();
-        //afficheDistances(distance);
+        afficheDistances(distance);
         return sequenceChemins;
     }
 
-    public SequenceListe<ArrayList<Position>> caissesDeplacables_v2(Position p, byte[][] caisses){
+    public SequenceListe<ArrayList<Position>> caissesDeplacables(Position p, byte[][] caisses){
         //renvoie la liste des caisses déplaçables avec la position p, la position de la caisse, et la future position de la caisse
         SequenceListe<ArrayList<Position>> caissesDep = new SequenceListe<>();
         ArrayList<Position> caisseDeplacee = new ArrayList<>();
