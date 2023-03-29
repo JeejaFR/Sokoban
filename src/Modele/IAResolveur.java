@@ -174,6 +174,7 @@ class IAResolveur extends IA {
             SequenceListe<SequenceListe<Position>> cheminsPousseurCaisse = Dijkstra(posPousseur, caisses);
 
             //pour chaque chemin possible du pousseur à une caisse
+            System.out.println("cheminsPousseurCaisse.taille() : " + cheminsPousseurCaisse.taille());
             while(!cheminsPousseurCaisse.estVide()){
                 cheminCourant = cheminsPousseurCaisse.extraitTete();//on récupère le chemin courant SequenceListe<Position>
 
@@ -383,6 +384,7 @@ class IAResolveur extends IA {
         pCaisse = null;
         pCaisse = getPosCaisse(p.l-1, p.c, caisses);//si la caisse est au-dessus du pousseur
         if(pCaisse != null){
+            boolean bloquante_dessus = estCaseBloquante_V2(pCaisse.l,pCaisse.c,pCaisse.l-1, pCaisse.c, supprimeCaisse(pCaisse, caisses));
             if(!estCaseHorsMap(pCaisse.l-1, pCaisse.c) && estCaseLibre(pCaisse.l-1, pCaisse.c, caisses) && !estCaseBloquante_V2(pCaisse.l,pCaisse.c,pCaisse.l-1, pCaisse.c, supprimeCaisse(pCaisse, caisses))){
                 caisseDeplacee.clear();
                 caisseDeplacee.add(p);
@@ -408,52 +410,6 @@ class IAResolveur extends IA {
             if(!estCaseHorsMap(pCaisse.l, pCaisse.c-1) && estCaseLibre(pCaisse.l, pCaisse.c-1, caisses) && !estCaseBloquante_V2(pCaisse.l,pCaisse.c,pCaisse.l, pCaisse.c-1, supprimeCaisse(pCaisse, caisses))){
                 caisseDeplacee.clear();
                 caisseDeplacee.add(p);
-                caisseDeplacee.add(pCaisse);
-                caisseDeplacee.add(new Position(pCaisse.l, pCaisse.c-1));
-                caissesDep.insereQueue(caisseDeplacee);
-            }
-        }
-        return caissesDep;
-    }
-
-    public SequenceListe<ArrayList<Position>> caissesDeplacables(Position p, byte[][] caisses){
-        //renvoie la liste des caisses déplaçables ainsi que leur future position une fois déplacées
-        SequenceListe<ArrayList<Position>> caissesDep = new SequenceListe<>();
-        ArrayList<Position> caisseDeplacee = new ArrayList<>();
-        Position pCaisse;
-        pCaisse = getPosCaisse(p.l+1, p.c, caisses);//si la caisse est en-dessous du pousseur
-        if(pCaisse != null){
-            if(!estCaseHorsMap(pCaisse.l+1, pCaisse.c) && estCaseLibre(pCaisse.l+1, pCaisse.c, caisses) && !estCaseBloquante_V2(pCaisse.l,pCaisse.c,pCaisse.l+1, pCaisse.c, supprimeCaisse(pCaisse, caisses))){
-                caisseDeplacee.add(pCaisse);
-                caisseDeplacee.add(new Position(pCaisse.l+1, pCaisse.c));
-                caissesDep.insereQueue(caisseDeplacee);
-            }
-        }
-        pCaisse = null;
-        pCaisse = getPosCaisse(p.l-1, p.c, caisses);//si la caisse est au-dessus du pousseur
-        if(pCaisse != null){
-            if(!estCaseHorsMap(pCaisse.l-1, pCaisse.c) && estCaseLibre(pCaisse.l-1, pCaisse.c, caisses) && !estCaseBloquante_V2(pCaisse.l,pCaisse.c,pCaisse.l-1, pCaisse.c, supprimeCaisse(pCaisse, caisses))){
-                caisseDeplacee.clear();
-                caisseDeplacee.add(pCaisse);
-                caisseDeplacee.add(new Position(pCaisse.l-1, pCaisse.c));
-                caissesDep.insereQueue(caisseDeplacee);
-            }
-        }
-        pCaisse = null;
-        pCaisse = getPosCaisse(p.l, p.c+1, caisses);//si la caisse est à droite du pousseur
-        if(pCaisse != null){
-            if(!estCaseHorsMap(pCaisse.l, pCaisse.c+1) && estCaseLibre(pCaisse.l, pCaisse.c+1, caisses) && !estCaseBloquante_V2(pCaisse.l,pCaisse.c,pCaisse.l, pCaisse.c+1, supprimeCaisse(pCaisse, caisses))){
-                caisseDeplacee.clear();
-                caisseDeplacee.add(pCaisse);
-                caisseDeplacee.add(new Position(pCaisse.l, pCaisse.c+1));
-                caissesDep.insereQueue(caisseDeplacee);
-            }
-        }
-        pCaisse = null;
-        pCaisse = getPosCaisse(p.l, p.c-1, caisses);//si la caisse est à gauche du pousseur
-        if(pCaisse != null){
-            if(!estCaseHorsMap(pCaisse.l, pCaisse.c-1) && estCaseLibre(pCaisse.l, pCaisse.c-1, caisses) && !estCaseBloquante_V2(pCaisse.l,pCaisse.c,pCaisse.l, pCaisse.c-1, supprimeCaisse(pCaisse, caisses))){
-                caisseDeplacee.clear();
                 caisseDeplacee.add(pCaisse);
                 caisseDeplacee.add(new Position(pCaisse.l, pCaisse.c-1));
                 caissesDep.insereQueue(caisseDeplacee);
