@@ -174,7 +174,7 @@ class IAResolveur extends IA {
             SequenceListe<SequenceListe<Position>> cheminsPousseurCaisse = Dijkstra(posPousseur, caisses);
 
             //pour chaque chemin possible du pousseur à une caisse
-            System.out.println("cheminsPousseurCaisse.taille() : " + cheminsPousseurCaisse.taille());
+            //System.out.println("cheminsPousseurCaisse.taille() : " + cheminsPousseurCaisse.taille());
             while(!cheminsPousseurCaisse.estVide()){
                 cheminCourant = cheminsPousseurCaisse.extraitTete();//on récupère le chemin courant SequenceListe<Position>
 
@@ -887,7 +887,7 @@ class IAResolveur extends IA {
         saveCaisses[l_initial][c_initial] = VIDE;
         actualiseToutesCaisses(saveCaisses);
 
-        if(estCaisseBloquee(l,c,saveCaisses)){
+        if(saveCaisses[l][c]==16){
             return true;
         }
         return false;
