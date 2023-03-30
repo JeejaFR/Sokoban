@@ -9,7 +9,7 @@ import java.util.*;
 import static Modele.Niveau.*;
 
 class IAResolveur extends IA {
-    private HashMap<String, byte[][]> instances;
+    private HashMap<Integer, byte[][]> instances;
     private int[][] carte;
     private byte[][] caisses;
     private Position posPousseur;
@@ -64,7 +64,7 @@ class IAResolveur extends IA {
         Sequence<Coup> resultat = Configuration.nouvelleSequence();
         Coup coup = null;
         ArrayList<SequenceListe<Position>> chemins = null;
-
+        /*
         instances = new HashMap<>();
         nb_instances = 0;
         nb_buts = 0;
@@ -76,8 +76,8 @@ class IAResolveur extends IA {
         }
         chemins = calcul_chemin(posPousseur, caisses);
         System.out.println("chemins.size() : " + chemins.size());
+         */
 
-        /*
         int taille_totale_file = 0;
         int duree_totale_Dijkstra = 0;
         int nb_fois_Dijkstra_total = 0;
@@ -131,7 +131,6 @@ class IAResolveur extends IA {
         System.out.println("temps total moyen : " + temps_total_total_moyen + " ms");
         System.out.println("nb moyen instances : " + nb_instances_total_moyen);
         System.exit(0);
-         */
 
         for(int i=0; i<chemins.size(); i++){
             SequenceListe<Position> chemin = chemins.get(i);
@@ -178,7 +177,7 @@ class IAResolveur extends IA {
             SequenceListe<SequenceListe<Position>> cheminsPousseurCaisse = Dijkstra(posPousseur, caisses);
 
             //pour chaque chemin possible du pousseur à une caisse
-            System.out.println("cheminsPousseurCaisse.taille() : " + cheminsPousseurCaisse.taille());
+            //System.out.println("cheminsPousseurCaisse.taille() : " + cheminsPousseurCaisse.taille());
             while(!cheminsPousseurCaisse.estVide()){
                 cheminCourant = cheminsPousseurCaisse.extraitTete();//on récupère le chemin courant SequenceListe<Position>
 
@@ -190,7 +189,6 @@ class IAResolveur extends IA {
                 Position posPousseurNew = posCaissePresent;//position de la caisse avant qu'elle soit poussée
 
                 if(!estInstance(posPousseurNew, caissesNew, instances)){
-                    nb_instances++;
                     cheminCourant.insereQueue(posPousseurNew);//on ajoute la nouvelle position du pousseur après avoir poussé la caisse
                     instanceCourante = new Instance(posPousseurNew, caissesNew);
                     int nb_caisses_sur_but = nbCaissesSurBut(caissesNew);
@@ -349,7 +347,7 @@ class IAResolveur extends IA {
                 endTime = System.currentTimeMillis();
                 duration += (endTime - startTime);
                 nb_total_chemins += sequenceChemins.taille();
-                afficheDistances(distance);
+                //afficheDistances(distance);
                 return sequenceChemins;
             }
             chemin.insereTete(new Position(caseSuivante.getL(), caseSuivante.getC()));
@@ -368,7 +366,7 @@ class IAResolveur extends IA {
         endTime = System.currentTimeMillis();
         duration += (endTime - startTime);
         nb_total_chemins += sequenceChemins.taille();
-        afficheDistances(distance);
+        //afficheDistances(distance);
         return sequenceChemins;
     }
 
@@ -569,29 +567,32 @@ class IAResolveur extends IA {
         return caisses2;
     }
 
-    public void ajouterInstance(Position p, byte[][] caisses, HashMap<String, byte[][]> instances){
+    public void ajouterInstance(Position p, byte[][] caisses, HashMap<Integer, byte[][]> instances){
         byte[][] instanceCopie = copieByte(caisses);
         instanceCopie[p.getL()][p.getC()] = POUSSEUR ;
-        String posPousseur = p.getL() + "," + p.getC();
-        int clePousseur = posPousseur.hashCode();
-        int cleInstance = Arrays.deepHashCode(instanceCopie);
-        int cle = clePousseur+cleInstance;
+        //String posPousseur = p.getL() + "," + p.getC();
+        //int clePousseur = posPousseur.hashCode();
+        int cleInstance = Arrays.deepHashCode(instanceCopie)+p.affiche().hashCode();
+        //int cle = clePousseur+cleInstance;
         //System.out.println("cle = " + cle);
         //afficheCaisses(instanceCopie);
-        instances.put(String.valueOf(cle), instanceCopie);
+        if(!instances.containsKey(cleInstance)){
+            instances.put(cleInstance, instanceCopie);
+            nb_instances++;
+        }
     }
 
-    public boolean estInstance(Position p, byte[][] caisses, HashMap<String, byte[][]> instances) {
+    public boolean estInstance(Position p, byte[][] caisses, HashMap<Integer, byte[][]> instances) {
         byte[][] instanceCopie = copieByte(caisses);
         instanceCopie[p.getL()][p.getC()] = POUSSEUR;
-        String posPousseur = p.getL() + "," + p.getC();
-        int clePousseur = posPousseur.hashCode();
-        int cleInstance = Arrays.deepHashCode(instanceCopie);
-        int cle = clePousseur+cleInstance;
-        if(!instances.containsKey(String.valueOf(cle))){
+        //String posPousseur = p.getL() + "," + p.getC();
+        //int clePousseur = posPousseur.hashCode();
+        int cleInstance = Arrays.deepHashCode(instanceCopie)+p.affiche().hashCode();
+        //int cle = clePousseur+cleInstance;
+        if(!instances.containsKey(cleInstance)){
             return false;
         }else{
-            byte[][] instanceTrouvee = instances.get(String.valueOf(cle));
+            byte[][] instanceTrouvee = instances.get(cleInstance);
             for(int i = 0; i < instanceCopie.length; i++){
                 for(int j = 0; j < instanceCopie[0].length; j++){
                     if(instanceCopie[i][j] != instanceTrouvee[i][j]){
@@ -601,7 +602,6 @@ class IAResolveur extends IA {
             }
             return true;
         }
-
     }
 
     void afficheCaisses(byte[][] caisses){
