@@ -65,7 +65,7 @@ class IAResolveur extends IA {
         Sequence<Coup> resultat = Configuration.nouvelleSequence();
         Coup coup = null;
         ArrayList<SequenceListe<Position>> chemins = null;
-        /*
+
         instances = new HashMap<>();
         nb_instances = 0;
         nb_buts = 0;
@@ -77,8 +77,8 @@ class IAResolveur extends IA {
         }
         chemins = calcul_chemin(posPousseur, caisses);
         System.out.println("chemins.size() : " + chemins.size());
-         */
 
+        /*
         int taille_totale_file = 0;
         int duree_totale_Dijkstra = 0;
         int nb_fois_Dijkstra_total = 0;
@@ -133,6 +133,7 @@ class IAResolveur extends IA {
         System.out.println("temps total moyen : " + temps_total_total_moyen + " ms");
         System.out.println("nb moyen instances : " + nb_instances_total_moyen);
         System.exit(0);
+         */
 
         for(int i=0; i<chemins.size(); i++){
             SequenceListe<Position> chemin = chemins.get(i);
@@ -176,13 +177,12 @@ class IAResolveur extends IA {
             caisses = arbreCheminsTete.getCourant().getCaisses();
 
             //récupère les chemins possibles pour le pousseur depuis l'instance courante
-            LinkedList<SequenceListe<Position>> cheminsPousseurCaisse = Dijkstra(posPousseur, caisses);
+            SequenceListe<SequenceListe<Position>> cheminsPousseurCaisse = Dijkstra(posPousseur, caisses);
 
             //pour chaque chemin possible du pousseur à une caisse
-            while(!cheminsPousseurCaisse.isEmpty()){
-                //System.out.println("taille cheminCourant : " + cheminCourant.taille());
-                //System.exit(0);
-                cheminCourant = cheminsPousseurCaisse.poll();//on récupère le chemin courant SequenceListe<Position>
+            while(!cheminsPousseurCaisse.estVide()){
+                cheminCourant = cheminsPousseurCaisse.extraitTete();//on récupère le chemin courant SequenceListe<Position>
+
 
                 posCaisseFutur = cheminCourant.extraitQueue();//dernière position du chemin courant (future position de la caisse déplacée)
                 posCaissePresent = cheminCourant.extraitQueue();//avant-dernière position du chemin courant (position de la caisse à déplacer)
@@ -212,24 +212,12 @@ class IAResolveur extends IA {
                         return cheminInverse;
                     }else{
                         ajouterInstance(posPousseurNew, caissesNew, instances);
-                        int rapprocheCaisseBut = rapprocheCaisseBut(posCaissePresent, posCaisseFutur, caissesNew);
                         ArbreChemins arbreEnfile = new ArbreChemins(instanceCourante, cheminCourant, arbreCheminsTete);
-                        if(rapprocheCaisseBut == 1) {
-                            queue.addFirst(arbreEnfile);
-                        }else {
-                            queue.addLast(arbreEnfile);
-                        }
-                        /*
-                        if(estBut(posCaisseFutur) && !estBut(posCaissePresent)){
-                            queue.addFirst(arbreEnfile);
-                        }else {
-                            queue.addLast(arbreEnfile);
-                        }
-                         */
+                        queue.add(arbreEnfile);
+                        //AJOUTER UN POIDS EN FONCTION DU NOMBRE DE CAISSES SUR LES BUTS
                     }
                 }
             }//pas de solution pour ce chemin
-            //System.out.println("nb instances: " + nb_instances);
         }
         return chemin;
     }
@@ -269,6 +257,7 @@ class IAResolveur extends IA {
             Position pos = chemin.extraitTete();
             System.out.println("pos: " + pos.affiche());
         }
+        System.out.println("----------------");
     }
 
     public boolean estBut(Position p){
@@ -325,7 +314,7 @@ class IAResolveur extends IA {
         }
     }
 
-    public LinkedList<SequenceListe<Position>> Dijkstra(Position pos, byte[][] caisses){
+    public SequenceListe<SequenceListe<Position>> Dijkstra(Position pos, byte[][] caisses){
         startTime = System.currentTimeMillis();
         nb_fois_Dijkstra++;
         PositionPoids pousseur = new PositionPoids(pos.getL(), pos.getC(), 0);
@@ -359,7 +348,7 @@ class IAResolveur extends IA {
             //contient la position p, la position de la caisse, et la future position de la caisse
             while(!caisses_deplacables_temp.estVide()){
                 ArrayList<Position> caisse = caisses_deplacables_temp.extraitTete();
-                caisses_deplacables.insereTete(caisse);
+                caisses_deplacables.insereQueue(caisse);
             }
             //mise à jour des distances
             SequenceListe<PositionPoids> casesAccessibles = casesAccessibles(p, caisses);//renvoie les cases accessibles à côté du pousseur
@@ -373,9 +362,10 @@ class IAResolveur extends IA {
             }
         }
         //on a maintenant le tableau des distances et les caisses déplaçables
-        FAPListe<SequenceListe<Position>> sequenceChemins = new FAPListe<>();
-        FAPListe<SequenceListe<Position>> sequenceCheminsButs = new FAPListe<>();
-        LinkedList<SequenceListe<Position>> sequence = new LinkedList<>();
+        SequenceListe<SequenceListe<Position>> sequenceChemins = new SequenceListe<>();
+        SequenceListe<SequenceListe<Position>> sequenceCheminsButs = new SequenceListe<>();
+        SequenceListe<SequenceListe<Position>> sequenceFinale = new SequenceListe<>();
+        FAPListe<SequenceListe<Position>> sequence = new FAPListe<>();
         SequenceListe<Position> chemin = new SequenceListe<>();
         PositionPoids caseSuivante;
         ArrayList<Position> tete = null;
@@ -386,49 +376,36 @@ class IAResolveur extends IA {
             chemin.insereTete(tete.get(1));//la case sur laquelle est la caisse est ajoutée au chemin courant
             chemin.insereTete(tete.get(0));//la case à côté de la caisse est ajoutée au chemin courant
             caseSuivante = parcourtDistances(tete.get(0), distance);
-            if(caseSuivante == null){//si le pousseur est bloqué (entouré de caisses par exemple)
-                //on privilégie les chemins qui mènent la caisse sur un but
-                ElementAvecPoids<SequenceListe<Position>> element = new ElementAvecPoids<>(chemin, chemin.taille());
-                if(estBut(tete.get(2))){//si la position où sera déplacée la caisse est un but, on ajoute le chemin au début de la séquence
-                    sequenceCheminsButs.insere(chemin);
-                }else{
-                    sequenceChemins.insere(chemin);
-                }
-                endTime = System.currentTimeMillis();
-                duration += (endTime - startTime);
-                nb_total_chemins += sequenceChemins.taille()+sequenceCheminsButs.taille();
-                while(!sequenceCheminsButs.estVide()){
-                    sequence.addLast(sequenceCheminsButs.extrait());
-                }
-                while(!sequenceChemins.estVide()){
-                    sequence.addLast(sequenceChemins.extrait());
-                }
-                return sequence;
-            }
-            chemin.insereTete(new Position(caseSuivante.getL(), caseSuivante.getC()));
-            while(caseSuivante.poids != 0){
-                caseSuivante = parcourtDistances(new Position(caseSuivante.getL(), caseSuivante.getC()), distance);
+            if(caseSuivante != null){//si le pousseur n'est pas bloqué (entouré de caisses par exemple)
                 chemin.insereTete(new Position(caseSuivante.getL(), caseSuivante.getC()));
+                while (caseSuivante.poids != 0) {
+                    caseSuivante = parcourtDistances(new Position(caseSuivante.getL(), caseSuivante.getC()), distance);
+                    chemin.insereTete(new Position(caseSuivante.getL(), caseSuivante.getC()));
+                }
             }
-            //on privilégie les chemins qui mènent la caisse sur un but
-            ElementAvecPoids<SequenceListe<Position>> element = new ElementAvecPoids<>(chemin, chemin.taille());
-            if(estBut(tete.get(2))){//si la position où sera déplacée la caisse est un but, on ajoute le chemin au début de la séquence
-                sequenceCheminsButs.insere(chemin);
-            }else{
-                sequenceChemins.insere(chemin);
-            }
+            sequence.insere(chemin);
             chemin = new SequenceListe<>();
+        }
+        while(!sequence.estVide()){
+            SequenceListe<Position> chemin2 = sequence.extrait();
+            if(estBut(chemin2.getTete())) {
+                sequenceCheminsButs.insereQueue(chemin2);
+            }else{
+                sequenceChemins.insereQueue(chemin2);
+            }
+        }
+        while(!sequenceCheminsButs.estVide()){
+            SequenceListe<Position> chemin2 = sequenceCheminsButs.extraitTete();
+            sequenceFinale.insereQueue(chemin2);
+        }
+        while(!sequenceChemins.estVide()){
+            SequenceListe<Position> chemin2 = sequenceChemins.extraitTete();
+            sequenceFinale.insereQueue(chemin2);
         }
         endTime = System.currentTimeMillis();
         duration += (endTime - startTime);
-        nb_total_chemins += sequenceChemins.taille()+sequenceCheminsButs.taille();
-        while(!sequenceCheminsButs.estVide()){
-            sequence.addLast(sequenceCheminsButs.extrait());
-        }
-        while(!sequenceChemins.estVide()){
-            sequence.addLast(sequenceChemins.extrait());
-        }
-        return sequence;
+        nb_total_chemins += sequenceFinale.taille();
+        return sequenceFinale;
     }
 
     public SequenceListe<ArrayList<Position>> caissesDeplacables(Position p, byte[][] caisses){

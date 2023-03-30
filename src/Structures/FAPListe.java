@@ -44,7 +44,7 @@ public class FAPListe<E extends Comparable<E>> extends FAP<E> {
 
 		precedent = null;
 		courant = s.tete;
-		while ((courant != null) && (element.compareTo(courant.element) > 0)) {
+		while ((courant != null) && (element.compareTo(courant.element) < 0)) {
 			precedent = courant;
 			courant = courant.suivant;
 		}

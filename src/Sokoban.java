@@ -31,6 +31,7 @@ import Modele.IA;
 import Modele.Jeu;
 import Modele.LecteurNiveaux;
 import Modele.Position;
+import Structures.FAPListe;
 import Structures.Iterateur;
 import Structures.SequenceListe;
 import Vue.CollecteurEvenements;
@@ -40,41 +41,40 @@ import java.io.InputStream;
 import java.util.ArrayList;
 
 public class Sokoban {
+
+	public static void afficheChemin(SequenceListe<Position> chemin) {
+		while(!chemin.estVide()){
+			Position pos = chemin.extraitTete();
+			System.out.println("pos: " + pos.affiche());
+		}
+		System.out.println("----------------");
+	}
 	final static String typeInterface = Configuration.lisChaine("Interface");
 
 	public static void main(String[] args) {
 
-
 		InputStream in;
 		in = Configuration.ouvre("Niveaux/niveaux.txt");
-
-		ArrayList<SequenceListe<Position>> cheminFinal = new ArrayList<SequenceListe<Position>>();
-		SequenceListe<Position> chemin = new SequenceListe<Position>();
-
-		/*
-		//démare le calcul du temps (61 ms en moyenne)
-		chemin = new SequenceListe<Position>();
-		for (int i = 0; i < 10; i++) {
-			Position p = new Position((int) (Math.random() * 20), (int) (Math.random() * 20));
-			chemin.insereTete(p);
+/*
+		SequenceListe<Position> chemin = new SequenceListe<>();
+		FAPListe<SequenceListe<Position>> fap = new FAPListe<>();
+		int x=0; int y=0;
+		for(int i = 0; i < 7; i++) {
+			int r = (int)(Math.random() * 8) + 1;
+			for (int j = 0; j < r; j++) {
+				x = (int)(Math.random() * 100);
+				y = (int)(Math.random() * 100);
+				chemin.insereTete(new Position(x, y));
+			}
+			fap.insere(chemin);
+			chemin = new SequenceListe<>();
 		}
-		Iterateur<Position> cheminIt = chemin.iterateur();
-		while (cheminIt.aProchain()) {
-			Position p = cheminIt.prochain();
-			System.out.println(p.affiche());
+		while(!fap.estVide()){
+			SequenceListe<Position> chemin2 = fap.extrait();
+			afficheChemin(chemin2);
 		}
-		long startTime = System.currentTimeMillis();
-		chemin.melangeAleatoire();
-		long endTime = System.currentTimeMillis();
-		Iterateur<Position> cheminIt2 = chemin.iterateur();
-		System.out.println("Chemin mélangé : ");
-		while (cheminIt2.aProchain()) {
-			Position p = cheminIt2.prochain();
-			System.out.println(p.affiche());
-		}
-		System.out.println("Temps de mélange : " + (endTime - startTime) + " ms");
 		System.exit(0);
-		 */
+*/
 		LecteurNiveaux l = new LecteurNiveaux(in);
 		Jeu j = new Jeu(l);
 		CollecteurEvenements control = new ControleurMediateur(j);
