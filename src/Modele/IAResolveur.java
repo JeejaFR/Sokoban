@@ -212,8 +212,13 @@ class IAResolveur extends IA {
                         return cheminInverse;
                     }else{
                         ajouterInstance(posPousseurNew, caissesNew, instances);
-                        int rapprocheCaisseBut = rapprocheCaisseBut(posCaissePresent, posCaisseFutur, caissesNew);
-                        queue.add(new ArbreChemins(instanceCourante, cheminCourant, arbreCheminsTete));
+                        //int rapprocheCaisseBut = rapprocheCaisseBut(posCaissePresent, posCaisseFutur, caissesNew);
+                        ArbreChemins arbreEnfile = new ArbreChemins(instanceCourante, cheminCourant, arbreCheminsTete);
+                        if(estBut(posCaisseFutur) && !estBut(posCaissePresent)){
+                            queue.addFirst(arbreEnfile);
+                        }else {
+                            queue.addLast(arbreEnfile);
+                        }
                     }
                 }
             }//pas de solution pour ce chemin
@@ -361,10 +366,10 @@ class IAResolveur extends IA {
                 duration += (endTime - startTime);
                 nb_total_chemins += sequenceChemins.taille()+sequenceCheminsButs.taille();
                 while(!sequenceCheminsButs.estVide()){
-                    sequence.add(sequenceCheminsButs.extrait());
+                    sequence.addLast(sequenceCheminsButs.extrait());
                 }
                 while(!sequenceChemins.estVide()){
-                    sequence.add(sequenceChemins.extrait());
+                    sequence.addLast(sequenceChemins.extrait());
                 }
                 return sequence;
             }
@@ -386,10 +391,10 @@ class IAResolveur extends IA {
         duration += (endTime - startTime);
         nb_total_chemins += sequenceChemins.taille()+sequenceCheminsButs.taille();
         while(!sequenceCheminsButs.estVide()){
-            sequence.add(sequenceCheminsButs.extrait());
+            sequence.addLast(sequenceCheminsButs.extrait());
         }
         while(!sequenceChemins.estVide()){
-            sequence.add(sequenceChemins.extrait());
+            sequence.addLast(sequenceChemins.extrait());
         }
         return sequence;
     }
