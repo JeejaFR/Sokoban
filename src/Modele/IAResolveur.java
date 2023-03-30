@@ -66,6 +66,7 @@ class IAResolveur extends IA {
         Coup coup = null;
         ArrayList<SequenceListe<Position>> chemins = null;
 
+/*
         instances = new HashMap<>();
         nb_instances = 0;
         nb_buts = 0;
@@ -77,8 +78,7 @@ class IAResolveur extends IA {
         }
         chemins = calcul_chemin(posPousseur, caisses);
         System.out.println("chemins.size() : " + chemins.size());
-
-        /*
+*/
         int taille_totale_file = 0;
         int duree_totale_Dijkstra = 0;
         int nb_fois_Dijkstra_total = 0;
@@ -133,7 +133,6 @@ class IAResolveur extends IA {
         System.out.println("temps total moyen : " + temps_total_total_moyen + " ms");
         System.out.println("nb moyen instances : " + nb_instances_total_moyen);
         System.exit(0);
-         */
 
         for(int i=0; i<chemins.size(); i++){
             SequenceListe<Position> chemin = chemins.get(i);
@@ -213,7 +212,12 @@ class IAResolveur extends IA {
                     }else{
                         ajouterInstance(posPousseurNew, caissesNew, instances);
                         ArbreChemins arbreEnfile = new ArbreChemins(instanceCourante, cheminCourant, arbreCheminsTete);
-                        queue.add(arbreEnfile);
+                        //queue.add(arbreEnfile);
+                        if(estBut(posCaisseFutur) && !estBut(posCaissePresent)){
+                            queue.addFirst(arbreEnfile);
+                        }else{
+                            queue.add(arbreEnfile);
+                        }
                         //AJOUTER UN POIDS EN FONCTION DU NOMBRE DE CAISSES SUR LES BUTS
                     }
                 }
