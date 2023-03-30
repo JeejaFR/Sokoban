@@ -34,6 +34,10 @@ public class FAPListe<E extends Comparable<E>> extends FAP<E> {
 		super.s = s;
 	}
 
+	public int taille(){
+		return s.taille();
+	}
+
 	@Override
 	public void insere(E element) {
 		Maillon<E> precedent, courant;
@@ -53,5 +57,6 @@ public class FAPListe<E extends Comparable<E>> extends FAP<E> {
 		}
 		if (courant == null)
 			s.queue = m;
+		s.incrementeTaille();
 	}
 }

@@ -26,7 +26,9 @@ package Structures;
  *          38401 Saint Martin d'Hères
  */
 
-public class SequenceListe<E> implements Sequence<E> {
+import Modele.Position;
+
+public class SequenceListe<E> implements Sequence<E>, Comparable<SequenceListe<Position>> {
 	Maillon<E> tete, queue;
 	private int taille = 0;
 
@@ -39,6 +41,10 @@ public class SequenceListe<E> implements Sequence<E> {
 			queue.suivant = m;
 			queue = queue.suivant;
 		}
+		taille++;
+	}
+
+	public void incrementeTaille(){
 		taille++;
 	}
 
@@ -141,5 +147,16 @@ public class SequenceListe<E> implements Sequence<E> {
 	@Override
 	public Iterateur<E> iterateur() {
 		return new IterateurSequenceListe<>(this);
+	}
+
+	@Override
+	public int compareTo(SequenceListe<Position> o) {
+		int size1 = taille();
+		int size2 = o.taille();
+		if(size1 == size2) {//Si les deux listes ont la même taille, renvoie 0 pour indiquer que leur poids est identique.
+			return 0;
+		}else{//La liste ayant la taille la plus élevée est considérée comme supérieure à l'autre liste
+			return Integer.compare(size2, size1);
+		}
 	}
 }
