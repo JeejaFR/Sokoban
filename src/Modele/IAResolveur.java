@@ -212,13 +212,20 @@ class IAResolveur extends IA {
                         return cheminInverse;
                     }else{
                         ajouterInstance(posPousseurNew, caissesNew, instances);
-                        //int rapprocheCaisseBut = rapprocheCaisseBut(posCaissePresent, posCaisseFutur, caissesNew);
+                        int rapprocheCaisseBut = rapprocheCaisseBut(posCaissePresent, posCaisseFutur, caissesNew);
                         ArbreChemins arbreEnfile = new ArbreChemins(instanceCourante, cheminCourant, arbreCheminsTete);
+                        if(rapprocheCaisseBut == 1) {
+                            queue.addFirst(arbreEnfile);
+                        }else {
+                            queue.addLast(arbreEnfile);
+                        }
+                        /*
                         if(estBut(posCaisseFutur) && !estBut(posCaissePresent)){
                             queue.addFirst(arbreEnfile);
                         }else {
                             queue.addLast(arbreEnfile);
                         }
+                         */
                     }
                 }
             }//pas de solution pour ce chemin
@@ -228,7 +235,32 @@ class IAResolveur extends IA {
     }
 
     public int rapprocheCaisseBut(Position posCaissePresent, Position posCaisseFutur, byte[][] caisses){
-        //Dijkstra pour trouver le chemin le plus court entre la caisse et le but
+        int lignePresent = posCaissePresent.getL();
+        int colonnePresent = posCaissePresent.getC();
+        int ligneFutur = posCaisseFutur.getL();
+        int colonneFutur = posCaisseFutur.getC();
+        SequenceListe<Position> sequenceButs = new SequenceListe<Position>();
+        for(int i=0;i<caisses.length;i++){//pour chaque but libre
+            for(int j=0;j<caisses[0].length;j++){
+                if(caisses[i][j] != CAISSE && (carte[i][j] & BUT) != 0){
+                    sequenceButs.insereQueue(new Position(i,j));
+                }
+            }
+        }
+        int procheBut_present = 0;
+        int procheBut_futur = 0;
+        while(!sequenceButs.estVide()){
+            Position posBut = sequenceButs.extraitTete();
+            int ligneBut = posBut.getL();
+            int colonneBut = posBut.getC();
+            procheBut_present += Math.abs(ligneBut - lignePresent) + Math.abs(colonneBut - colonnePresent);
+            procheBut_futur += Math.abs(ligneBut - ligneFutur) + Math.abs(colonneBut - colonneFutur);
+        }
+        if(procheBut_futur > procheBut_present){
+            return 1;
+        }else if(procheBut_futur < procheBut_present){
+            return -1;
+        }
         return 0;
     }
 
