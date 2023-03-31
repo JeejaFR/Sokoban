@@ -223,15 +223,6 @@ class IAResolveur extends IA {
                         }else{
                             queue.insereQueue(arbreEnfile);
                         }
-                        //si queue ne contient pas arbreEnfile
-                        /*
-                        if (estBut(posCaisseFutur) && !estBut(posCaissePresent)) {
-                            queue.addFirst(arbreEnfile);
-                        } else {
-                            queue.add(arbreEnfile);
-                        }
-                         */
-                        //AJOUTER UN POIDS EN FONCTION DU NOMBRE DE CAISSES SUR LES BUTS
                     }
                 }
             }//pas de solution pour ce chemin
