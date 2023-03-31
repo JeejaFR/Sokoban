@@ -42,6 +42,9 @@ public class FAPListe<E extends Comparable<E>> extends FAP<E> {
 		s.insereQueue(element);
 	}
 
+	public void insereTete(E element){
+		s.insereTete(element);
+	}
 	@Override
 	public void insere(E element) {
 		Maillon<E> precedent, courant;
@@ -63,4 +66,5 @@ public class FAPListe<E extends Comparable<E>> extends FAP<E> {
 			s.queue = m;
 		s.incrementeTaille();
 	}
+
 }
