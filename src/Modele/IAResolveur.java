@@ -887,10 +887,10 @@ class IAResolveur extends IA {
         return ((caisses[l][c-1]==VIDE||caisses[l][c-1]==CAISSE)&&(caisses[l][c+1]!=CAISSE_BLOQUEE&&carte[l][c+1]!=MUR))||((caisses[l][c+1]==VIDE||caisses[l][c+1]==CAISSE)&&(caisses[l][c-1]!=CAISSE_BLOQUEE&&carte[l][c-1]!=MUR));
     }
     boolean gestionPlusieurTemp(int l, int c,byte[][] caisses){
-        if(estCaisseBloqueeTemp(l+1,c,caisses)&&(!aMurAutour(l+1,c)||((caisses[l+1][c+1]==VIDE || caisses[l+1][c+1]==CAISSE)&&(caisses[l+1][c-1]==VIDE || caisses[l+1][c-1]==CAISSE))||pourra_bouger_horizontal(l,c,caisses))) return false;
-        if(estCaisseBloqueeTemp(l-1,c,caisses)&&(!aMurAutour(l-1,c)||((caisses[l-1][c+1]==VIDE || caisses[l-1][c+1]==CAISSE)&&(caisses[l-1][c-1]==VIDE || caisses[l-1][c-1]==CAISSE))||pourra_bouger_horizontal(l,c,caisses))) return false;
-        if(estCaisseBloqueeTemp(l,c+1,caisses)&&(!aMurAutour(l,c+1)||((caisses[l-1][c+1]==VIDE || caisses[l-1][c+1]==CAISSE)&&(caisses[l+1][c+1]==VIDE || caisses[l+1][c+1]==CAISSE))||pourra_bouger_vertical(l,c,caisses))) return false;
-        if(estCaisseBloqueeTemp(l,c-1,caisses)&&(!aMurAutour(l,c-1)||((caisses[l+1][c-1]==VIDE || caisses[l+1][c-1]==CAISSE)&&(caisses[l-1][c-1]==VIDE || caisses[l-1][c-1]==CAISSE))||pourra_bouger_vertical(l,c,caisses))) return false;
+        if(!aMur(l+1,c)&&!aMur(l+1,c-1)&&!aMur(l+1,c+1)&&estCaisseBloqueeTemp(l+1,c,caisses)&&(!aMurAutour(l+1,c)||((caisses[l+1][c+1]==VIDE || caisses[l+1][c+1]==CAISSE)&&(caisses[l+1][c-1]==VIDE || caisses[l+1][c-1]==CAISSE))||pourra_bouger_horizontal(l,c,caisses))) return false;
+        if(!aMur(l-1,c)&&!aMur(l-1,c-1)&&!aMur(l-1,c+1)&&estCaisseBloqueeTemp(l-1,c,caisses)&&(!aMurAutour(l-1,c)||((caisses[l-1][c+1]==VIDE || caisses[l-1][c+1]==CAISSE)&&(caisses[l-1][c-1]==VIDE || caisses[l-1][c-1]==CAISSE))||pourra_bouger_horizontal(l,c,caisses))) return false;
+        if(!aMur(l,c+1)&&!aMur(l-1,c+1)&&!aMur(l+1,c+1)&&estCaisseBloqueeTemp(l,c+1,caisses)&&(!aMurAutour(l,c+1)||((caisses[l-1][c+1]==VIDE || caisses[l-1][c+1]==CAISSE)&&(caisses[l+1][c+1]==VIDE || caisses[l+1][c+1]==CAISSE))||pourra_bouger_vertical(l,c,caisses))) return false;
+        if(!aMur(l,c-1)&&!aMur(l+1,c-1)&&!aMur(l-1,c-1)&&estCaisseBloqueeTemp(l,c-1,caisses)&&(!aMurAutour(l,c-1)||((caisses[l+1][c-1]==VIDE || caisses[l+1][c-1]==CAISSE)&&(caisses[l-1][c-1]==VIDE || caisses[l-1][c-1]==CAISSE))||pourra_bouger_vertical(l,c,caisses))) return false;
 
         return estCaisseBloqueeTemp(l,c+1,caisses) || estCaisseBloqueeTemp(l,c-1,caisses) || estCaisseBloqueeTemp(l+1,c,caisses) || estCaisseBloqueeTemp(l-1,c,caisses); // || cases[l][c+1]==CAISSE_BLOQUEE || cases[l][c-1]==CAISSE_BLOQUEE || cases[l+1][c]==CAISSE_BLOQUEE || cases[l-1][c]==CAISSE_BLOQUEE;
     }
