@@ -27,10 +27,7 @@
 
 import Controleur.ControleurMediateur;
 import Global.Configuration;
-import Modele.IA;
-import Modele.Jeu;
-import Modele.LecteurNiveaux;
-import Modele.Position;
+import Modele.*;
 import Structures.FAPListe;
 import Structures.Iterateur;
 import Structures.SequenceListe;
@@ -56,22 +53,19 @@ public class Sokoban {
 		InputStream in;
 		in = Configuration.ouvre("Niveaux/niveaux.txt");
 /*
-		SequenceListe<Position> chemin = new SequenceListe<>();
-		FAPListe<SequenceListe<Position>> fap = new FAPListe<>();
+		int nb_caisses = 20;
+		FAPListe<ArbreChemins> fap = new FAPListe<>();
 		int x=0; int y=0;
 		for(int i = 0; i < 7; i++) {
-			int r = (int)(Math.random() * 8) + 1;
-			for (int j = 0; j < r; j++) {
-				x = (int)(Math.random() * 100);
-				y = (int)(Math.random() * 100);
-				chemin.insereTete(new Position(x, y));
-			}
-			fap.insere(chemin);
-			chemin = new SequenceListe<>();
+			int nb_caisses_sur_buts = (int)(Math.random() * 19) + 1;
+			int poids = nb_caisses - nb_caisses_sur_buts;
+			ArbreChemins arbre = new ArbreChemins(null, null, null, poids);
+			System.out.println("insertion d'un arbre de poids " + poids + " = 20 - " + nb_caisses_sur_buts);
+			fap.insere(arbre);
 		}
 		while(!fap.estVide()){
-			SequenceListe<Position> chemin2 = fap.extrait();
-			afficheChemin(chemin2);
+			ArbreChemins arbre2 = fap.extrait();
+			System.out.println(arbre2.getPoids());
 		}
 		System.exit(0);
 */

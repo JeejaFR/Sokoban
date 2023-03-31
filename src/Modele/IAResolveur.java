@@ -1,7 +1,6 @@
 package Modele;
 
 import Global.Configuration;
-import Structures.ElementAvecPoids;
 import Structures.Sequence;
 import Structures.SequenceListe;
 import Structures.FAPListe;
@@ -156,7 +155,7 @@ class IAResolveur extends IA {
         SequenceListe<ArrayList<Position>> caissesDepl = new SequenceListe<ArrayList<Position>>();
         ArrayList<Position> caisseDeplCourante = new ArrayList<Position>();
         SequenceListe<Position> cheminCourant = new SequenceListe<Position>();
-        LinkedList<ArbreChemins> queue = new LinkedList <ArbreChemins>();
+        FAPListe<ArbreChemins> queue = new FAPListe<ArbreChemins>();
         ArbreChemins arbreCourant = null;
         Instance instanceCourante = null;
         Position posCaisseFutur = null;
@@ -164,24 +163,27 @@ class IAResolveur extends IA {
 
         ajouterInstance(posPousseur, caisses, instances);
         Instance instanceDepart = new Instance(posPousseur, caisses);
-        ArbreChemins arbreCheminsTete = new ArbreChemins(instanceDepart, null, null);
+        ArbreChemins arbreCheminsTete = new ArbreChemins(instanceDepart, null, null, 0);
 
-        queue.add(arbreCheminsTete);
+        queue.insere(arbreCheminsTete);
 
-        while(!queue.isEmpty()){
-            arbreCheminsTete = queue.poll();//ArbreChemins
+        while(!queue.estVide()){
+
+            arbreCheminsTete = queue.extrait();//ArbreChemins
 
             //récupère l'instance courante qui contient la position du pousseur et les caisses
             posPousseur = arbreCheminsTete.getCourant().getPosPousseur();
             caisses = arbreCheminsTete.getCourant().getCaisses();
 
             //récupère les chemins possibles pour le pousseur depuis l'instance courante
-            SequenceListe<SequenceListe<Position>> cheminsPousseurCaisse = Dijkstra(posPousseur, caisses);
+            FAPListe<SequenceListe<Position>> cheminsPousseurCaisse = Dijkstra(posPousseur, caisses);
+            //System.out.println("cheminsPousseurCaisse taille: " + cheminsPousseurCaisse.taille());
 
             //pour chaque chemin possible du pousseur à une caisse
             while(!cheminsPousseurCaisse.estVide()){
-                cheminCourant = cheminsPousseurCaisse.extraitTete();//on récupère le chemin courant SequenceListe<Position>
-
+                cheminCourant = cheminsPousseurCaisse.extrait();//on récupère le chemin courant SequenceListe<Position>
+                //System.out.println("chemin courant taille: " + cheminCourant.taille());
+                //System.out.println("instances taille: " + instances.size());
 
                 posCaisseFutur = cheminCourant.extraitQueue();//dernière position du chemin courant (future position de la caisse déplacée)
                 posCaissePresent = cheminCourant.extraitQueue();//avant-dernière position du chemin courant (position de la caisse à déplacer)
@@ -196,7 +198,7 @@ class IAResolveur extends IA {
                     int nb_caisses_sur_but = nbCaissesSurBut(caissesNew);
                     if(nb_caisses_sur_but == nb_caisses){
                         System.out.println("=========================== Toutes les caisses sont sur les buts ===========================");
-                        arbreCourant = new ArbreChemins(instanceCourante, cheminCourant, arbreCheminsTete);
+                        arbreCourant = new ArbreChemins(instanceCourante, cheminCourant, arbreCheminsTete,0);
                         while(!instanceCourante.estInstance(instanceDepart)){
                             chemin.add(cheminCourant);
                             instanceCourante = arbreCourant.getPere().getCourant();
@@ -207,17 +209,28 @@ class IAResolveur extends IA {
                         for(int j=chemin.size()-1; j>=0; j--){
                             cheminInverse.add(chemin.get(j));
                         }
-                        taille_file=queue.size();
+                        taille_file=queue.taille();
                         return cheminInverse;
                     }else{
                         ajouterInstance(posPousseurNew, caissesNew, instances);
-                        ArbreChemins arbreEnfile = new ArbreChemins(instanceCourante, cheminCourant, arbreCheminsTete);
-                        //queue.add(arbreEnfile);
-                        if(estBut(posCaisseFutur) && !estBut(posCaissePresent)){
-                            queue.addFirst(arbreEnfile);
+                        int poids = nb_caisses - nb_caisses_sur_but;
+                        int ancien_poids = arbreCheminsTete.getPoids();
+                        //System.out.println("poids: " + poids);
+                        //System.exit(0);
+                        ArbreChemins arbreEnfile = new ArbreChemins(instanceCourante, cheminCourant, arbreCheminsTete, poids);
+                        if(poids<ancien_poids) {
+                            queue.insere(arbreEnfile);
                         }else{
+                            queue.insereQueue(arbreEnfile);
+                        }
+                        //si queue ne contient pas arbreEnfile
+                        /*
+                        if (estBut(posCaisseFutur) && !estBut(posCaissePresent)) {
+                            queue.addFirst(arbreEnfile);
+                        } else {
                             queue.add(arbreEnfile);
                         }
+                         */
                         //AJOUTER UN POIDS EN FONCTION DU NOMBRE DE CAISSES SUR LES BUTS
                     }
                 }
@@ -318,7 +331,7 @@ class IAResolveur extends IA {
         }
     }
 
-    public SequenceListe<SequenceListe<Position>> Dijkstra(Position pos, byte[][] caisses){
+    public FAPListe<SequenceListe<Position>> Dijkstra(Position pos, byte[][] caisses){
         startTime = System.currentTimeMillis();
         nb_fois_Dijkstra++;
         PositionPoids pousseur = new PositionPoids(pos.getL(), pos.getC(), 0);
@@ -390,6 +403,7 @@ class IAResolveur extends IA {
             sequence.insere(chemin);
             chemin = new SequenceListe<>();
         }
+        /*
         while(!sequence.estVide()){
             SequenceListe<Position> chemin2 = sequence.extrait();
             if(estBut(chemin2.getTete())) {
@@ -406,10 +420,11 @@ class IAResolveur extends IA {
             SequenceListe<Position> chemin2 = sequenceChemins.extraitTete();
             sequenceFinale.insereQueue(chemin2);
         }
+         */
         endTime = System.currentTimeMillis();
         duration += (endTime - startTime);
-        nb_total_chemins += sequenceFinale.taille();
-        return sequenceFinale;
+        nb_total_chemins += sequence.taille();
+        return sequence;
     }
 
     public SequenceListe<ArrayList<Position>> caissesDeplacables(Position p, byte[][] caisses){
@@ -612,12 +627,8 @@ class IAResolveur extends IA {
     public void ajouterInstance(Position p, byte[][] caisses, HashMap<Integer, byte[][]> instances){
         byte[][] instanceCopie = copieByte(caisses);
         instanceCopie[p.getL()][p.getC()] = POUSSEUR ;
-        //String posPousseur = p.getL() + "," + p.getC();
-        //int clePousseur = posPousseur.hashCode();
+
         int cleInstance = Arrays.deepHashCode(instanceCopie)+p.affiche().hashCode();
-        //int cle = clePousseur+cleInstance;
-        //System.out.println("cle = " + cle);
-        //afficheCaisses(instanceCopie);
         if(!instances.containsKey(cleInstance)){
             instances.put(cleInstance, instanceCopie);
             nb_instances++;
@@ -627,22 +638,13 @@ class IAResolveur extends IA {
     public boolean estInstance(Position p, byte[][] caisses, HashMap<Integer, byte[][]> instances) {
         byte[][] instanceCopie = copieByte(caisses);
         instanceCopie[p.getL()][p.getC()] = POUSSEUR;
-        //String posPousseur = p.getL() + "," + p.getC();
-        //int clePousseur = posPousseur.hashCode();
+
         int cleInstance = Arrays.deepHashCode(instanceCopie)+p.affiche().hashCode();
-        //int cle = clePousseur+cleInstance;
         if(!instances.containsKey(cleInstance)){
             return false;
         }else{
             byte[][] instanceTrouvee = instances.get(cleInstance);
-            for(int i = 0; i < instanceCopie.length; i++){
-                for(int j = 0; j < instanceCopie[0].length; j++){
-                    if(instanceCopie[i][j] != instanceTrouvee[i][j]){
-                        return false;
-                    }
-                }
-            }
-            return true;
+            return Arrays.deepEquals(instanceCopie,instanceTrouvee);
         }
     }
 
