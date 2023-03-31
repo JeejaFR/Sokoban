@@ -65,7 +65,7 @@ class IAResolveur extends IA {
         Coup coup = null;
         ArrayList<SequenceListe<Position>> chemins = null;
 
-/*
+
         instances = new HashMap<>();
         nb_instances = 0;
         nb_buts = 0;
@@ -77,7 +77,7 @@ class IAResolveur extends IA {
         }
         chemins = calcul_chemin(posPousseur, caisses);
         System.out.println("chemins.size() : " + chemins.size());
-*/
+        /*
         int taille_totale_file = 0;
         int duree_totale_Dijkstra = 0;
         int nb_fois_Dijkstra_total = 0;
@@ -132,7 +132,7 @@ class IAResolveur extends IA {
         System.out.println("temps total moyen : " + temps_total_total_moyen + " ms");
         System.out.println("nb moyen instances : " + nb_instances_total_moyen);
         System.exit(0);
-
+           */
         for(int i=0; i<chemins.size(); i++){
             SequenceListe<Position> chemin = chemins.get(i);
             chemin.extraitTete();//on enlève la position du pousseur puisqu'il est déjà à cette position
@@ -177,6 +177,7 @@ class IAResolveur extends IA {
 
             //récupère les chemins possibles pour le pousseur depuis l'instance courante
             FAPListe<SequenceListe<Position>> cheminsPousseurCaisse = Dijkstra(posPousseur, caisses);
+
             //System.out.println("cheminsPousseurCaisse taille: " + cheminsPousseurCaisse.taille());
 
             //pour chaque chemin possible du pousseur à une caisse
@@ -243,19 +244,19 @@ class IAResolveur extends IA {
                 }
             }
         }
-        int procheBut_present = 0;
-        int procheBut_futur = 0;
+        int rapproche = 0;
         while(!sequenceButs.estVide()){
             Position posBut = sequenceButs.extraitTete();
             int ligneBut = posBut.getL();
             int colonneBut = posBut.getC();
-            procheBut_present += Math.abs(ligneBut - lignePresent) + Math.abs(colonneBut - colonnePresent);
-            procheBut_futur += Math.abs(ligneBut - ligneFutur) + Math.abs(colonneBut - colonneFutur);
+            if((Math.abs(ligneBut - lignePresent) + Math.abs(colonneBut - colonnePresent))>(Math.abs(ligneBut - ligneFutur) + Math.abs(colonneBut - colonneFutur))) { // si le present est plus loin que le futur
+                rapproche++;
+            }else{
+                rapproche--; // On diminue meme si egale car perte de temps
+            }
         }
-        if(procheBut_futur > procheBut_present){
+        if(rapproche>0){
             return 1;
-        }else if(procheBut_futur < procheBut_present){
-            return -1;
         }
         return 0;
     }
@@ -430,40 +431,39 @@ class IAResolveur extends IA {
                 caisseDeplacee.add(pCaisse);
                 caisseDeplacee.add(new Position(pCaisse.l+1, pCaisse.c));
                 caissesDep.insereQueue(caisseDeplacee);
+                return caissesDep;
             }
         }
-        pCaisse = null;
         pCaisse = getPosCaisse(p.l-1, p.c, caisses);//si la caisse est au-dessus du pousseur
         if(pCaisse != null){
             boolean bloquante_dessus = estCaseBloquante_V2(pCaisse.l,pCaisse.c,pCaisse.l-1, pCaisse.c, supprimeCaisse(pCaisse, caisses));
             if(!estCaseHorsMap(pCaisse.l-1, pCaisse.c) && estCaseLibre(pCaisse.l-1, pCaisse.c, caisses) && !estCaseBloquante_V2(pCaisse.l,pCaisse.c,pCaisse.l-1, pCaisse.c, supprimeCaisse(pCaisse, caisses))){
-                caisseDeplacee.clear();
+                //caisseDeplacee.clear();
                 caisseDeplacee.add(p);
                 caisseDeplacee.add(pCaisse);
                 caisseDeplacee.add(new Position(pCaisse.l-1, pCaisse.c));
                 caissesDep.insereQueue(caisseDeplacee);
+                return caissesDep;
             }
         }
-        pCaisse = null;
         pCaisse = getPosCaisse(p.l, p.c+1, caisses);//si la caisse est à droite du pousseur
-        if(pCaisse != null){
-            if(!estCaseHorsMap(pCaisse.l, pCaisse.c+1) && estCaseLibre(pCaisse.l, pCaisse.c+1, caisses) && !estCaseBloquante_V2(pCaisse.l,pCaisse.c,pCaisse.l, pCaisse.c+1, supprimeCaisse(pCaisse, caisses))){
-                caisseDeplacee.clear();
+        if(pCaisse != null) {
+            if (!estCaseHorsMap(pCaisse.l, pCaisse.c + 1) && estCaseLibre(pCaisse.l, pCaisse.c + 1, caisses) && !estCaseBloquante_V2(pCaisse.l, pCaisse.c, pCaisse.l, pCaisse.c + 1, supprimeCaisse(pCaisse, caisses))) {
                 caisseDeplacee.add(p);
                 caisseDeplacee.add(pCaisse);
-                caisseDeplacee.add(new Position(pCaisse.l, pCaisse.c+1));
+                caisseDeplacee.add(new Position(pCaisse.l, pCaisse.c + 1));
                 caissesDep.insereQueue(caisseDeplacee);
+                return caissesDep;
             }
         }
-        pCaisse = null;
         pCaisse = getPosCaisse(p.l, p.c-1, caisses);//si la caisse est à gauche du pousseur
-        if(pCaisse != null){
-            if(!estCaseHorsMap(pCaisse.l, pCaisse.c-1) && estCaseLibre(pCaisse.l, pCaisse.c-1, caisses) && !estCaseBloquante_V2(pCaisse.l,pCaisse.c,pCaisse.l, pCaisse.c-1, supprimeCaisse(pCaisse, caisses))){
-                caisseDeplacee.clear();
+        if(pCaisse != null) {
+            if (!estCaseHorsMap(pCaisse.l, pCaisse.c - 1) && estCaseLibre(pCaisse.l, pCaisse.c - 1, caisses) && !estCaseBloquante_V2(pCaisse.l, pCaisse.c, pCaisse.l, pCaisse.c - 1, supprimeCaisse(pCaisse, caisses))) {
                 caisseDeplacee.add(p);
                 caisseDeplacee.add(pCaisse);
-                caisseDeplacee.add(new Position(pCaisse.l, pCaisse.c-1));
+                caisseDeplacee.add(new Position(pCaisse.l, pCaisse.c - 1));
                 caissesDep.insereQueue(caisseDeplacee);
+                return caissesDep;
             }
         }
         return caissesDep;
@@ -915,6 +915,8 @@ class IAResolveur extends IA {
     }
 
     boolean estCaseBloquante_V2(int l_initial, int c_initial, int l, int c,byte[][] caisses){
+        if(estCaseHorsMap(l,c)) return true;
+        if(caisses[l][c]!=VIDE && caisses[l][c]!=BUT) return true;
         if(aMur(l,c)) return true;
 
         byte[][] saveCaisses = caisses;
