@@ -23,6 +23,7 @@ class IAResolveur extends IA {
     private long startTime=0,endTime=0, duration=0, startTime_total=0, endTime_total=0;
     private int nb_total_chemins=0, nb_fois_Dijkstra=0, taille_file=0;
     private double nb_moyen_chemins=0.0;
+    private long ensemble_buts;
 
     public IAResolveur() {
     }
@@ -32,14 +33,21 @@ class IAResolveur extends IA {
         c = n.colonnes()-2;
         carte = new int[l][c];
         caisses = new byte[l][c];
+        StringBuilder binaire = new StringBuilder();
         //supprime la 1ere ligne, la dernière ligne, la 1ere colonne, la dernière colonne de cases
         for(int i = 1; i < l+1; i++) {
             for (int j = 1; j < c + 1; j++) {
+                if(cases[i][j] == VIDE){
+                    binaire.append("0");
+                }
                 if (((cases[i][j] & MUR) != 0 || (cases[i][j] & VIDE) != 0)) {
                     carte[i - 1][j - 1] = cases[i][j];
+                    //ajout de 0 à la fin de la chaine binaire
+                    binaire.append("0");
                 }
                 else if((cases[i][j] & BUT) != 0){
                     carte[i - 1][j - 1] = BUT;
+                    binaire.append("1");
                     if ((cases[i][j] & CAISSE) != 0){
                         this.nb_caisses++;
                         this.caisses[i - 1][j - 1] = CAISSE;
@@ -48,15 +56,20 @@ class IAResolveur extends IA {
                 }
                 else if ((cases[i][j] & CAISSE) != 0) {
                     carte[i - 1][j - 1] = VIDE;
+                    binaire.append("0");
                     this.nb_caisses++;
                     this.caisses[i - 1][j - 1] = CAISSE;
                 }
                 else if((cases[i][j] & POUSSEUR) != 0) {
                     carte[i - 1][j - 1] = VIDE;
+                    binaire.append("0");
                     posPousseur = new Position(i - 1, j - 1);
                 }
             }
         }
+        this.ensemble_buts = Long.parseLong(binaire.toString(), 2);
+        System.out.println("binaire : " + binaire);
+        System.out.println("ensemble_buts : " + this.ensemble_buts);
     }
 
     @Override
