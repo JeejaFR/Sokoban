@@ -458,14 +458,22 @@ public class Niveau extends Historique<Coup> implements Cloneable {
 			return true;
 		}
 	}
+
+	boolean pourra_bouger_vertical(int l,int c){
+		return ((cases[l-1][c]==VIDE||cases[l-1][c]==CAISSE)&&(cases[l+1][c]!=CAISSE_BLOQUEE&&cases[l+1][c]!=MUR))||((cases[l+1][c]==VIDE||cases[l+1][c]==CAISSE)&&(cases[l-1][c]!=CAISSE_BLOQUEE&&cases[l-1][c]!=MUR));
+	}
+	boolean pourra_bouger_horizontal(int l,int c){
+		return ((cases[l][c-1]==VIDE||cases[l][c-1]==CAISSE)&&(cases[l][c+1]!=CAISSE_BLOQUEE&&cases[l][c+1]!=MUR))||((cases[l][c+1]==VIDE||cases[l][c+1]==CAISSE)&&(cases[l][c-1]!=CAISSE_BLOQUEE&&cases[l][c-1]!=MUR));
+	}
 	boolean gestionPlusieurTemp(int l, int c){
-		if(estCaisseBloqueeTemp(l+1,c)&&!aMurAutour(l+1,c)) return false;
-		if(estCaisseBloqueeTemp(l-1,c)&&!aMurAutour(l-1,c)) return false;
-		if(estCaisseBloqueeTemp(l,c+1)&&!aMurAutour(l,c+1)) return false;
-		if(estCaisseBloqueeTemp(l,c-1)&&!aMurAutour(l,c-1)) return false;
+		if(estCaisseBloqueeTemp(l+1,c)&&(!aMurAutour(l+1,c)||((cases[l+1][c+1]==VIDE || cases[l+1][c+1]==CAISSE)&&(cases[l+1][c-1]==VIDE || cases[l+1][c-1]==CAISSE))||pourra_bouger_horizontal(l,c))) return false;
+		if(estCaisseBloqueeTemp(l-1,c)&&(!aMurAutour(l-1,c)||((cases[l-1][c+1]==VIDE || cases[l-1][c+1]==CAISSE)&&(cases[l-1][c-1]==VIDE || cases[l-1][c-1]==CAISSE))||pourra_bouger_horizontal(l,c))) return false;
+		if(estCaisseBloqueeTemp(l,c+1)&&(!aMurAutour(l,c+1)||((cases[l-1][c+1]==VIDE || cases[l-1][c+1]==CAISSE)&&(cases[l+1][c+1]==VIDE || cases[l+1][c+1]==CAISSE))||pourra_bouger_vertical(l,c))) return false;
+		if(estCaisseBloqueeTemp(l,c-1)&&(!aMurAutour(l,c-1)||((cases[l+1][c-1]==VIDE || cases[l+1][c-1]==CAISSE)&&(cases[l-1][c-1]==VIDE || cases[l-1][c-1]==CAISSE))||pourra_bouger_vertical(l,c))) return false;
 
 		return estCaisseBloqueeTemp(l,c+1) || estCaisseBloqueeTemp(l,c-1) || estCaisseBloqueeTemp(l+1,c) || estCaisseBloqueeTemp(l-1,c) || cases[l][c+1]==CAISSE_BLOQUEE || cases[l][c-1]==CAISSE_BLOQUEE || cases[l+1][c]==CAISSE_BLOQUEE || cases[l-1][c]==CAISSE_BLOQUEE;
 	}
+
 
 	boolean estCaisseBloquee(int l, int c){
 		if(aMur(l,c) || estCaseLibre(l,c)) return false;
