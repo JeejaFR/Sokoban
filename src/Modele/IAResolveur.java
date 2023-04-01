@@ -65,7 +65,7 @@ class IAResolveur extends IA {
         Coup coup = null;
         ArrayList<SequenceListe<Position>> chemins = null;
 
-/*
+
         instances = new HashMap<>();
         nb_instances = 0;
         nb_buts = 0;
@@ -76,8 +76,7 @@ class IAResolveur extends IA {
             return null;
         }
         chemins = calcul_chemin(posPousseur, caisses);
-        System.out.println("chemins.size() : " + chemins.size());
-*/
+        /*
         int taille_totale_file = 0;
         int duree_totale_Dijkstra = 0;
         int nb_fois_Dijkstra_total = 0;
@@ -132,6 +131,7 @@ class IAResolveur extends IA {
         System.out.println("temps total moyen : " + temps_total_total_moyen + " ms");
         System.out.println("nb moyen instances : " + nb_instances_total_moyen);
         System.exit(0);
+         */
 
         for(int i=0; i<chemins.size(); i++){
             SequenceListe<Position> chemin = chemins.get(i);
@@ -163,7 +163,7 @@ class IAResolveur extends IA {
 
         ajouterInstance(posPousseur, caisses, instances);
         Instance instanceDepart = new Instance(posPousseur, caisses);
-        ArbreChemins arbreCheminsTete = new ArbreChemins(instanceDepart, null, null, 0);
+        ArbreChemins arbreCheminsTete = new ArbreChemins(instanceDepart, null, null, 1000);
 
         queue.insere(arbreCheminsTete);
 
@@ -182,12 +182,12 @@ class IAResolveur extends IA {
             //pour chaque chemin possible du pousseur à une caisse
             while(!cheminsPousseurCaisse.estVide()){
                 cheminCourant = cheminsPousseurCaisse.extrait();//on récupère le chemin courant SequenceListe<Position>
-                //System.out.println("chemin courant taille: " + cheminCourant.taille());
-                //System.out.println("instances taille: " + instances.size());
+                //System.out.println("premier chemin extrait: ");
+                //afficheChemin(cheminCourant);
 
                 posCaisseFutur = cheminCourant.extraitQueue();//dernière position du chemin courant (future position de la caisse déplacée)
                 posCaissePresent = cheminCourant.extraitQueue();//avant-dernière position du chemin courant (position de la caisse à déplacer)
-                posPousseur = cheminCourant.getQueue();//position du pousseur à côté de la caisse à déplacer
+                //posPousseur = cheminCourant.getQueue();//position du pousseur à côté de la caisse à déplacer
 
                 byte[][] caissesNew = pousserCaisse(posCaissePresent, posCaisseFutur, caisses);
                 Position posPousseurNew = posCaissePresent;//position de la caisse avant qu'elle soit poussée
@@ -213,15 +213,14 @@ class IAResolveur extends IA {
                         return cheminInverse;
                     }else{
                         ajouterInstance(posPousseurNew, caissesNew, instances);
-                        int poids = nb_caisses - nb_caisses_sur_but;
-                        int ancien_poids = arbreCheminsTete.getPoids();
-                        //System.out.println("poids: " + poids);
-                        //System.exit(0);
-                        ArbreChemins arbreEnfile = new ArbreChemins(instanceCourante, cheminCourant, arbreCheminsTete, poids);
-                        if(poids<ancien_poids) {
-                            queue.insere(arbreEnfile);
+                        int poids = cheminCourant.taille();//(int)(nb_caisses - nb_caisses_sur_but+(cheminCourant.taille()*0.8));
+                        if(estBut(posCaisseFutur) && !estBut(posCaissePresent)){
+                            poids = nb_caisses - nb_caisses_sur_but;
+                        }
+                        if(poids < arbreCheminsTete.getPoids()){
+                            queue.insere(new ArbreChemins(instanceCourante, cheminCourant, arbreCheminsTete, poids));
                         }else{
-                            queue.insereQueue(arbreEnfile);
+                            queue.insereQueue(new ArbreChemins(instanceCourante, cheminCourant, arbreCheminsTete, poids));
                         }
                     }
                 }
@@ -394,24 +393,6 @@ class IAResolveur extends IA {
             sequence.insere(chemin);
             chemin = new SequenceListe<>();
         }
-        /*
-        while(!sequence.estVide()){
-            SequenceListe<Position> chemin2 = sequence.extrait();
-            if(estBut(chemin2.getTete())) {
-                sequenceCheminsButs.insereQueue(chemin2);
-            }else{
-                sequenceChemins.insereQueue(chemin2);
-            }
-        }
-        while(!sequenceCheminsButs.estVide()){
-            SequenceListe<Position> chemin2 = sequenceCheminsButs.extraitTete();
-            sequenceFinale.insereQueue(chemin2);
-        }
-        while(!sequenceChemins.estVide()){
-            SequenceListe<Position> chemin2 = sequenceChemins.extraitTete();
-            sequenceFinale.insereQueue(chemin2);
-        }
-         */
         endTime = System.currentTimeMillis();
         duration += (endTime - startTime);
         nb_total_chemins += sequence.taille();
