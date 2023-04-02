@@ -483,7 +483,6 @@ class IAResolveur extends IA {
         }
         pCaisse = getPosCaisse(p.l, p.c-1, caisses);//si la caisse est à gauche du pousseur
         if(pCaisse != null) {
-            boolean a = estCaseBloquante_V2(pCaisse.l, pCaisse.c, pCaisse.l, pCaisse.c - 1, supprimeCaisse(pCaisse, caisses), p);
             if (!estCaseHorsMap(pCaisse.l, pCaisse.c - 1) && estCaseLibre(pCaisse.l, pCaisse.c - 1, caisses) && !estCaseBloquante_V2(pCaisse.l, pCaisse.c, pCaisse.l, pCaisse.c - 1, supprimeCaisse(pCaisse, caisses), p)) {
                 caisseDeplacee = new ArrayList<>();
                 caisseDeplacee.add(p);
@@ -944,18 +943,18 @@ class IAResolveur extends IA {
     }
 
     boolean pourra_bouger_vertical(int l,int c,byte[][] caisses){
-        return ((caisses[l-1][c]==VIDE||caisses[l-1][c]==CAISSE)&&(caisses[l+1][c]!=CAISSE_BLOQUEE&&carte[l+1][c]!=MUR))||((caisses[l+1][c]==VIDE||caisses[l+1][c]==CAISSE)&&(caisses[l-1][c]!=CAISSE_BLOQUEE&&carte[l-1][c]!=MUR));
+        return ((estCaseLibre(l-1,c,caisses)||caisses[l-1][c]==VIDE||caisses[l-1][c]==CAISSE)&&(caisses[l+1][c]!=CAISSE_BLOQUEE&&carte[l+1][c]!=MUR))||((estCaseLibre(l+1,c,caisses)||caisses[l+1][c]==VIDE||caisses[l+1][c]==CAISSE)&&(caisses[l-1][c]!=CAISSE_BLOQUEE&&carte[l-1][c]!=MUR));
     }
     boolean pourra_bouger_horizontal(int l,int c,byte[][] caisses){
-        return ((caisses[l][c-1]==VIDE||caisses[l][c-1]==CAISSE)&&(caisses[l][c+1]!=CAISSE_BLOQUEE&&carte[l][c+1]!=MUR))||((caisses[l][c+1]==VIDE||caisses[l][c+1]==CAISSE)&&(caisses[l][c-1]!=CAISSE_BLOQUEE&&carte[l][c-1]!=MUR));
+        return ((estCaseLibre(l,c-1,caisses)||caisses[l][c-1]==VIDE||caisses[l][c-1]==CAISSE)&&(caisses[l][c+1]!=CAISSE_BLOQUEE&&carte[l][c+1]!=MUR))||((estCaseLibre(l,c+1,caisses)||caisses[l][c+1]==VIDE||caisses[l][c+1]==CAISSE)&&(caisses[l][c-1]!=CAISSE_BLOQUEE&&carte[l][c-1]!=MUR));
     }
     boolean gestionPlusieurTemp(int l, int c,byte[][] caisses){
-        if(!aMur(l+1,c)&&!aMur(l+1,c-1)&&!aMur(l+1,c+1)&&estCaisseBloqueeTemp(l+1,c,caisses)&&(!aMurAutour(l+1,c)||((caisses[l+1][c+1]==VIDE || caisses[l+1][c+1]==CAISSE)&&(caisses[l+1][c-1]==VIDE || caisses[l+1][c-1]==CAISSE))||pourra_bouger_horizontal(l,c,caisses))) return false;
-        if(!aMur(l-1,c)&&!aMur(l-1,c-1)&&!aMur(l-1,c+1)&&estCaisseBloqueeTemp(l-1,c,caisses)&&(!aMurAutour(l-1,c)||((caisses[l-1][c+1]==VIDE || caisses[l-1][c+1]==CAISSE)&&(caisses[l-1][c-1]==VIDE || caisses[l-1][c-1]==CAISSE))||pourra_bouger_horizontal(l,c,caisses))) return false;
-        if(!aMur(l,c+1)&&!aMur(l-1,c+1)&&!aMur(l+1,c+1)&&estCaisseBloqueeTemp(l,c+1,caisses)&&(!aMurAutour(l,c+1)||((caisses[l-1][c+1]==VIDE || caisses[l-1][c+1]==CAISSE)&&(caisses[l+1][c+1]==VIDE || caisses[l+1][c+1]==CAISSE))||pourra_bouger_vertical(l,c,caisses))) return false;
-        if(!aMur(l,c-1)&&!aMur(l+1,c-1)&&!aMur(l-1,c-1)&&estCaisseBloqueeTemp(l,c-1,caisses)&&(!aMurAutour(l,c-1)||((caisses[l+1][c-1]==VIDE || caisses[l+1][c-1]==CAISSE)&&(caisses[l-1][c-1]==VIDE || caisses[l-1][c-1]==CAISSE))||pourra_bouger_vertical(l,c,caisses))) return false;
+        if(estCaisseBloqueeTemp(l+1,c,caisses)&&(!aMurAutour(l+1,c)||((caisses[l+1][c+1]==VIDE || caisses[l+1][c+1]==CAISSE)&&(caisses[l+1][c-1]==VIDE || caisses[l+1][c-1]==CAISSE))||pourra_bouger_horizontal(l,c,caisses))) return false;
+        if(estCaisseBloqueeTemp(l-1,c,caisses)&&(!aMurAutour(l-1,c)||((caisses[l-1][c+1]==VIDE || caisses[l-1][c+1]==CAISSE)&&(caisses[l-1][c-1]==VIDE || caisses[l-1][c-1]==CAISSE))||pourra_bouger_horizontal(l,c,caisses))) return false;
+        if(estCaisseBloqueeTemp(l,c+1,caisses)&&(!aMurAutour(l,c+1)||((caisses[l-1][c+1]==VIDE || caisses[l-1][c+1]==CAISSE)&&(caisses[l+1][c+1]==VIDE || caisses[l+1][c+1]==CAISSE))||pourra_bouger_vertical(l,c,caisses))) return false;
+        if(estCaisseBloqueeTemp(l,c-1,caisses)&&(!aMurAutour(l,c-1)||((caisses[l+1][c-1]==VIDE || caisses[l+1][c-1]==CAISSE)&&(caisses[l-1][c-1]==VIDE || caisses[l-1][c-1]==CAISSE))||pourra_bouger_vertical(l,c,caisses))) return false;
 
-        return estCaisseBloqueeTemp(l,c+1,caisses) || estCaisseBloqueeTemp(l,c-1,caisses) || estCaisseBloqueeTemp(l+1,c,caisses) || estCaisseBloqueeTemp(l-1,c,caisses); // || cases[l][c+1]==CAISSE_BLOQUEE || cases[l][c-1]==CAISSE_BLOQUEE || cases[l+1][c]==CAISSE_BLOQUEE || cases[l-1][c]==CAISSE_BLOQUEE;
+        return estCaisseBloqueeTemp(l,c+1,caisses) || estCaisseBloqueeTemp(l,c-1,caisses) || estCaisseBloqueeTemp(l+1,c,caisses) || estCaisseBloqueeTemp(l-1,c,caisses) || caisses[l][c+1]==CAISSE_BLOQUEE || caisses[l][c-1]==CAISSE_BLOQUEE || caisses[l+1][c]==CAISSE_BLOQUEE || caisses[l-1][c]==CAISSE_BLOQUEE;
     }
 
     public boolean estCaseDisponible(int l, int c,byte[][] caisses) {
