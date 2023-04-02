@@ -11,7 +11,7 @@ import java.util.*;
 import static Modele.Niveau.*;
 
 class IAResolveur extends IA {
-    private HashMap<Integer, byte[][]> instances;
+    private HashMap<BigInteger, byte[][]> instances;
     private int[][] carte;
     private byte[][] caisses;
     private Position posPousseur;
@@ -97,7 +97,7 @@ class IAResolveur extends IA {
         }
         chemins = calcul_chemin(posPousseur, caisses);
         System.out.println("chemins.size() : " + chemins.size());
- /*
+/*
         int taille_totale_file = 0;
         int duree_totale_Dijkstra = 0;
         int nb_fois_Dijkstra_total = 0;
@@ -111,7 +111,7 @@ class IAResolveur extends IA {
         double temps_total_total_moyen = 0.0;
         double nb_instances_total_moyen = 0.0;
 
-        double nb_tests = 10.0;
+        double nb_tests = 100.0;
         for(int i=0; i<nb_tests; i++) {
             startTime=0;endTime=0;duration=0;startTime_total=0;endTime_total=0;
             nb_total_chemins=0;nb_fois_Dijkstra=0;
@@ -205,7 +205,6 @@ class IAResolveur extends IA {
             while(!cheminsPousseurCaisse.estVide()){
 
                 cheminCourant = cheminsPousseurCaisse.extrait();//on récupère le chemin courant SequenceListe<Position>
-                //System.out.println("///////// taille : "+cheminCourant.taille()+" ///////////");
                 //cheminCourant = afficheChemin(cheminCourant);
 
                 int distanceParcouru = cheminCourant.taille();
@@ -218,14 +217,18 @@ class IAResolveur extends IA {
 
                 byte[][] caissesNew = pousserCaisse(posCaissePresent, posCaisseFutur, caisses);
                 Position posPousseurNew = posCaissePresent;//position de la caisse avant qu'elle soit poussée
-
+                System.out.println("Avant :");
+                System.out.println("position pousseur : "+posPousseurNew.affiche());
+                afficheCaisses(caissesNew);
                 if(!estInstance(posPousseurNew, caissesNew, instances)){
+                    System.out.println("Après :");
                     cheminCourant.insereQueue(posPousseurNew);//on ajoute la nouvelle position du pousseur après avoir poussé la caisse
                     instanceCourante = new Instance(posPousseurNew, caissesNew);
                     int nb_caisses_sur_but = nbCaissesSurBut(caissesNew);
-                    System.out.println("affichage caisses");
-                    System.out.println("position pousseur : "+posPousseurNew.affiche());
+                    //System.out.println("affichage caisses");
+                    System.out.println("position pousseur : "+posPousseurNew.affiche()+" +");
                     afficheCaisses(caissesNew);
+                    System.out.println("nb instances : " + nb_instances);
                     if(nb_caisses_sur_but == nb_caisses){
                         System.out.println("=========================== Toutes les caisses sont sur les buts ===========================");
                         arbreCourant = new ArbreChemins(instanceCourante, cheminCourant, arbreCheminsTete,0);
@@ -761,27 +764,63 @@ class IAResolveur extends IA {
         return caisses2;
     }
 
-    public void ajouterInstance(Position p, byte[][] caisses, HashMap<Integer, byte[][]> instances){
+    public void ajouterInstance(Position p, byte[][] caisses, HashMap<BigInteger, byte[][]> instances){
         byte[][] instanceCopie = copieByte(caisses);
         instanceCopie[p.getL()][p.getC()] = POUSSEUR ;
+        StringBuilder sb = new StringBuilder();
+        for(int i=0; i<instanceCopie.length; i++){
+            for(int j=0; j<instanceCopie[0].length; j++){
+                if(instanceCopie[i][j]==CAISSE){
+                    sb.append("1");
+                }else{
+                    if(instanceCopie[i][j]==POUSSEUR){
+                        sb.append("2");
+                    }else{
+                        sb.append("0");
+                    }
+                }
+            }
+        }
+        BigInteger cleInstance = new BigInteger(sb.toString(), 3);
 
-        int cleInstance = Arrays.deepHashCode(instanceCopie)+p.affiche().hashCode();
         if(!instances.containsKey(cleInstance)){
             instances.put(cleInstance, instanceCopie);
             nb_instances++;
         }
     }
 
-    public boolean estInstance(Position p, byte[][] caisses, HashMap<Integer, byte[][]> instances) {
+    public boolean estInstance(Position p, byte[][] caisses, HashMap<BigInteger, byte[][]> instances){
         byte[][] instanceCopie = copieByte(caisses);
         instanceCopie[p.getL()][p.getC()] = POUSSEUR;
+        StringBuilder sb = new StringBuilder();
+        for(int i=0; i<instanceCopie.length; i++){
+            for(int j=0; j<instanceCopie[0].length; j++){
+                if(instanceCopie[i][j]==CAISSE){
+                    sb.append("1");
+                }else{
+                    if(instanceCopie[i][j]==POUSSEUR){
+                        sb.append("2");
+                    }else{
+                        sb.append("0");
+                    }
+                }
+            }
+        }
+        BigInteger cleInstance = new BigInteger(sb.toString(), 3);
 
-        int cleInstance = Arrays.deepHashCode(instanceCopie)+p.affiche().hashCode();
         if(!instances.containsKey(cleInstance)){
             return false;
         }else{
             byte[][] instanceTrouvee = instances.get(cleInstance);
-            return Arrays.deepEquals(instanceCopie,instanceTrouvee);
+            for(int i=0; i<instanceCopie.length; i++){
+                for(int j=0; j<instanceCopie[0].length; j++){
+                    if(instanceCopie[i][j]!=instanceTrouvee[i][j]){
+                        return false;
+                    }
+                }
+            }
+            return true;
+            //return Arrays.deepEquals(instanceCopie,instanceTrouvee);
         }
     }
 

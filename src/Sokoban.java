@@ -55,26 +55,30 @@ public class Sokoban {
 
 		InputStream in;
 		in = Configuration.ouvre("Niveaux/niveaux.txt");
-
-
 /*
-		int nb_caisses = 20;
-		FAPListe<ArbreChemins> fap = new FAPListe<>();
-		int x=0; int y=0;
-		for(int i = 0; i < 7; i++) {
-			int nb_caisses_sur_buts = (int)(Math.random() * 19) + 1;
-			int poids = nb_caisses - nb_caisses_sur_buts;
-			ArbreChemins arbre = new ArbreChemins(null, null, null, poids);
-			System.out.println("insertion d'un arbre de poids " + poids + " = 20 - " + nb_caisses_sur_buts);
-			fap.insere(arbre);
+		int[][] instanceCopie = new int[10][10];
+		instanceCopie[3][7] = 1;
+		instanceCopie[3][6] = 1;
+		instanceCopie[4][1] = 2;
+		StringBuilder sb = new StringBuilder();
+		for(int i=0; i<instanceCopie.length; i++){
+			for(int j=0; j<instanceCopie[0].length; j++){
+				if(instanceCopie[i][j]==1){
+					sb.append("1");
+				}else{
+					if(instanceCopie[i][j]==2){
+						sb.append("2");
+					}else{
+						sb.append("0");
+					}
+				}
+			}
 		}
-		while(!fap.estVide()){
-			ArbreChemins arbre2 = fap.extrait();
-			System.out.println(arbre2.getPoids());
-		}
-		System.exit(0);
+		System.out.println(sb);
+		BigInteger bigInteger = new BigInteger(sb.toString(), 3);
+		System.out.println(bigInteger);
+		System.out.println(bigInteger.hashCode());
 */
-
 		LecteurNiveaux l = new LecteurNiveaux(in);
 		Jeu j = new Jeu(l);
 		CollecteurEvenements control = new ControleurMediateur(j);
