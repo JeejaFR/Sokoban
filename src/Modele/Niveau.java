@@ -480,10 +480,10 @@ public class Niveau extends Historique<Coup> implements Cloneable {
 	}
 
 	boolean pourra_bouger_vertical(int l,int c){
-		return ((cases[l-1][c]==VIDE||cases[l-1][c]==CAISSE)&&(cases[l+1][c]!=CAISSE_BLOQUEE&&cases[l+1][c]!=MUR))||((cases[l+1][c]==VIDE||cases[l+1][c]==CAISSE)&&(cases[l-1][c]!=CAISSE_BLOQUEE&&cases[l-1][c]!=MUR));
+		return ((estCaseLibre(l-1,c)||cases[l-1][c]==VIDE||cases[l-1][c]==CAISSE)&&(cases[l+1][c]!=CAISSE_BLOQUEE&&cases[l+1][c]!=MUR))||((estCaseLibre(l+1,c)||cases[l+1][c]==VIDE||cases[l+1][c]==CAISSE)&&(cases[l-1][c]!=CAISSE_BLOQUEE&&cases[l-1][c]!=MUR));
 	}
 	boolean pourra_bouger_horizontal(int l,int c){
-		return ((cases[l][c-1]==VIDE||cases[l][c-1]==CAISSE)&&(cases[l][c+1]!=CAISSE_BLOQUEE&&cases[l][c+1]!=MUR))||((cases[l][c+1]==VIDE||cases[l][c+1]==CAISSE)&&(cases[l][c-1]!=CAISSE_BLOQUEE&&cases[l][c-1]!=MUR));
+		return ((estCaseLibre(l,c-1)||cases[l][c-1]==VIDE||cases[l][c-1]==CAISSE)&&(cases[l][c+1]!=CAISSE_BLOQUEE&&cases[l][c+1]!=MUR))||((estCaseLibre(l,c+1)||cases[l][c+1]==VIDE||cases[l][c+1]==CAISSE)&&(cases[l][c-1]!=CAISSE_BLOQUEE&&cases[l][c-1]!=MUR));
 	}
 	boolean gestionPlusieurTemp(int l, int c){
 		if(estCaisseBloqueeTemp(l+1,c)&&(!aMurAutour(l+1,c)||((cases[l+1][c+1]==VIDE || cases[l+1][c+1]==CAISSE)&&(cases[l+1][c-1]==VIDE || cases[l+1][c-1]==CAISSE))||pourra_bouger_horizontal(l,c))) return false;
@@ -494,8 +494,33 @@ public class Niveau extends Historique<Coup> implements Cloneable {
 		return estCaisseBloqueeTemp(l,c+1) || estCaisseBloqueeTemp(l,c-1) || estCaisseBloqueeTemp(l+1,c) || estCaisseBloqueeTemp(l-1,c) || cases[l][c+1]==CAISSE_BLOQUEE || cases[l][c-1]==CAISSE_BLOQUEE || cases[l+1][c]==CAISSE_BLOQUEE || cases[l-1][c]==CAISSE_BLOQUEE;
 	}
 
+	void actualiseUneCaisseSpecial(int c,int l){
+		if(estCaseHorsMap(l,c)) return;
+		if (aCaisse(l,c)){
+			if(cases[l][c]==CAISSE_BLOQUEE) return;
+			if(aBut(l,c)){
+				return;
+			}
+			if (estCaisseBloqueeTemp(l,c)) {
+				cases[l][c] = CAISSE_BLOQUEE_TEMP;
+				return;
+			}
+			cases[l][c] = CAISSE;
+		}
+	}
+
+	boolean estCaseHorsMap(int l, int c){
+		return (l < 0 || l > this.l-1 || c < 0 || c > this.c-1);
+	}
+	void actualiseCoteSpecial(int l,int c){
+		if(pousseurL+1!=l) actualiseUneCaisseSpecial(pousseurL+1,pousseurC);
+		if(pousseurL-1!=l) actualiseUneCaisseSpecial(pousseurL-1,pousseurC);
+		if(pousseurC+1!=c) actualiseUneCaisseSpecial(pousseurL,pousseurC+1);
+		if(pousseurC-1!=c) actualiseUneCaisseSpecial(pousseurL,pousseurC-1);
+	}
 
 	boolean estCaisseBloquee(int l, int c){
+		actualiseCoteSpecial(l,c);
 		if(estBloqueeEnCarre(l,c)) return true;
 		if(aMur(l,c) || estCaseLibre(l,c)) return false;
 		if(!aBut(l,c)) {
@@ -574,9 +599,9 @@ public class Niveau extends Historique<Coup> implements Cloneable {
 	}
 	void actualiseCaisses(int l, int c){
 		actualiseUneCaisse(l+1,c);
-		actualiseUneCaisse(l-1,c);
-		actualiseUneCaisse(l,c+1);
-		actualiseUneCaisse(l,c-1);
+		actualiseCaisses(l+1,c);
+		actualiseCaisses(l+1,c);
+		actualiseCaisses(l+1,c);
 	}
 
 }
