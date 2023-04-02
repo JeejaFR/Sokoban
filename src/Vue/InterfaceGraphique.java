@@ -39,7 +39,7 @@ public class InterfaceGraphique implements Runnable, InterfaceUtilisateur, Obser
 	JFrame frame;
 	boolean maximized;
 	NiveauGraphique niv;
-	JLabel nbPas, nbPoussees;
+	JLabel nbPas, nbPoussees, nom, caissesRestantes;
 	JToggleButton IA, animation;
 
 	InterfaceGraphique(Jeu jeu, CollecteurEvenements c) {
@@ -93,15 +93,24 @@ public class InterfaceGraphique implements Runnable, InterfaceUtilisateur, Obser
 
 	public void run() {
 		// Eléments de l'interface
-		frame = new JFrame("Ma fenetre a moi");
+		frame = new JFrame("Sokoban");
 		niv = new NiveauGraphique(j);
 
 		// Texte et contrôles à droite de la fenêtre
 		Box boiteTexte = Box.createVerticalBox();
 
 		// Titre
-		boiteTexte.add(creerLabel("Sokoban"));
-		boiteTexte.add(creerLabel("Caisses restantes : " + (j.niveau().getNbButs()-j.niveau().getNbCaissesSurBut())));
+		JLabel titre = creerLabel("Sokoban");
+		titre.setFont(new Font("Arial", Font.BOLD, 20));
+		boiteTexte.add(titre);
+		nom = creerLabel("Niveau " + j.niveau().nom());
+		//modifie la couleur de nom en bleu
+		nom.setForeground(Color.BLUE);
+		nom.setFont(new Font("Arial", Font.BOLD, 16));
+		boiteTexte.add(nom);
+		caissesRestantes = creerLabel("Caisses restantes : " + (j.niveau().getNbButs()-j.niveau().getNbCaissesSurBut()));
+		caissesRestantes.setFont(new Font("Arial", Font.BOLD, 16));
+		boiteTexte.add(caissesRestantes);
 		// Remplissage de l'espace entre le titre et les boutons
 		boiteTexte.add(Box.createGlue());
 
@@ -186,5 +195,7 @@ public class InterfaceGraphique implements Runnable, InterfaceUtilisateur, Obser
 	public void miseAJour() {
 		nbPas.setText("Pas : " + j.niveau().nbPas());
 		nbPoussees.setText("Poussées : " + j.niveau().nbPoussees());
+		caissesRestantes.setText("Caisses restantes : " + (j.niveau().getNbButs()-j.niveau().getNbCaissesSurBut()));
+		nom.setText("Niveau " + j.niveau().nom());
 	}
 }

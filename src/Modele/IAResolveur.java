@@ -85,7 +85,7 @@ class IAResolveur extends IA {
         Sequence<Coup> resultat = Configuration.nouvelleSequence();
         Coup coup = null;
         ArrayList<SequenceListe<Position>> chemins = null;
-
+/*
         instances = new HashMap<>();
         nb_instances = 0;
         nb_buts = 0;
@@ -97,7 +97,7 @@ class IAResolveur extends IA {
         }
         chemins = calcul_chemin(posPousseur, caisses);
         System.out.println("chemins.size() : " + chemins.size());
-/*
+*/
         int taille_totale_file = 0;
         int duree_totale_Dijkstra = 0;
         int nb_fois_Dijkstra_total = 0;
@@ -152,7 +152,7 @@ class IAResolveur extends IA {
         System.out.println("temps total moyen : " + temps_total_total_moyen + " ms");
         System.out.println("nb moyen instances : " + nb_instances_total_moyen);
         System.exit(0);
-*/
+
         for(int i=0; i<chemins.size(); i++){
             SequenceListe<Position> chemin = chemins.get(i);
             chemin.extraitTete();//on enlève la position du pousseur puisqu'il est déjà à cette position
@@ -217,20 +217,20 @@ class IAResolveur extends IA {
 
                 byte[][] caissesNew = pousserCaisse(posCaissePresent, posCaisseFutur, caisses);
                 Position posPousseurNew = posCaissePresent;//position de la caisse avant qu'elle soit poussée
-                System.out.println("Avant :");
-                System.out.println("position pousseur : "+posPousseurNew.affiche());
-                afficheCaisses(caissesNew);
+                //System.out.println("Avant :");
+                //System.out.println("position pousseur : "+posPousseurNew.affiche());
+                //afficheCaisses(caissesNew);
                 if(!estInstance(posPousseurNew, caissesNew, instances)){
-                    System.out.println("Après :");
+                    //System.out.println("Après :");
                     cheminCourant.insereQueue(posPousseurNew);//on ajoute la nouvelle position du pousseur après avoir poussé la caisse
                     instanceCourante = new Instance(posPousseurNew, caissesNew);
                     int nb_caisses_sur_but = nbCaissesSurBut(caissesNew);
                     //System.out.println("affichage caisses");
-                    System.out.println("position pousseur : "+posPousseurNew.affiche()+" +");
-                    afficheCaisses(caissesNew);
-                    System.out.println("nb instances : " + nb_instances);
+                    //System.out.println("position pousseur : "+posPousseurNew.affiche()+" +");
+                    //afficheCaisses(caissesNew);
+                    //System.out.println("nb instances : " + nb_instances);
                     if(nb_caisses_sur_but == nb_caisses){
-                        System.out.println("=========================== Toutes les caisses sont sur les buts ===========================");
+                        //System.out.println("=========================== Toutes les caisses sont sur les buts ===========================");
                         arbreCourant = new ArbreChemins(instanceCourante, cheminCourant, arbreCheminsTete,0);
                         while(!instanceCourante.estInstance(instanceDepart)){
                             chemin.add(cheminCourant);
@@ -811,16 +811,7 @@ class IAResolveur extends IA {
         if(!instances.containsKey(cleInstance)){
             return false;
         }else{
-            byte[][] instanceTrouvee = instances.get(cleInstance);
-            for(int i=0; i<instanceCopie.length; i++){
-                for(int j=0; j<instanceCopie[0].length; j++){
-                    if(instanceCopie[i][j]!=instanceTrouvee[i][j]){
-                        return false;
-                    }
-                }
-            }
-            return true;
-            //return Arrays.deepEquals(instanceCopie,instanceTrouvee);
+            return Arrays.deepEquals(instanceCopie,instances.get(cleInstance));
         }
     }
 

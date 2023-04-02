@@ -198,7 +198,7 @@ public class Niveau extends Historique<Coup> implements Cloneable {
 		return c;
 	}
 
-	String nom() {
+	public String nom() {
 		return nom;
 	}
 
