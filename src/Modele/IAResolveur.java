@@ -45,7 +45,7 @@ class IAResolveur extends IA {
                 }
                 else if((cases[i][j] & BUT) != 0){
                     carte[i - 1][j - 1] = BUT;
-                    if ((cases[i][j] & CAISSE) != 0){
+                    if (((cases[i][j] & CAISSE) != 0) || ((cases[i][j] & CAISSE_BLOQUEE_TEMP ) != 0)){
                         this.nb_caisses++;
                         this.caisses[i - 1][j - 1] = CAISSE;
                     }
@@ -54,7 +54,7 @@ class IAResolveur extends IA {
                         posPousseur = new Position(i - 1, j - 1);
                     }
                 }
-                else if ((cases[i][j] & CAISSE) != 0) {
+                else if (((cases[i][j] & CAISSE ) != 0) || ((cases[i][j] & CAISSE_BLOQUEE_TEMP ) != 0)) {
                     carte[i - 1][j - 1] = VIDE;
                     this.nb_caisses++;
                     this.caisses[i - 1][j - 1] = CAISSE;
@@ -65,6 +65,7 @@ class IAResolveur extends IA {
                 }
             }
         }
+        System.out.println("nb_caisses : " + nb_caisses);
     }
 
     @Override
@@ -482,6 +483,7 @@ class IAResolveur extends IA {
         }
         pCaisse = getPosCaisse(p.l, p.c-1, caisses);//si la caisse est à gauche du pousseur
         if(pCaisse != null) {
+            boolean a = estCaseBloquante_V2(pCaisse.l, pCaisse.c, pCaisse.l, pCaisse.c - 1, supprimeCaisse(pCaisse, caisses), p);
             if (!estCaseHorsMap(pCaisse.l, pCaisse.c - 1) && estCaseLibre(pCaisse.l, pCaisse.c - 1, caisses) && !estCaseBloquante_V2(pCaisse.l, pCaisse.c, pCaisse.l, pCaisse.c - 1, supprimeCaisse(pCaisse, caisses), p)) {
                 caisseDeplacee = new ArrayList<>();
                 caisseDeplacee.add(p);
