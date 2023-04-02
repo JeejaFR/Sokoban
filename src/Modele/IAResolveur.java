@@ -50,6 +50,9 @@ class IAResolveur extends IA {
                         this.caisses[i - 1][j - 1] = CAISSE;
                     }
                     this.nb_buts++;
+                    if((cases[i][j] & POUSSEUR) != 0) {
+                        posPousseur = new Position(i - 1, j - 1);
+                    }
                 }
                 else if ((cases[i][j] & CAISSE) != 0) {
                     carte[i - 1][j - 1] = VIDE;
@@ -221,6 +224,7 @@ class IAResolveur extends IA {
                     instanceCourante = new Instance(posPousseurNew, caissesNew);
                     int nb_caisses_sur_but = nbCaissesSurBut(caissesNew);
                     System.out.println("affichage caisses");
+                    System.out.println("position pousseur : "+posPousseurNew.affiche());
                     afficheCaisses(caissesNew);
                     if(nb_caisses_sur_but == nb_caisses){
                         System.out.println("=========================== Toutes les caisses sont sur les buts ===========================");
