@@ -35,6 +35,7 @@ import Vue.CollecteurEvenements;
 import Vue.InterfaceGraphique;
 import Vue.InterfaceTextuelle;
 import java.io.InputStream;
+import java.math.BigInteger;
 import java.util.ArrayList;
 
 public class Sokoban {
@@ -46,12 +47,16 @@ public class Sokoban {
 		}
 		System.out.println("----------------");
 	}
+
+
 	final static String typeInterface = Configuration.lisChaine("Interface");
 
 	public static void main(String[] args) {
 
 		InputStream in;
 		in = Configuration.ouvre("Niveaux/niveaux.txt");
+
+
 /*
 		int nb_caisses = 20;
 		FAPListe<ArbreChemins> fap = new FAPListe<>();
@@ -69,6 +74,7 @@ public class Sokoban {
 		}
 		System.exit(0);
 */
+
 		LecteurNiveaux l = new LecteurNiveaux(in);
 		Jeu j = new Jeu(l);
 		CollecteurEvenements control = new ControleurMediateur(j);
