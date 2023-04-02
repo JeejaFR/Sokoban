@@ -82,7 +82,7 @@ class IAResolveur extends IA {
         Sequence<Coup> resultat = Configuration.nouvelleSequence();
         Coup coup = null;
         ArrayList<SequenceListe<Position>> chemins = null;
-/*
+
         instances = new HashMap<>();
         nb_instances = 0;
         nb_buts = 0;
@@ -94,7 +94,7 @@ class IAResolveur extends IA {
         }
         chemins = calcul_chemin(posPousseur, caisses);
         System.out.println("chemins.size() : " + chemins.size());
- */
+ /*
         int taille_totale_file = 0;
         int duree_totale_Dijkstra = 0;
         int nb_fois_Dijkstra_total = 0;
@@ -149,7 +149,7 @@ class IAResolveur extends IA {
         System.out.println("temps total moyen : " + temps_total_total_moyen + " ms");
         System.out.println("nb moyen instances : " + nb_instances_total_moyen);
         System.exit(0);
-
+*/
         for(int i=0; i<chemins.size(); i++){
             SequenceListe<Position> chemin = chemins.get(i);
             chemin.extraitTete();//on enlève la position du pousseur puisqu'il est déjà à cette position
@@ -220,8 +220,8 @@ class IAResolveur extends IA {
                     cheminCourant.insereQueue(posPousseurNew);//on ajoute la nouvelle position du pousseur après avoir poussé la caisse
                     instanceCourante = new Instance(posPousseurNew, caissesNew);
                     int nb_caisses_sur_but = nbCaissesSurBut(caissesNew);
-                    //System.out.println("affichage caisses");
-                    //afficheCaisses(caissesNew);
+                    System.out.println("affichage caisses");
+                    afficheCaisses(caissesNew);
                     if(nb_caisses_sur_but == nb_caisses){
                         System.out.println("=========================== Toutes les caisses sont sur les buts ===========================");
                         arbreCourant = new ArbreChemins(instanceCourante, cheminCourant, arbreCheminsTete,0);
@@ -893,6 +893,11 @@ class IAResolveur extends IA {
         i=0;
         return gauche||droite||bas||haut;
     }
+
+    boolean aCaisseNonBloquante(int l,int c,byte[][] caisses){
+        return (caisses[l][c]==CAISSE || caisses[l][c]==12 || caisses[l][c]==CAISSE_BLOQUEE_TEMP);
+    }
+
     boolean bloqueeVerticalDroit(int l,int c, int nord, byte[][] caisses){
         if(aAccesBut(l,c,caisses)) return false;
         if(aMur(l,c)) return true;
@@ -903,7 +908,7 @@ class IAResolveur extends IA {
                 if(estCaseHorsMap(l-1,c+i)){
                     if(estBut(new Position(l,c+i)) && carte[l][c-1]!=MUR && carte[l+1][c+i]!=MUR && caisses[l][c+i] != CAISSE) return false;
                 }else{
-                    if((estCaseLibre(l-1,c+i,caisses)|| estBut(new Position(l,c+i))||caisses[l-1][c+i]==CAISSE)&& carte[l][c-1]!=MUR && carte[l+1][c+i]!=MUR && caisses[l][c+i] != CAISSE) return false;
+                    if((estCaseLibre(l-1,c+i,caisses)|| estBut(new Position(l,c+i))||aCaisseNonBloquante(l-1,c+i,caisses))&& carte[l][c-1]!=MUR && carte[l+1][c+i]!=MUR && caisses[l][c+i] != CAISSE) return false;
                 }
                 i++;
             }
@@ -915,7 +920,7 @@ class IAResolveur extends IA {
                     if(estBut(new Position(l,c+i)) && carte[l][c-1]!=MUR && carte[l-1][c+i]!=MUR && caisses[l][c+i] != CAISSE) return false;
                 }
                 else{
-                    if((estCaseLibre(l+1,c+i,caisses)|| estBut(new Position(l,c+i))||caisses[l+1][c+i]==CAISSE)&& carte[l][c-1]!=MUR && carte[l-1][c+i]!=MUR && caisses[l][c+i] != CAISSE) return false;
+                    if((estCaseLibre(l+1,c+i,caisses)|| estBut(new Position(l,c+i))||aCaisseNonBloquante(l+1,c+i,caisses))&& carte[l][c-1]!=MUR && carte[l-1][c+i]!=MUR && caisses[l][c+i] != CAISSE) return false;
                 }
                 i++;
             }
@@ -932,7 +937,7 @@ class IAResolveur extends IA {
                 if(estCaseHorsMap(l-1,c-i)){
                     if(estBut(new Position(l,c-i)) && carte[l][c+1]!=MUR && carte[l+1][c-i]!=MUR && caisses[l][c-i] != CAISSE) return false;
                 }else{
-                    if((estCaseLibre(l-1,c-i,caisses)|| estBut(new Position(l,c-i))||caisses[l-1][c-i]==CAISSE)&& carte[l][c+1]!=MUR && carte[l+1][c-i]!=MUR && caisses[l][c-i] != CAISSE) return false;
+                    if((estCaseLibre(l-1,c-i,caisses)|| estBut(new Position(l,c-i))||aCaisseNonBloquante(l-1,c-i,caisses))&& carte[l][c+1]!=MUR && carte[l+1][c-i]!=MUR && caisses[l][c-i] != CAISSE) return false;
                 }
                 i++;
             }
@@ -943,7 +948,7 @@ class IAResolveur extends IA {
                 if(estCaseHorsMap(l+1,c-i)){
                     if(estBut(new Position(l,c-i)) && carte[l][c+1]!=MUR && carte[l-1][c-i]!=MUR && caisses[l][c-i] != CAISSE) return false;
                 }else{
-                    if((estCaseLibre(l+1,c-i,caisses) || estBut(new Position(l,c-i))||caisses[l+1][c-i]==CAISSE)&& carte[l][c+1]!=MUR && carte[l-1][c-i]!=MUR && caisses[l][c-i] != CAISSE) return false;
+                    if((estCaseLibre(l+1,c-i,caisses) || estBut(new Position(l,c-i))||aCaisseNonBloquante(l+1,c-i,caisses))&& carte[l][c+1]!=MUR && carte[l-1][c-i]!=MUR && caisses[l][c-i] != CAISSE) return false;
                 }
                 i++;
             }
@@ -960,7 +965,7 @@ class IAResolveur extends IA {
                 if(estCaseHorsMap(l-i,c-1)){
                     if(estBut(new Position(l-i,c)) && carte[l+1][c]!=MUR && carte[l-i][c+1]!=MUR && caisses[l-i][c] != CAISSE) return false;
                 }else{
-                    if((estCaseLibre(l-i,c-1,caisses)||estBut(new Position(l-i,c))||caisses[l-i][c-1]==CAISSE) && carte[l+1][c]!=MUR && carte[l-i][c+1]!=MUR && caisses[l-i][c] != CAISSE) return false;
+                    if((estCaseLibre(l-i,c-1,caisses)||estBut(new Position(l-i,c))||aCaisseNonBloquante(l-i,c-1,caisses)) && carte[l+1][c]!=MUR && carte[l-i][c+1]!=MUR && caisses[l-i][c] != CAISSE) return false;
                 }
                 i++;
             }
@@ -971,7 +976,7 @@ class IAResolveur extends IA {
                 if(estCaseHorsMap(l-i,c+1)){
                     if(estBut(new Position(l-i,c)) && carte[l+1][c]!=MUR && carte[l-i][c-1]!=MUR && caisses[l-i][c] != CAISSE) return false;
                 }else{
-                    if((estCaseLibre(l-i,c+1,caisses) || estBut(new Position(l-i,c))||caisses[l-i][c+1]==CAISSE)&& carte[l+1][c]!=MUR && carte[l-i][c-1]!=MUR && caisses[l-i][c] != CAISSE) return false;
+                    if((estCaseLibre(l-i,c+1,caisses) || estBut(new Position(l-i,c))||aCaisseNonBloquante(l-i,c+1,caisses))&& carte[l+1][c]!=MUR && carte[l-i][c-1]!=MUR && caisses[l-i][c] != CAISSE) return false;
                 }
                 i++;
             }
@@ -989,7 +994,7 @@ class IAResolveur extends IA {
                     if(estBut(new Position(l+i,c)) && carte[l-1][c]!=MUR && carte[l+i][c+1]!=MUR && caisses[l+i][c] != CAISSE) return false;
                 }
                 else{
-                    if((estCaseLibre(l+i,c-1,caisses) || estBut(new Position(l+i,c))||caisses[l+i][c-1]==CAISSE)&& carte[l-1][c]!=MUR && carte[l+i][c+1]!=MUR && caisses[l+i][c] != CAISSE) return false;
+                    if((estCaseLibre(l+i,c-1,caisses) || estBut(new Position(l+i,c))||aCaisseNonBloquante(l+i,c-1,caisses))&& carte[l-1][c]!=MUR && carte[l+i][c+1]!=MUR && caisses[l+i][c] != CAISSE) return false;
                 }
 
                 i++;
@@ -1001,7 +1006,7 @@ class IAResolveur extends IA {
                 if(estCaseHorsMap(l+i,c+1)){
                     if(estBut(new Position(l+i,c)) && carte[l-1][c]!=MUR && carte[l+i][c-1]!=MUR && caisses[l+i][c] != CAISSE) return false;
                 }else{
-                    if((estCaseLibre(l+i,c+1,caisses) || estBut(new Position(l+i,c))||caisses[l+i][c+1]==CAISSE)&& carte[l-1][c]!=MUR && carte[l+i][c-1]!=MUR && caisses[l+i][c] != CAISSE) return false;
+                    if((estCaseLibre(l+i,c+1,caisses) || estBut(new Position(l+i,c))||aCaisseNonBloquante(l+i,c+1,caisses))&& carte[l-1][c]!=MUR && carte[l+i][c-1]!=MUR && caisses[l+i][c] != CAISSE) return false;
                 }
                 i++;
             }
@@ -1024,7 +1029,25 @@ class IAResolveur extends IA {
         return estCaisseBloqueeTemp(l,c+1,caisses) || estCaisseBloqueeTemp(l,c-1,caisses) || estCaisseBloqueeTemp(l+1,c,caisses) || estCaisseBloqueeTemp(l-1,c,caisses); // || cases[l][c+1]==CAISSE_BLOQUEE || cases[l][c-1]==CAISSE_BLOQUEE || cases[l+1][c]==CAISSE_BLOQUEE || cases[l-1][c]==CAISSE_BLOQUEE;
     }
 
+    public boolean estCaseDisponible(int l, int c,byte[][] caisses) {
+        if(estCaseHorsMap(l,c)) return false;
+        return (caisses[l][c] & (MUR | CAISSE | CAISSE_BLOQUEE_TEMP | CAISSE_BLOQUEE)) == 0;
+    }
+    boolean estBloqueeEnCarre(int l,int c,byte[][] caisses){
+        //caisse en haut à droite
+        if(!estCaseDisponible(l+1,c,caisses)&&!estCaseDisponible(l+1,c-1,caisses)&&!estCaseDisponible(l,c-1,caisses)) return true;
+        //caisse en bas à droite
+        if(!estCaseDisponible(l-1,c,caisses)&&!estCaseDisponible(l-1,c-1,caisses)&&!estCaseDisponible(l,c-1,caisses)) return true;
+        //caisse en haut à gauche
+        if(!estCaseDisponible(l+1,c,caisses)&&!estCaseDisponible(l+1,c+1,caisses)&&!estCaseDisponible(l,c+1,caisses)) return true;
+        //caisse en bas à gauche
+        if(!estCaseDisponible(l-1,c,caisses)&&!estCaseDisponible(l-1,c+1,caisses)&&!estCaseDisponible(l,c+1,caisses)) return true;
+
+        return false;
+    }
+
     boolean estCaisseBloquee(int l, int c,byte[][] caisses){
+        if(estBloqueeEnCarre(l,c,caisses)) return true;
         if(aMur(l,c) || estCaseLibre(l,c,caisses)) return false;
         if(!estBut(new Position(l,c))) {
             // CAS CAISSE TEMPORAIRE
