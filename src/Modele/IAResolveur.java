@@ -453,7 +453,7 @@ class IAResolveur extends IA {
         Position pCaisse;
         pCaisse = getPosCaisse(p.l+1, p.c, caisses);//si la caisse est en-dessous du pousseur
         if(pCaisse != null){
-            if(!estCaseHorsMap(pCaisse.l+1, pCaisse.c) && estCaseLibre(pCaisse.l+1, pCaisse.c, caisses) && !estCaseBloquante_V2(pCaisse.l,pCaisse.c,pCaisse.l+1, pCaisse.c, supprimeCaisse(pCaisse, caisses))){
+            if(!estCaseHorsMap(pCaisse.l+1, pCaisse.c) && estCaseLibre(pCaisse.l+1, pCaisse.c, caisses) && !estCaseBloquante_V2(pCaisse.l,pCaisse.c,pCaisse.l+1, pCaisse.c, supprimeCaisse(pCaisse, caisses),p)){
                 caisseDeplacee.add(p);
                 caisseDeplacee.add(pCaisse);
                 caisseDeplacee.add(new Position(pCaisse.l+1, pCaisse.c));
@@ -462,8 +462,8 @@ class IAResolveur extends IA {
         }
         pCaisse = getPosCaisse(p.l-1, p.c, caisses);//si la caisse est au-dessus du pousseur
         if(pCaisse != null){
-            boolean bloquante_dessus = estCaseBloquante_V2(pCaisse.l,pCaisse.c,pCaisse.l-1, pCaisse.c, supprimeCaisse(pCaisse, caisses));
-            if(!estCaseHorsMap(pCaisse.l-1, pCaisse.c) && estCaseLibre(pCaisse.l-1, pCaisse.c, caisses) && !estCaseBloquante_V2(pCaisse.l,pCaisse.c,pCaisse.l-1, pCaisse.c, supprimeCaisse(pCaisse, caisses))){
+            boolean bloquante_dessus = estCaseBloquante_V2(pCaisse.l,pCaisse.c,pCaisse.l-1, pCaisse.c, supprimeCaisse(pCaisse, caisses),p);
+            if(!estCaseHorsMap(pCaisse.l-1, pCaisse.c) && estCaseLibre(pCaisse.l-1, pCaisse.c, caisses) && !estCaseBloquante_V2(pCaisse.l,pCaisse.c,pCaisse.l-1, pCaisse.c, supprimeCaisse(pCaisse, caisses),p)){
                 caisseDeplacee.clear();
                 caisseDeplacee.add(p);
                 caisseDeplacee.add(pCaisse);
@@ -473,7 +473,7 @@ class IAResolveur extends IA {
         }
         pCaisse = getPosCaisse(p.l, p.c+1, caisses);//si la caisse est à droite du pousseur
         if(pCaisse != null) {
-            if (!estCaseHorsMap(pCaisse.l, pCaisse.c + 1) && estCaseLibre(pCaisse.l, pCaisse.c + 1, caisses) && !estCaseBloquante_V2(pCaisse.l, pCaisse.c, pCaisse.l, pCaisse.c + 1, supprimeCaisse(pCaisse, caisses))) {
+            if (!estCaseHorsMap(pCaisse.l, pCaisse.c + 1) && estCaseLibre(pCaisse.l, pCaisse.c + 1, caisses) && !estCaseBloquante_V2(pCaisse.l, pCaisse.c, pCaisse.l, pCaisse.c + 1, supprimeCaisse(pCaisse, caisses),p)) {
                 caisseDeplacee.clear();
                 caisseDeplacee.add(p);
                 caisseDeplacee.add(pCaisse);
@@ -483,7 +483,7 @@ class IAResolveur extends IA {
         }
         pCaisse = getPosCaisse(p.l, p.c-1, caisses);//si la caisse est à gauche du pousseur
         if(pCaisse != null) {
-            if (!estCaseHorsMap(pCaisse.l, pCaisse.c - 1) && estCaseLibre(pCaisse.l, pCaisse.c - 1, caisses) && !estCaseBloquante_V2(pCaisse.l, pCaisse.c, pCaisse.l, pCaisse.c - 1, supprimeCaisse(pCaisse, caisses))) {
+            if (!estCaseHorsMap(pCaisse.l, pCaisse.c - 1) && estCaseLibre(pCaisse.l, pCaisse.c - 1, caisses) && !estCaseBloquante_V2(pCaisse.l, pCaisse.c, pCaisse.l, pCaisse.c - 1, supprimeCaisse(pCaisse, caisses),p)) {
                 caisseDeplacee.clear();
                 caisseDeplacee.add(p);
                 caisseDeplacee.add(pCaisse);
@@ -493,7 +493,7 @@ class IAResolveur extends IA {
         }
         return caissesDep;
     }
-
+    /*
     public boolean estAdjacentCaisse(PositionPoids p, byte[][] caisses){
         Position pCaisse;
         pCaisse = getPosCaisse(p.l+1, p.c, caisses);//si la caisse est en-dessous du pousseur
@@ -540,7 +540,7 @@ class IAResolveur extends IA {
             }
         }
         return false;
-    }
+    }*/
 
     private byte[][] supprimeCaisse(Position pCaisse, byte[][] caisses) {
         byte [][] caisses2 = copieByte(caisses);
@@ -974,7 +974,29 @@ class IAResolveur extends IA {
         return false;
     }
 
-    boolean estCaisseBloquee(int l, int c,byte[][] caisses){
+    void actualiseUneCaisseSpecial(int c,int l,byte[][] caisses){
+        if(estCaseHorsMap(l,c)) return;
+        if (aCaisse(l,c,caisses)){
+            if(caisses[l][c]==CAISSE_BLOQUEE) return;
+            if(estBut(new Position(l,c))){
+                return;
+            }
+            if (estCaisseBloqueeTemp(l,c,caisses)) {
+                caisses[l][c] = CAISSE_BLOQUEE_TEMP;
+                return;
+            }
+            caisses[l][c] = CAISSE;
+        }
+    }
+    void actualiseCoteSpecial(int l,int c,byte[][] caisses,Position sokoban_pos){
+        if(sokoban_pos.l+1!=l) actualiseUneCaisseSpecial(sokoban_pos.l+1,sokoban_pos.c,caisses);
+        if(sokoban_pos.l-1!=l) actualiseUneCaisseSpecial(sokoban_pos.l-1,sokoban_pos.c,caisses);
+        if(sokoban_pos.c+1!=c) actualiseUneCaisseSpecial(sokoban_pos.l,sokoban_pos.c+1,caisses);
+        if(sokoban_pos.c-1!=c) actualiseUneCaisseSpecial(sokoban_pos.l,sokoban_pos.c-1,caisses);
+    }
+
+    boolean estCaisseBloquee(int l, int c,byte[][] caisses,Position sokoban_pos){
+        actualiseCoteSpecial(l,c,caisses,sokoban_pos);
         if(estBloqueeEnCarre(l,c,caisses)) return true;
         if(aMur(l,c) || estCaseLibre(l,c,caisses)) return false;
         if(!estBut(new Position(l,c))) {
@@ -1014,7 +1036,7 @@ class IAResolveur extends IA {
         return false;
     }
 
-    boolean estCaseBloquante_V2(int l_initial, int c_initial, int l, int c,byte[][] caisses){
+    boolean estCaseBloquante_V2(int l_initial, int c_initial, int l, int c,byte[][] caisses, Position sokoban_pos){
         if(estCaseHorsMap(l,c)) return true;
         if(caisses[l][c]!=VIDE && caisses[l][c]!=BUT) return true;
         if(aMur(l,c)) return true;
@@ -1023,7 +1045,7 @@ class IAResolveur extends IA {
         //System.out.println("l: "+l+" c: "+c+" cases[l][c]: "+ cases[l][c]);
         saveCaisses[l][c] = CAISSE;
         saveCaisses[l_initial][c_initial] = VIDE;
-        actualiseToutesCaisses(saveCaisses);
+        actualiseToutesCaisses(saveCaisses,sokoban_pos);
 
         if(saveCaisses[l][c]==16){
             return true;
@@ -1033,13 +1055,13 @@ class IAResolveur extends IA {
     public boolean aCaisse(int l, int c,byte[][] caisses){
         return (caisses[l][c] & CAISSE) != 0  || (caisses[l][c] & CAISSE_BLOQUEE_TEMP) != 0; // || (cases[l][c] & CAISSE_BLOQUEE) != 0;
     }
-    void actualiseUneCaisse(int l, int c,byte[][] caisses){
+    void actualiseUneCaisse(int l, int c,byte[][] caisses,Position sokoban_pos){
         if (aCaisse(l,c,caisses)){
             //if(cases[l][c]==CAISSE_BLOQUEE) return;
             if(estBut(new Position(l,c))){
                 return;
             }
-            if (estCaisseBloquee(l,c,caisses)){
+            if (estCaisseBloquee(l,c,caisses,sokoban_pos)){
                 caisses[l][c] = CAISSE_BLOQUEE; //FAUDRA TERMINER L'INSTANCE ! A FAIRE
                 return;
             }
@@ -1050,24 +1072,13 @@ class IAResolveur extends IA {
             caisses[l][c] = CAISSE;
         }
     }
-
-    public void actualiseToutesCaisses(byte[][] caisses){
+    public void actualiseToutesCaisses(byte[][] caisses, Position sokoban_pos){
         for(int l=0;l<caisses.length;l++){
             for(int c=0;c<caisses[0].length;c++){
-                actualiseUneCaisse(l,c,caisses);
+                actualiseUneCaisse(l,c,caisses,sokoban_pos);
             }
         }
     }
-    void actualiseCaisses(int l, int c,byte[][] caisses){
-        actualiseUneCaisse(l+1,c,caisses);
-        actualiseUneCaisse(l-1,c,caisses);
-        actualiseUneCaisse(l,c+1,caisses);
-        actualiseUneCaisse(l,c-1,caisses);
-    }
-
-
-
-
 
 
 }
