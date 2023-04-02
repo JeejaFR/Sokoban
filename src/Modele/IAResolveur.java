@@ -176,6 +176,7 @@ class IAResolveur extends IA {
         queue.insere(arbreCheminsTete);
 
         while(!queue.estVide()){
+            System.out.println("queue taille: " + queue.taille());
             ArbreChemins arbreCheminsAvant = arbreCheminsTete;
             //System.out.println("\n\n ///// NOUVELLE QUEUE ///// \n\n");
             arbreCheminsTete = queue.extrait();//ArbreChemins
@@ -953,6 +954,8 @@ class IAResolveur extends IA {
         if(estCaisseBloqueeTemp(l-1,c,caisses)&&(!aMurAutour(l-1,c)||((caisses[l-1][c+1]==VIDE || caisses[l-1][c+1]==CAISSE)&&(caisses[l-1][c-1]==VIDE || caisses[l-1][c-1]==CAISSE))||pourra_bouger_horizontal(l,c,caisses))) return false;
         if(estCaisseBloqueeTemp(l,c+1,caisses)&&(!aMurAutour(l,c+1)||((caisses[l-1][c+1]==VIDE || caisses[l-1][c+1]==CAISSE)&&(caisses[l+1][c+1]==VIDE || caisses[l+1][c+1]==CAISSE))||pourra_bouger_vertical(l,c,caisses))) return false;
         if(estCaisseBloqueeTemp(l,c-1,caisses)&&(!aMurAutour(l,c-1)||((caisses[l+1][c-1]==VIDE || caisses[l+1][c-1]==CAISSE)&&(caisses[l-1][c-1]==VIDE || caisses[l-1][c-1]==CAISSE))||pourra_bouger_vertical(l,c,caisses))) return false;
+
+        if(estCaseHorsMap(l,c) || estCaseHorsMap(l,c+1) || estCaseHorsMap(l,c-1) || estCaseHorsMap(l+1,c) || estCaseHorsMap(l-1,c)) return true;
 
         return estCaisseBloqueeTemp(l,c+1,caisses) || estCaisseBloqueeTemp(l,c-1,caisses) || estCaisseBloqueeTemp(l+1,c,caisses) || estCaisseBloqueeTemp(l-1,c,caisses) || caisses[l][c+1]==CAISSE_BLOQUEE || caisses[l][c-1]==CAISSE_BLOQUEE || caisses[l+1][c]==CAISSE_BLOQUEE || caisses[l-1][c]==CAISSE_BLOQUEE;
     }
