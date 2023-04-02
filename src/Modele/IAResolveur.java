@@ -65,7 +65,6 @@ class IAResolveur extends IA {
                 }
             }
         }
-        System.out.println("nb_caisses : " + nb_caisses);
     }
 
     @Override
@@ -73,7 +72,7 @@ class IAResolveur extends IA {
         Sequence<Coup> resultat = Configuration.nouvelleSequence();
         Coup coup = null;
         ArrayList<SequenceListe<Position>> chemins = null;
-
+/*
         instances = new HashMap<>();
         nb_instances = 0;
         nb_buts = 0;
@@ -85,7 +84,7 @@ class IAResolveur extends IA {
         }
         chemins = calcul_chemin(posPousseur, caisses);
         System.out.println("chemins.size() : " + chemins.size());
-/*
+*/
         int taille_totale_file = 0;
         int duree_totale_Dijkstra = 0;
         int nb_fois_Dijkstra_total = 0;
@@ -140,7 +139,7 @@ class IAResolveur extends IA {
         System.out.println("temps total moyen : " + temps_total_total_moyen + " ms");
         System.out.println("nb moyen instances : " + nb_instances_total_moyen);
         System.exit(0);
-*/
+
         for(int i=0; i<chemins.size(); i++){
             SequenceListe<Position> chemin = chemins.get(i);
             chemin.extraitTete();//on enlève la position du pousseur puisqu'il est déjà à cette position
@@ -176,7 +175,10 @@ class IAResolveur extends IA {
         queue.insere(arbreCheminsTete);
 
         while(!queue.estVide()){
-            System.out.println("queue taille: " + queue.taille());
+            if(queue.taille()%50000==0) {
+                System.out.println("queue taille: " + queue.taille());
+                System.out.println("nb instances: " + nb_instances);
+            }
             ArbreChemins arbreCheminsAvant = arbreCheminsTete;
             //System.out.println("\n\n ///// NOUVELLE QUEUE ///// \n\n");
             arbreCheminsTete = queue.extrait();//ArbreChemins
@@ -706,7 +708,7 @@ class IAResolveur extends IA {
         if(!instances.containsKey(cleInstance)){
             return false;
         }else{
-            return Arrays.deepEquals(instanceCopie,instances.get(cleInstance));
+            return true;//Arrays.deepEquals(instanceCopie,instances.get(cleInstance));
         }
     }
 
