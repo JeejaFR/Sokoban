@@ -82,6 +82,8 @@ class IAResolveur extends IA {
             Configuration.erreur("Niveau impossible à résoudre : le nombre de caisses est différent du nombre de buts.");
             return null;
         }
+        //initialiseButDansCoin();
+        //afficheCaisses(butDansCoin);
         chemins = calcul_chemin(posPousseur, caisses);
 /*
         int taille_totale_file = 0;
@@ -166,6 +168,8 @@ class IAResolveur extends IA {
         Instance instanceCourante = null;
         Position posCaisseFutur = null;
         Position posCaissePresent = null;
+        byte[][] butDansCoin = initialiseButDansCoin();
+        int nombreCaisseDansCoin = 0;
 
         ajouterInstance(posPousseur, caisses, instances);
         Instance instanceDepart = new Instance(posPousseur, caisses);
@@ -199,7 +203,14 @@ class IAResolveur extends IA {
                 posCaisseFutur = cheminCourant.extraitQueue();//dernière position du chemin courant (future position de la caisse déplacée)
                 posCaissePresent = cheminCourant.extraitQueue();//avant-dernière position du chemin courant (position de la caisse à déplacer)
 
+                int nombreCaisseDansCoinAvant = nombreCaisseCoin(butDansCoin,caisses);
+                butDansCoin = actualiseButDansCoin(posCaisseFutur.l,posCaisseFutur.c,butDansCoin);
+
+
                 byte[][] caissesNew = pousserCaisse(posCaissePresent, posCaisseFutur, caisses);
+                int nombreCaisseDansCoinApres = nombreCaisseCoin(butDansCoin,caissesNew);
+
+
                 Position posPousseurNew = posCaissePresent;//position de la caisse avant qu'elle soit poussée
 
                 if(!estInstance(posPousseurNew, caissesNew, instances)) {
@@ -225,6 +236,9 @@ class IAResolveur extends IA {
                     } else {
                         ajouterInstance(posPousseurNew, caissesNew, instances);
                         int poids = nb_caisses - nb_caisses_sur_but;
+                        if(nombreCaisseDansCoinAvant<nombreCaisseDansCoinApres){
+                            poids-=(nombreCaisseDansCoinApres*5);
+                        }
                         int ancien_poids = arbreCheminsAvant.getPoids();
                         ArbreChemins arbreEnfile = new ArbreChemins(instanceCourante, cheminCourant, arbreCheminsTete, poids);
                         if (poids < ancien_poids) {
@@ -268,6 +282,58 @@ class IAResolveur extends IA {
         }
         return 0;
     }
+
+    boolean estButDansCoin(int i,int j,byte[][] butDansCoin){
+        return butDansCoin[i][j]==1;
+    }
+
+    byte[][] initialiseButDansCoin(){
+        byte[][] butDansCoin = new byte[carte.length][carte[0].length];
+        for(int i=0;i< carte.length;i++){
+            for(int j=0;j<carte[0].length;j++){
+                if(!estCaseHorsMap(i,j)){
+                    if(carte[i][j]==BUT){
+                        if(estCaseHorsMap(i-1,j)){
+                            if(estCaseHorsMap(i,j+1)) butDansCoin[i][j] = 1;
+                            if(estCaseHorsMap(i,j-1)) butDansCoin[i][j] = 1;
+                        }
+                        else if(estCaseHorsMap(i+1,j)){
+                            if(estCaseHorsMap(i,j+1)) butDansCoin[i][j] = 1;
+                            if(estCaseHorsMap(i,j-1)) butDansCoin[i][j] = 1;
+                        }
+                        else if(!estCaseHorsMap(i,j-1)&&!estCaseHorsMap(i,j+1)){
+                            if (carte[i-1][j]==MUR && (carte[i][j+1]==MUR||carte[i][j-1]==MUR)) butDansCoin[i][j] = 1;
+                            if (carte[i+1][j]==MUR && (carte[i][j+1]==MUR||carte[i][j-1]==MUR)) butDansCoin[i][j] = 1;
+                        }
+                    }
+                }
+            }
+        }
+        return butDansCoin;
+    }
+
+    byte[][] actualiseButDansCoin(int i,int j,byte[][] butDansCoin){ // on vient de pousser une caisse sur la case i j
+        if(estButDansCoin(i,j,butDansCoin)){
+            //butDansCoin[i][j] = 0;
+            if(!estCaseHorsMap(i,j+1) && carte[i][j+1]==BUT) butDansCoin[i][j+1] = 1;
+            if(!estCaseHorsMap(i,j-1) && carte[i][j-1]==BUT) butDansCoin[i][j-1] = 1;
+            if(!estCaseHorsMap(i+1,j) && carte[i+1][j]==BUT) butDansCoin[i+1][j] = 1;
+            if(!estCaseHorsMap(i-1,j) && carte[i-1][j]==BUT) butDansCoin[i-1][j] = 1;
+        }
+        return butDansCoin;
+    }
+
+    int nombreCaisseCoin(byte[][] butDansCoin,byte[][] caisses){
+        int nb=0;
+        for(int i=0;i< butDansCoin.length;i++) {
+            for (int j = 0; j < butDansCoin[0].length; j++) {
+                if(caisses[i][j]==CAISSE) nb+=butDansCoin[i][j];
+            }
+        }
+        return nb;
+    }
+
+
 
     private SequenceListe<Position> afficheChemin(SequenceListe<Position> chemin) {
         SequenceListe<Position> chemin_copy = new SequenceListe<>();
