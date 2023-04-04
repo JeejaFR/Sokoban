@@ -15,6 +15,10 @@ public class PositionPoids implements Comparable<PositionPoids> {
         this.poids = p;
     }
 
+    public int getPoids(){
+        return poids;
+    }
+
     @Override
     public int compareTo(PositionPoids o) {
         if(this.poids < o.poids){

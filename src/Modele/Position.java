@@ -17,6 +17,10 @@ public class Position {
         return c;
     }
 
+    public boolean egal(Position p){
+        return (this.l == p.l && this.c == p.c);
+    }
+
     public String affiche(){
         String s = "("+l+","+c+")";
         return s;
