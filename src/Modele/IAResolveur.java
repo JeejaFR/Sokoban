@@ -560,15 +560,17 @@ class IAResolveur extends IA {
         PositionPoids caseSuivante = parcourtDistances(posBut, distance);
         if(caseSuivante != null){
             System.out.println("caseSuivante (non ajoutée à sequence) : " + caseSuivante.affiche());
-            while(caseSuivante.getPoids() != 0){
+            while(caseSuivante!=null && caseSuivante.getPoids() != 0){
                 int i = caseSuivante.getL();
                 int j = caseSuivante.getC();
                 caseSuivante = parcourtDistances(new Position(i, j), distance);
-                System.out.println("caseSuivante : " + caseSuivante.affiche());
+                if(caseSuivante!=null) System.out.println("caseSuivante : " + caseSuivante.affiche());
+
                 // JEREMY, il faut vérifier que la case de position i, j ne soit pas bloquante. Rappel : tu peux te servir de byte[][] caisses
-                sequence.insereTete(new Position(i, j));
+                if(!estCaseBloquante_V2(-1,-1,i,j,caisses,posPousseur)) sequence.insereTete(new Position(i, j));
             }
         }else{//pas de chemin existant de la caisse au but
+            System.out.println("aucun chemin");
             return null;
         }
         return sequence;
@@ -1199,7 +1201,7 @@ class IAResolveur extends IA {
         byte[][] saveCaisses = copieByte(caisses);
         //System.out.println("l: "+l+" c: "+c+" cases[l][c]: "+ cases[l][c]);
         saveCaisses[l][c] = CAISSE;
-        saveCaisses[l_initial][c_initial] = VIDE;
+        if(l_initial!=-1 && c_initial!=-1) saveCaisses[l_initial][c_initial] = VIDE;
         actualiseToutesCaisses(saveCaisses,sokoban_pos);
 
         if(saveCaisses[l][c]==16){
