@@ -608,25 +608,21 @@ class IAResolveur extends IA {
                 int j = caseAccessible.getC();
                 //System.out.println("Pousseur i: "+posPousseur.getL()+" j: "+posPousseur.getC());
                 //System.out.println("case accessible i: "+i+ " j: "+j);
+                if (!visite[i][j]) {//si la case accessible à côté de la caisse n'a pas été visitée
+                    visite[i][j] = true;
+                    int d = distanceMin(distance, i, j) + 1;
+                    distance[i][j] = d;
+                    caseAccessible.setPoids(d);
+                    queue.insereQueue(caseAccessible);
+                }
                 if(dest.egal(new Position(i, j))){
                     fin = true;
-                }else {
-                    if (!visite[i][j]) {//si la case accessible à côté de la caisse n'a pas été visitée
-                        visite[i][j] = true;
-                        int d = distanceMin(distance, i, j) + 1;
-                        distance[i][j] = d;
-                        caseAccessible.setPoids(d);
-                        queue.insereQueue(caseAccessible);
-                    }
                 }
             }
         }
         //on a maintenant le tableau des distances du pousseur jusqu'à la destination
         SequenceListe<Position> sequence = new SequenceListe<>();
         PositionPoids caseSuivante = parcourtDistances(dest, distance);
-        System.out.println("ICI ---");
-        afficheDistances(distance);
-        System.exit(0);
         if(caseSuivante != null){
             sequence.insereTete(caseSuivante.getPos());
             while(caseSuivante != null && caseSuivante.getPoids() != 0){
