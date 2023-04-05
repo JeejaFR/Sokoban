@@ -83,6 +83,7 @@ public class ControleurMediateur implements CollecteurEvenements {
 		if (cp != null) {
 			jeu.joue(cp);
 			repercute(cp, Mouvement.AVANT);
+			joueurAutomatique = null;
 		} else {
 			Configuration.alerte("Coup null fourni, probablement un bug dans l'IA");
 		}
@@ -93,6 +94,7 @@ public class ControleurMediateur implements CollecteurEvenements {
 			Coup cp = jeu.annuler();
 			repercute(cp, Mouvement.ARRIERE);
 		}
+		joueurAutomatique = null;
 	}
 
 	void refait() {
@@ -100,7 +102,7 @@ public class ControleurMediateur implements CollecteurEvenements {
 			Coup cp = jeu.refaire();
 			repercute(cp, Mouvement.AVANT);
 		}
-
+		joueurAutomatique = null;
 	}
 
 	void deplace(int dL, int dC) {
@@ -166,6 +168,7 @@ public class ControleurMediateur implements CollecteurEvenements {
 
 	private void reinitialise() {
 		jeu.reinitialiseNiveau();
+		joueurAutomatique = null;
 	}
 
 	public void prochain() {
