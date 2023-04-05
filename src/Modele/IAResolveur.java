@@ -512,8 +512,13 @@ class IAResolveur extends IA {
 
     public SequenceListe<Position> aEtoileCaisseBut(Position posCaisse, Position posPousseur, Position posBut, byte[][] caisses){
         if(posCaisse.egal(posBut)) return null;
-        //System.out.println("aEtoileCaisseBut : " + posCaisse.affiche() + " " + posPousseur.affiche() + " " + posBut.affiche());
-        PositionPoids caisse = new PositionPoids(posCaisse.getL(), posCaisse.getC(), 0);
+
+        Position future = pousse(posCaisse, posPousseur);
+        System.out.println("caisse : " + posCaisse.affiche());
+        System.out.println("future : " + future.affiche());
+        PositionPoids caisse = new PositionPoids(future.getL(), future.getC(), 0);
+        PositionPoids pousseur = new PositionPoids(posCaisse.getL(), posCaisse.getC(), 0);
+
         boolean fin = false;
         int[][] distance = new int[l][c];
         for(int i = 0; i < distance.length; i++){
@@ -531,7 +536,7 @@ class IAResolveur extends IA {
         SequenceListe<ArrayList<PositionPoids>> queue = new SequenceListe<>();
         ArrayList<PositionPoids> q = new ArrayList<>();
         q.add(caisse);
-        q.add(new PositionPoids(posPousseur.getL(), posPousseur.getC(), 0));
+        q.add(pousseur);
         queue.insereTete(q);
 
         while(!queue.estVide() && !fin){
@@ -564,6 +569,7 @@ class IAResolveur extends IA {
                 }
             }
         }
+        afficheDistances(distance);
         //on a maintenant le tableau des distances de la caisse jusqu'au but
         SequenceListe<Position> sequence = new SequenceListe<>();
         PositionPoids caseSuivante = parcourtDistances(posBut, distance);
@@ -649,7 +655,8 @@ class IAResolveur extends IA {
             if(cheminCaisse != null){
                 while(!cheminCaisse.estVide()){
                     Position courante = cheminCaisse.extraitTete();
-                    if(cheminCaisse==null || cheminCaisse.estVide()) break;
+                    System.out.println("position caisse après déplacement : "+courante.affiche());
+                    if(cheminCaisse.estVide()) break;
                     Position futur = cheminCaisse.getTete();
                     Position PosDestination = posDerriere(futur,courante);
                     System.out.println("caisse : "+courante.affiche());
@@ -668,10 +675,9 @@ class IAResolveur extends IA {
         return sequence;
     }
 
-
-    public Position pousse(Position A, Position B){
-        //la case A pousse la case B
-        return new Position(B.getL() + (B.getL() - A.getL()), B.getC() + (B.getC() - A.getC()));
+    public Position pousse(Position caisse, Position pousseur){
+        //la case pousseur pousse la case caisse
+        return new Position(caisse.getL() + (caisse.getL() - pousseur.getL()), caisse.getC() + (caisse.getC() - pousseur.getC()));
     }
 
     public SequenceListe<ArrayList<Position>> caissesDeplacables(Position p, byte[][] caisses){
