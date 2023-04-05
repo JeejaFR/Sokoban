@@ -454,9 +454,9 @@ class IAResolveur extends IA {
                 caisses_deplacables.insereQueue(caisse);
             }
             //mise à jour des distances
-            SequenceListe<PositionPoids> casesAccessibles = casesAccessibles(p, caisses);//renvoie les cases accessibles à côté du pousseur
-            while(!casesAccessibles.estVide()) {
-                PositionPoids q = casesAccessibles.extraitTete();
+            SequenceListe<PositionPoids> cases_accessibles = casesAccessibles(p, caisses);//renvoie les cases accessibles à côté du pousseur
+            while(!cases_accessibles.estVide()) {
+                PositionPoids q = cases_accessibles.extraitTete();
                 int i = q.getL();
                 int j = q.getC();
                 if (!visite[i][j]) {//si la case accessible n'a pas été visitée
@@ -560,14 +560,11 @@ class IAResolveur extends IA {
         SequenceListe<Position> sequence = new SequenceListe<>();
         PositionPoids caseSuivante = parcourtDistances(posBut, distance);
         if(caseSuivante != null){
-            System.out.println("caseSuivante (non ajoutée à sequence) : " + caseSuivante.affiche());
-            while(caseSuivante!=null && caseSuivante.getPoids() != 0){
+            sequence.insereTete(posBut);
+            while(caseSuivante != null && caseSuivante.getPoids() != 0){
                 int i = caseSuivante.getL();
                 int j = caseSuivante.getC();
                 caseSuivante = parcourtDistances(new Position(i, j), distance);
-                if(caseSuivante!=null) System.out.println("caseSuivante : " + caseSuivante.affiche());
-
-                // JEREMY, il faut vérifier que la case de position i, j ne soit pas bloquante. Rappel : tu peux te servir de byte[][] caisses
                 if(!estCaseBloquante_V2(-1,-1,i,j,caisses,posPousseur)) sequence.insereTete(new Position(i, j));
             }
         }else{//pas de chemin existant de la caisse au but
@@ -578,6 +575,67 @@ class IAResolveur extends IA {
         afficheDistances(distance);
         return sequence;
     }
+
+    public SequenceListe<Position> dijkstraPousseurDerriereCaisse(Position posPousseur, Position dest, byte[][] caisses){
+        PositionPoids p = new PositionPoids(dest.getL(), dest.getC(), 0);
+        boolean fin = false;
+        int[][] distance = new int[l][c];
+        for(int i = 0; i < distance.length; i++){
+            for(int j = 0; j < distance[0].length; j++){
+                distance[i][j] = INFINI;
+            }
+        }
+        boolean[][] visite = new boolean[l][c];
+        for(int i = 0; i < visite.length; i++){
+            for(int j = 0; j < visite[0].length; j++){
+                visite[i][j] = false;
+            }
+        }
+        distance[posPousseur.getL()][posPousseur.getC()] = 0;
+        SequenceListe<PositionPoids> queue = new SequenceListe<>();
+        queue.insereTete(p);
+
+        while(!queue.estVide() && !fin){
+            p = queue.extraitTete();
+
+            //mise à jour des distances
+            SequenceListe<PositionPoids> cases_accessibles = casesAccessiblesPousseurDerriereCaisseManatthan(p.getPos(), dest, caisses);//renvoie les cases accessibles à côté du pousseur
+            while(!cases_accessibles.estVide()){
+                PositionPoids caseAccessible = cases_accessibles.extraitTete();
+                int i = caseAccessible.getL();
+                int j = caseAccessible.getC();
+                if(dest.egal(new Position(i, j))){
+                    fin = true;
+                }else {
+                    if (!visite[i][j]) {//si la case accessible à côté de la caisse n'a pas été visitée
+                        visite[i][j] = true;
+                        int d = distanceMin(distance, i, j) + 1;
+                        distance[i][j] = d;
+                        caseAccessible.setPoids(d);
+                        queue.insereQueue(caseAccessible);
+                    }
+                }
+            }
+        }
+        //on a maintenant le tableau des distances du pousseur jusqu'à la destination
+        SequenceListe<Position> sequence = new SequenceListe<>();
+        PositionPoids caseSuivante = parcourtDistances(dest, distance);
+        if(caseSuivante != null){
+            sequence.insereTete(dest);
+            while(caseSuivante.getPoids() != 0){
+                int i = caseSuivante.getL();
+                int j = caseSuivante.getC();
+                caseSuivante = parcourtDistances(new Position(i, j), distance);
+                sequence.insereTete(new Position(i, j));
+            }
+        }else{//pas de chemin existant du pousseur à la destination
+            return null;
+        }
+        afficheDistances(distance);
+        return sequence;
+    }
+
+
     public SequenceListe<SequenceListe<Position>> cheminsCaisseButs(Position posPousseur, Position posCaisse, byte[][] caisses, ArrayList<Position> buts){
         SequenceListe<Position> chemin = new SequenceListe<>();
         SequenceListe<SequenceListe<Position>> sequence = new SequenceListe<>();
@@ -691,7 +749,6 @@ class IAResolveur extends IA {
         if(estCaseLibre(posCourante.getL()-1,posCourante.getC(), caisses)&&!estCaseBloquante_V2(posCourante.getL(), posCourante.getC(), posCourante.getL()-1, posCourante.getC(), caisses, pousseur)){
             Position position = new Position(posCourante.getL()-1,posCourante.getC());
             int distance = distanceManatthan(position,but);
-            System.out.println("Distance en haut : "+distance);
             if(distance < minimum){
                 minimum = distance;
                 casesAccessibles = new SequenceListe<>();
@@ -731,6 +788,56 @@ class IAResolveur extends IA {
         return casesAccessibles;
     }
 
+    public SequenceListe<PositionPoids> casesAccessiblesPousseurDerriereCaisseManatthan(Position dep, Position dest, byte[][] caisses){
+        SequenceListe<PositionPoids> casesAccessibles = new SequenceListe<>();
+        int minimum = INFINI;
+        if(estCaseLibre(dep.getL()+1,dep.getC(), caisses)){
+            Position position = new Position(dep.getL()+1,dep.getC());
+            minimum = distanceManatthan(position,dest);
+            casesAccessibles.insereTete(new PositionPoids(position.getL(),position.getC(),minimum));
+        }
+        if(estCaseLibre(dep.getL()-1,dep.getC(), caisses)){
+            Position position = new Position(dep.getL()-1,dep.getC());
+            int distance = distanceManatthan(position,dest);
+            if(distance < minimum){
+                minimum = distance;
+                casesAccessibles = new SequenceListe<>();
+                PositionPoids p = new PositionPoids(position.getL(),position.getC(),minimum);
+                casesAccessibles.insereTete(p);
+            }else if(distance == minimum){
+                PositionPoids p = new PositionPoids(position.getL()-1,position.getC(),minimum);
+                casesAccessibles.insereTete(p);
+            }
+        }
+        if(estCaseLibre(dep.getL(),dep.getC()+1, caisses)){
+            Position position = new Position(dep.getL(),dep.getC()+1);
+            int distance = distanceManatthan(position,dest);
+            if(distance < minimum){
+                minimum = distance;
+                casesAccessibles = new SequenceListe<>();
+                PositionPoids p = new PositionPoids(position.getL(),position.getC(),minimum);
+                casesAccessibles.insereTete(p);
+            }else if(distance == minimum){
+                PositionPoids p = new PositionPoids(position.getL(),position.getC(),minimum);
+                casesAccessibles.insereTete(p);
+            }
+        }
+        if(estCaseLibre(dep.getL(),dep.getC()-1, caisses)){
+            Position position = new Position(dep.getL(),dep.getC()-1);
+            int distance = distanceManatthan(position,dest);
+            if(distance < minimum){
+                minimum = distance;
+                casesAccessibles = new SequenceListe<>();
+                PositionPoids p = new PositionPoids(position.getL(),position.getC(),minimum);
+                casesAccessibles.insereTete(p);
+            }else if(distance == minimum){
+                PositionPoids p = new PositionPoids(position.getL(),position.getC(),minimum);
+                casesAccessibles.insereTete(p);
+            }
+        }
+        return casesAccessibles;
+    }
+
     public SequenceListe<PositionPoids> casesAccessibles(PositionPoids posCourante, byte[][] caisses){
         SequenceListe<PositionPoids> cases = new SequenceListe<>();
         if(estCaseLibre(posCourante.getL()+1, posCourante.getC(), caisses)){
@@ -744,24 +851,6 @@ class IAResolveur extends IA {
         }
         if(estCaseLibre(posCourante.getL(),posCourante.getC()-1, caisses)){
             cases.insereTete(new PositionPoids(posCourante.getL(),posCourante.getC()-1, posCourante.getPoids()+1));
-        }
-        cases.insereQueue(posCourante);//la case courante est accessible puisque le pousseur est déjà dessus
-        return cases;
-    }
-
-    public SequenceListe<PositionPoids> casesAccessibles_2(PositionPoids posCourante){
-        SequenceListe<PositionPoids> cases = new SequenceListe<>();
-        if(posCourante.l+1 <= l-1 && !aMurOuHorsMap(posCourante.l+1,posCourante.c)){
-            cases.insereTete(new PositionPoids(posCourante.l+1,posCourante.c, posCourante.poids+1));
-        }
-        if(posCourante.l-1 >= 0 && !aMurOuHorsMap(posCourante.l-1,posCourante.c)){
-            cases.insereTete(new PositionPoids(posCourante.l-1,posCourante.c, posCourante.poids+1));
-        }
-        if(posCourante.c+1 <= c-1 && !aMurOuHorsMap(posCourante.l,posCourante.c+1)){
-            cases.insereTete(new PositionPoids(posCourante.l,posCourante.c+1, posCourante.poids+1));
-        }
-        if(posCourante.c-1 >= 0 && !aMurOuHorsMap(posCourante.l,posCourante.c-1)){
-            cases.insereTete(new PositionPoids(posCourante.l,posCourante.c-1, posCourante.poids+1));
         }
         cases.insereQueue(posCourante);//la case courante est accessible puisque le pousseur est déjà dessus
         return cases;
