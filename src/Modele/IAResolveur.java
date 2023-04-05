@@ -644,6 +644,74 @@ class IAResolveur extends IA {
         return sequence;
     }
 
+    boolean estBloqueEnHautDjiskstra(Position caisseFutur,int gauche){
+        if(!aMurOuHorsMap(caisseFutur.getL()-1,caisseFutur.getC())) return false;
+        int i=0;
+        if(gauche==1){
+            while(!aMurOuHorsMap(l,c-i)){
+                if(!aMurOuHorsMap(l-1,c-i)) return false;
+            }
+            return true;
+        }else{
+            while(!aMurOuHorsMap(l,c+i)){
+                if(!aMurOuHorsMap(l-1,c+i)) return false;
+            }
+            return true;
+        }
+    }
+
+    boolean estBloqueEnBasDjiskstra(Position caisseFutur,int gauche){
+        if(!aMurOuHorsMap(caisseFutur.getL()+1,caisseFutur.getC())) return false;
+        int i=0;
+        if(gauche==1){
+            while(!aMurOuHorsMap(l,c-i)){
+                if(!aMurOuHorsMap(l+1,c-i)) return false;
+            }
+            return true;
+        }else{
+            while(!aMurOuHorsMap(l,c+i)){
+                if(!aMurOuHorsMap(l+1,c+i)) return false;
+            }
+            return true;
+        }
+    }
+
+    boolean estBloqueDroiteDjiskstra(Position caisseFutur,int haut){
+        if(!aMurOuHorsMap(caisseFutur.getL(),caisseFutur.getC()+1)) return false;
+        int i=0;
+        if(haut==1){
+            while(!aMurOuHorsMap(l-i,c)){
+                if(!aMurOuHorsMap(l-i,c+1)) return false;
+            }
+            return true;
+        }else{
+            while(!aMurOuHorsMap(l+i,c)){
+                if(!aMurOuHorsMap(l+i,c+1)) return false;
+            }
+            return true;
+        }
+    }
+
+
+    boolean estBloqueGaucheDjiskstra(Position caisseFutur,int haut){
+        if(!aMurOuHorsMap(caisseFutur.getL(),caisseFutur.getC()-1)) return false;
+        int i=0;
+        if(haut==1){
+            while(!aMurOuHorsMap(l-i,c)){
+                if(!aMurOuHorsMap(l-i,c-1)) return false;
+            }
+            return true;
+        }else{
+            while(!aMurOuHorsMap(l+i,c)){
+                if(!aMurOuHorsMap(l+i,c-1)) return false;
+            }
+            return true;
+        }
+    }
+
+
+
+
     public SequenceListe<Position> cheminsCaisseButs(Position posPousseur, Position posCaisse, byte[][] caisses, ArrayList<Position> buts){
         SequenceListe<Position> cheminCaisse = new SequenceListe<>();
         SequenceListe<Position> sequence = new SequenceListe<>();
