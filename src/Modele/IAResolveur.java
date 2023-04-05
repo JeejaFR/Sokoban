@@ -551,10 +551,6 @@ class IAResolveur extends IA {
                 }
             }
         }
-        System.out.println("posBut : " + posBut.affiche());
-        if(posCaisse.getL()>=2 && posCaisse.getC()>=5){
-            afficheDistances(distance);
-        }
         //on a maintenant le tableau des distances de la caisse jusqu'au but
         SequenceListe<Position> sequence = new SequenceListe<>();
         PositionPoids caseSuivante = parcourtDistances(posBut, distance);
@@ -571,8 +567,10 @@ class IAResolveur extends IA {
             }
         }else{//pas de chemin existant de la caisse au but
             System.out.println("aucun chemin");
+            System.out.println("----------------------------------");
             return null;
         }
+        afficheDistances(distance);
         return sequence;
     }
     public SequenceListe<SequenceListe<Position>> cheminsCaisseButs(Position posPousseur, Position posCaisse, byte[][] caisses, ArrayList<Position> buts){
@@ -580,10 +578,8 @@ class IAResolveur extends IA {
         SequenceListe<SequenceListe<Position>> sequence = new SequenceListe<>();
         //pour chaque but, on vérifie s'il existe un chemin de la caisse à ce but
         for(int i = 0; i < buts.size(); i++){
-            if(posPousseur.getL()==2 && posPousseur.getC()==5){
-                System.out.println("posPousseur : " + posPousseur.affiche());
-                System.out.println("posCaisse : " + posCaisse.affiche());
-            }
+            System.out.println("posPousseur : " + posPousseur.affiche());
+            System.out.println("posCaisse : " + posCaisse.affiche());
             chemin = aEtoileCaisseBut(posCaisse, posPousseur, buts.get(i), caisses);
             if(chemin != null){
                 sequence.insereQueue(chemin);
@@ -682,8 +678,6 @@ class IAResolveur extends IA {
     public SequenceListe<PositionPoids> casesAccessiblesManatthan(PositionPoids posCourante, Position pousseur, Position but, byte[][] caisses){
         SequenceListe<PositionPoids> casesAccessibles = new SequenceListe<>();
         int minimum = INFINI;
-        boolean a = estCaseBloquante_V2(posCourante.getL(), posCourante.getC(), posCourante.getL()+1, posCourante.getC(), caisses, pousseur);
-        boolean b = estCaseLibre(posCourante.getL()+1,posCourante.getC(), caisses);
         if(estCaseLibre(posCourante.getL()+1,posCourante.getC(), caisses)&&!estCaseBloquante_V2(posCourante.getL(), posCourante.getC(), posCourante.getL()+1, posCourante.getC(), caisses, pousseur)){
             Position position = new Position(posCourante.getL()+1,posCourante.getC());
             minimum = distanceManatthan(position,but);
