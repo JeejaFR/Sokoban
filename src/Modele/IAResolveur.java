@@ -212,13 +212,16 @@ class IAResolveur extends IA {
 
                 //renvoie les chemins possibles de la caisse actuelle jusqu'à chaque but
                 Position posPousseurContreCaisse = cheminCourant.getQueue();
-                SequenceListe<SequenceListe<Position>> chemins_caisse_buts = cheminsCaisseButs(posCaissePresent, posCaisseFutur, caisses, buts);
-                if(!chemins_caisse_buts.estVide()){
+                ArrayList<SequenceListe<Position>> chemins_caisse_buts = cheminsCaisseButs(posCaissePresent, posCaisseFutur, caisses, buts);
+                if(chemins_caisse_buts!=null){
+                    chemin.add(chemins_caisse_buts.get(10));
+                    return chemin;
                     //SequenceListe<Position> courant = chemins_caisse_buts.extraitTete();
                     //System.out.println("LAAA ---------------------------- AAAL");
                     //courant = afficheChemin(courant);
-                }
 
+                }
+/*
                 int nombreCaisseDansCoinAvant = nombreCaisseCoin(butDansCoin,caisses);
                 butDansCoin = actualiseButDansCoin(posCaisseFutur.l,posCaisseFutur.c,butDansCoin);
 
@@ -255,7 +258,7 @@ class IAResolveur extends IA {
                         if(nombreCaisseDansCoinAvant<nombreCaisseDansCoinApres){
                             poids-=(nombreCaisseDansCoinApres*5);
                         }
-                         */
+
                         int ancien_poids = arbreCheminsAvant.getPoids();
                         ArbreChemins arbreEnfile = new ArbreChemins(instanceCourante, cheminCourant, arbreCheminsTete, poids);
                         if (poids < ancien_poids) {
@@ -264,7 +267,7 @@ class IAResolveur extends IA {
                             queue.insereQueue(arbreEnfile);
                         }
                     }
-                }
+                }*/
             }//pas de solution pour ce chemin
         }
         return chemin;
@@ -638,9 +641,9 @@ class IAResolveur extends IA {
     }
 
 
-    public SequenceListe<SequenceListe<Position>> cheminsCaisseButs(Position posPousseur, Position posCaisse, byte[][] caisses, ArrayList<Position> buts){
+    public ArrayList<SequenceListe<Position>> cheminsCaisseButs(Position posPousseur, Position posCaisse, byte[][] caisses, ArrayList<Position> buts){
         SequenceListe<Position> cheminCaisse = new SequenceListe<>();
-        SequenceListe<SequenceListe<Position>> sequence = new SequenceListe<>();
+        ArrayList<SequenceListe<Position>> sequence = new ArrayList<>();
         //pour chaque but, on vérifie s'il existe un chemin de la caisse à ce but
         for(int i = 0; i < buts.size(); i++){
             cheminCaisse = aEtoileCaisseBut(posCaisse, posPousseur, buts.get(i), caisses);
@@ -653,8 +656,8 @@ class IAResolveur extends IA {
                     if(estCaseLibre(PosDestination.getL(),PosDestination.getC(),caisses)){
                         SequenceListe<Position> cheminPousseur = dijkstraPousseurDerriereCaisse(posPousseur,PosDestination,caisses);
                         if(cheminPousseur!=null){
-                            cheminPousseur = afficheChemin(cheminPousseur);
-                            sequence.insereQueue(cheminPousseur);
+                            //cheminPousseur = afficheChemin(cheminPousseur);
+                            sequence.add(cheminPousseur);
                         }else{
                             System.out.println("vide");
                         }
