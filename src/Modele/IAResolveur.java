@@ -529,8 +529,13 @@ class IAResolveur extends IA {
             q = queue.extraitTete();
             caisse = q.get(0);
             posPousseur = q.get(1).getPos();
+
+            Position caissePos = new Position(caisse.getL(),caisse.getC());
+            byte[][] caisses_actuel = new byte[caisses.length][caisses[0].length];
+            caisses_actuel[caissePos.getL()][caissePos.getC()] = CAISSE;
             //mise à jour des distances
-            SequenceListe<PositionPoids> casesAccessibles = casesAccessiblesManatthan(caisse, posPousseur, posBut, caisses);//renvoie les cases accessibles non bloquantes à côté de la caisse
+            SequenceListe<PositionPoids> casesAccessibles = casesAccessiblesManatthan(caisse, posPousseur, posBut, caisses_actuel);//renvoie les cases accessibles non bloquantes à côté de la caisse
+
             while(!casesAccessibles.estVide()) {
                 PositionPoids caseAccessible = casesAccessibles.extraitTete();
                 int i = caseAccessible.getL();
@@ -686,6 +691,7 @@ class IAResolveur extends IA {
         if(estCaseLibre(posCourante.getL()-1,posCourante.getC(), caisses)&&!estCaseBloquante_V2(posCourante.getL(), posCourante.getC(), posCourante.getL()-1, posCourante.getC(), caisses, pousseur)){
             Position position = new Position(posCourante.getL()-1,posCourante.getC());
             int distance = distanceManatthan(position,but);
+            System.out.println("Distance en haut : "+distance);
             if(distance < minimum){
                 minimum = distance;
                 casesAccessibles = new SequenceListe<>();
