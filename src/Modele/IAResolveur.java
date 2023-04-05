@@ -212,12 +212,9 @@ class IAResolveur extends IA {
 
                 //renvoie les chemins possibles de la caisse actuelle jusqu'à chaque but
                 Position posPousseurContreCaisse = cheminCourant.getQueue();
-                ArrayList<SequenceListe<Position>> chemins_caisse_buts = cheminsCaisseButs(posCaissePresent, posCaisseFutur, caisses, buts);
-                for(int i=0; i<chemins_caisse_buts.size(); i++){
-                    afficheChemin(chemins_caisse_buts.get(i));
-                }
+                SequenceListe<SequenceListe<Position>> chemins_caisse_buts = cheminsCaisseButs(posCaissePresent, posCaisseFutur, caisses, buts);
                 if(chemins_caisse_buts!=null){
-                    chemin.add(chemins_caisse_buts.get(1));
+                    chemin.add(chemins_caisse_buts.getQueue());
                     return chemin;
                     //SequenceListe<Position> courant = chemins_caisse_buts.extraitTete();
                     //System.out.println("LAAA ---------------------------- AAAL");
@@ -644,14 +641,13 @@ class IAResolveur extends IA {
     }
 
 
-    public ArrayList<SequenceListe<Position>> cheminsCaisseButs(Position posPousseur, Position posCaisse, byte[][] caisses, ArrayList<Position> buts){
+    public SequenceListe<SequenceListe<Position>> cheminsCaisseButs(Position posPousseur, Position posCaisse, byte[][] caisses, ArrayList<Position> buts){
         SequenceListe<Position> cheminCaisse = new SequenceListe<>();
-        ArrayList<SequenceListe<Position>> sequence = new ArrayList<>();
+        SequenceListe<SequenceListe<Position>> sequence = new SequenceListe<>();
         //pour chaque but, on vérifie s'il existe un chemin de la caisse à ce but
         for(int i = 0; i < buts.size(); i++){
             cheminCaisse = aEtoileCaisseBut(posCaisse, posPousseur, buts.get(i), caisses);
             if(cheminCaisse != null){
-
                 while(!cheminCaisse.estVide()){
                     Position courante = cheminCaisse.extraitTete();
                     if(cheminCaisse==null || cheminCaisse.estVide()) break;
@@ -661,7 +657,7 @@ class IAResolveur extends IA {
                         SequenceListe<Position> cheminPousseur = dijkstraPousseurDerriereCaisse(posPousseur,PosDestination,caisses);
                         if(cheminPousseur!=null){
                             //cheminPousseur = afficheChemin(cheminPousseur);
-                            sequence.add(cheminPousseur);
+                            sequence.insereQueue(cheminPousseur);
                         }else{
                             System.out.println("vide");
                         }
