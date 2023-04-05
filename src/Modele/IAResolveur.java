@@ -213,8 +213,11 @@ class IAResolveur extends IA {
                 //renvoie les chemins possibles de la caisse actuelle jusqu'à chaque but
                 Position posPousseurContreCaisse = cheminCourant.getQueue();
                 ArrayList<SequenceListe<Position>> chemins_caisse_buts = cheminsCaisseButs(posCaissePresent, posCaisseFutur, caisses, buts);
+                for(int i=0; i<chemins_caisse_buts.size(); i++){
+                    afficheChemin(chemins_caisse_buts.get(i));
+                }
                 if(chemins_caisse_buts!=null){
-                    chemin.add(chemins_caisse_buts.get(10));
+                    chemin.add(chemins_caisse_buts.get(1));
                     return chemin;
                     //SequenceListe<Position> courant = chemins_caisse_buts.extraitTete();
                     //System.out.println("LAAA ---------------------------- AAAL");
@@ -648,6 +651,7 @@ class IAResolveur extends IA {
         for(int i = 0; i < buts.size(); i++){
             cheminCaisse = aEtoileCaisseBut(posCaisse, posPousseur, buts.get(i), caisses);
             if(cheminCaisse != null){
+
                 while(!cheminCaisse.estVide()){
                     Position courante = cheminCaisse.extraitTete();
                     if(cheminCaisse==null || cheminCaisse.estVide()) break;
