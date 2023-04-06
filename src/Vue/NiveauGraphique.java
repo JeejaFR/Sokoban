@@ -94,6 +94,8 @@ public class NiveauGraphique extends JComponent implements Observateur {
 			for (int colonne = 0; colonne < n.colonnes(); colonne++) {
 				int x = colonne * largeurCase;
 				int y = ligne * hauteurCase;
+				if(ligne>1 && colonne>1)
+					drawable.drawString((ligne-2)+","+(colonne-2), x-7-largeurCase/2, y+4-hauteurCase/2);
 				// Décalage éventuel
 				Vecteur decal = decalages[ligne][colonne];
 				if (decal != null) {
@@ -101,11 +103,11 @@ public class NiveauGraphique extends JComponent implements Observateur {
 					y += decal.y * hauteurCase;
 				}
 				// Tracé des objets
-				if (n.aMur(ligne, colonne))
+				if (n.aMur(ligne, colonne)){
 					tracer(drawable, mur, x, y, largeurCase, hauteurCase);
-				else if (n.aPousseur(ligne, colonne))
+				}else if (n.aPousseur(ligne, colonne)){
 					tracer(drawable, pousseur, x, y, largeurCase, hauteurCase);
-				else if (n.aCaisse(ligne, colonne)) {
+				}else if (n.aCaisse(ligne, colonne)){
 					int marque = n.marque(ligne, colonne);
 					if (n.aBut(ligne, colonne))
 						tracer(drawable, caisseSurBut, x, y, largeurCase, hauteurCase);
