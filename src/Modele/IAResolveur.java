@@ -740,7 +740,6 @@ class IAResolveur extends IA {
             if(cheminCaisse != null){
                 while(!cheminCaisse.estVide()){
                     Position courante = cheminCaisse.extraitTete();
-                    if(cheminCaisse.estVide()) break;
                     PosDestination = posDerriere(courante, posCaisse);
                     System.out.println("/////////");
                     System.out.println("pos pousseur : " + posPousseur.affiche());
@@ -767,8 +766,8 @@ class IAResolveur extends IA {
                     posPousseur = new Position(posCaisse.getL(), posCaisse.getC());
                     posCaisse = new Position(courante.getL(), courante.getC());
                 }
-                System.out.println("chemin 2 : " + posCaisse.affiche());
-                sequence.insereQueue(posCaisse);
+                //System.out.println("chemin 2 : " + posCaisse.affiche());
+                //sequence.insereQueue(posCaisse);
             }
         }
         /*while(sequence!=null && sequence.taille()!=0){
