@@ -177,9 +177,9 @@ class IAResolveur extends IA {
         Instance instanceCourante = null;
         Position posCaisseFutur = null;
         Position posCaissePresent = null;
-        byte[][] butDansCoin = initialiseButDansCoin();
-        int nombreCaisseDansCoin = 0;
         int poids = 0; int ancien_poids = 0;
+        //byte[][] butDansCoin = initialiseButDansCoin();
+        //int nombreCaisseDansCoin = 0;
 
         ajouterInstance(posPousseur, caisses, instances);
         Instance instanceDepart = new Instance(posPousseur, caisses);
@@ -188,10 +188,12 @@ class IAResolveur extends IA {
         queue.insere(arbreCheminsTete);
 
         while(!queue.estVide()){
+            /*
             if(queue.taille()%50000==0) {
                 System.out.println("queue taille: " + queue.taille());
                 System.out.println("nb instances: " + nb_instances);
             }
+             */
             ArbreChemins arbreCheminsAvant = arbreCheminsTete;
             //System.out.println("\n\n ///// NOUVELLE QUEUE ///// \n\n");
             arbreCheminsTete = queue.extrait();//ArbreChemins
@@ -261,26 +263,28 @@ class IAResolveur extends IA {
                         return cheminInverse;
                     } else {
                         ajouterInstance(posPousseurNew, caissesNew, instances);
+                        /*
                         cheminCopie = new SequenceListe<Position>();
                         cheminCopie = cheminCourant;//SequenceListe<Position>
                         chemins_caisse_buts = cheminsCaisseButs(posCaissePresent, posCaisseFutur, caissesNew, buts);
                         while(!chemins_caisse_buts.estVide()){
-                            System.out.println("chemins_caisse_buts taille: " + chemins_caisse_buts.taille());
                             SequenceListe<Position> cheminCourant_2 = chemins_caisse_buts.extraitTete();
                             if(!cheminCourant_2.estVide()) {
-                                cheminCourant_2.insereTete(posCaissePresent);
+                                //cheminCourant_2.insereTete(posCaissePresent);
                                 //cheminCopie.insereQueue(posCaissePresent);
                                 while(!cheminCourant_2.estVide()){//on ajoute le nouveau chemin de la caisse au but au chemin actuel
                                     cheminCopie.insereQueue(cheminCourant_2.extraitTete());
                                 }
                                 System.out.println("cheminCopie : ");
-                                afficheChemin(cheminCopie);
-                                poids = Math.abs(nb_caisses - nb_caisses_sur_but - 1);
+                                cheminCopie=afficheChemin(cheminCopie);
+                                poids = nb_caisses - nb_caisses_sur_but - 1;
                                 ArbreChemins arbreEnfile = new ArbreChemins(instanceCourante, cheminCopie, arbreCheminsTete, poids);
                                 queue.insere(arbreEnfile);
                             }
+                            cheminCopie = new SequenceListe<Position>();
+                            cheminCopie = cheminCourant;//SequenceListe<Position>
                         }
-
+                        */
                         poids = nb_caisses - nb_caisses_sur_but;
                         /*
                         if(nombreCaisseDansCoinAvant<nombreCaisseDansCoinApres){
@@ -298,7 +302,7 @@ class IAResolveur extends IA {
                 }
             }//pas de solution pour ce chemin
         }
-        return null;
+        return chemin;
     }
 
     public int rapprocheCaisseBut(Position posCaissePresent, Position posCaisseFutur, byte[][] caisses){
@@ -381,8 +385,6 @@ class IAResolveur extends IA {
         return nb;
     }
 
-
-
     private SequenceListe<Position> afficheChemin(SequenceListe<Position> chemin) {
         SequenceListe<Position> chemin_copy = new SequenceListe<>();
 
@@ -397,7 +399,7 @@ class IAResolveur extends IA {
     }
 
     public boolean estBut(Position p){
-        return (carte[p.l][p.c] & BUT) != 0;
+        return (carte[p.getL()][p.getC()] & BUT) != 0;
     }
 
     public int nbCaissesSurBut(byte[][] caisses){
@@ -677,7 +679,7 @@ class IAResolveur extends IA {
         return sequence;
     }
 
-    boolean estBloqueEnHautDjiskstra(Position caisseFutur,int gauche,byte[][] caisses){
+    boolean estBloqueEnHautDijkstra(Position caisseFutur, int gauche, byte[][] caisses){
         if(estCaseLibre(caisseFutur.getL()-1,caisseFutur.getC(),caisses)) return false;
         int ligne = caisseFutur.getL();
         int colonne = caisseFutur.getC();
@@ -697,7 +699,7 @@ class IAResolveur extends IA {
         }
     }
 
-    boolean estBloqueEnBasDjiskstra(Position caisseFutur,int gauche, byte[][] caisses){
+    boolean estBloqueEnBasDijkstra(Position caisseFutur, int gauche, byte[][] caisses){
         if(estCaseLibre(caisseFutur.getL()+1,caisseFutur.getC(),caisses)) return false;
         int ligne = caisseFutur.getL();
         int colonne = caisseFutur.getC();
@@ -717,7 +719,7 @@ class IAResolveur extends IA {
         }
     }
 
-    boolean estBloqueDroiteDjiskstra(Position caisseFutur,int haut, byte[][] caisses){
+    boolean estBloqueDroiteDijkstra(Position caisseFutur, int haut, byte[][] caisses){
         if(estCaseLibre(caisseFutur.getL(),caisseFutur.getC()+1,caisses)) return false;
         int ligne = caisseFutur.getL();
         int colonne = caisseFutur.getC();
@@ -738,7 +740,7 @@ class IAResolveur extends IA {
     }
 
 
-    boolean estBloqueGaucheDjiskstra(Position caisseFutur,int haut, byte[][] caisses){
+    boolean estBloqueGaucheDijkstra(Position caisseFutur, int haut, byte[][] caisses){
         if(estCaseLibre(caisseFutur.getL(),caisseFutur.getC()-1,caisses)) return false;
         int ligne = caisseFutur.getL();
         int colonne = caisseFutur.getC();
@@ -759,8 +761,6 @@ class IAResolveur extends IA {
             return true;
         }
     }
-
-
 
     public SequenceListe<SequenceListe<Position>> cheminsCaisseButs(Position posPousseur, Position posCaisse, byte[][] caisses, ArrayList<Position> buts){
         SequenceListe<Position> cheminCaisse = new SequenceListe<>();
@@ -789,7 +789,7 @@ class IAResolveur extends IA {
                         if(estCaseLibre(PosDestination.getL(), PosDestination.getC(), caisses_actuel)){
                             SequenceListe<Position> cheminPousseur = dijkstraPousseurDerriereCaisse(posPousseur, PosDestination, caisses_actuel);
 
-                            while (!cheminPousseur.estVide()) {
+                            while(cheminPousseur != null && !cheminPousseur.estVide()){
                                 Position pos = cheminPousseur.extraitTete();
                                 //System.out.println("chemin : " + pos.affiche());
                                 cheminCourantCaisseBut.insereQueue(pos);
@@ -812,11 +812,6 @@ class IAResolveur extends IA {
                 sequence.insereQueue(cheminCourantCaisseBut);
             }
         }
-        /*while(sequence!=null && sequence.taille()!=0){
-            SequenceListe<Position> chemin = sequence.extraitTete();
-            afficheChemin(chemin);
-        }
-        System.exit(0);*/
         return sequence;
     }
 
@@ -845,27 +840,27 @@ class IAResolveur extends IA {
                 caisseDeplacee = new ArrayList<>();
                 caisseDeplacee.add(p);
                 caisseDeplacee.add(pCaisse);
-                caisseDeplacee.add(new Position(pCaisse.l-1, pCaisse.c));
+                caisseDeplacee.add(new Position(pCaisse.getL()-1, pCaisse.getC()));
                 caissesDep.insereQueue(caisseDeplacee);
             }
         }
-        pCaisse = getPosCaisse(p.l, p.c+1, caisses);//si la caisse est à droite du pousseur
+        pCaisse = getPosCaisse(p.getL(), p.getC()+1, caisses);//si la caisse est à droite du pousseur
         if(pCaisse != null) {
-            if (!estCaseHorsMap(pCaisse.l, pCaisse.c + 1) && estCaseLibre(pCaisse.l, pCaisse.c + 1, caisses) && !estCaseBloquante_V2(pCaisse.l, pCaisse.c, pCaisse.l, pCaisse.c + 1, supprimeCaisse(pCaisse, caisses), p)) {
+            if (!estCaseHorsMap(pCaisse.getL(), pCaisse.getC() + 1) && estCaseLibre(pCaisse.getL(), pCaisse.getC() + 1, caisses) && !estCaseBloquante_V2(pCaisse.getL(), pCaisse.getC(), pCaisse.getL(), pCaisse.getC() + 1, supprimeCaisse(pCaisse, caisses), p)) {
                 caisseDeplacee = new ArrayList<>();
                 caisseDeplacee.add(p);
                 caisseDeplacee.add(pCaisse);
-                caisseDeplacee.add(new Position(pCaisse.l, pCaisse.c + 1));
+                caisseDeplacee.add(new Position(pCaisse.getL(), pCaisse.getC() + 1));
                 caissesDep.insereQueue(caisseDeplacee);
             }
         }
-        pCaisse = getPosCaisse(p.l, p.c-1, caisses);//si la caisse est à gauche du pousseur
+        pCaisse = getPosCaisse(p.getL(), p.getC()-1, caisses);//si la caisse est à gauche du pousseur
         if(pCaisse != null) {
-            if (!estCaseHorsMap(pCaisse.l, pCaisse.c - 1) && estCaseLibre(pCaisse.l, pCaisse.c - 1, caisses) && !estCaseBloquante_V2(pCaisse.l, pCaisse.c, pCaisse.l, pCaisse.c - 1, supprimeCaisse(pCaisse, caisses), p)) {
+            if (!estCaseHorsMap(pCaisse.getL(), pCaisse.getC() - 1) && estCaseLibre(pCaisse.getL(), pCaisse.getC() - 1, caisses) && !estCaseBloquante_V2(pCaisse.getL(), pCaisse.getC(), pCaisse.getL(), pCaisse.getC() - 1, supprimeCaisse(pCaisse, caisses), p)) {
                 caisseDeplacee = new ArrayList<>();
                 caisseDeplacee.add(p);
                 caisseDeplacee.add(pCaisse);
-                caisseDeplacee.add(new Position(pCaisse.l, pCaisse.c - 1));
+                caisseDeplacee.add(new Position(pCaisse.getL(), pCaisse.getC() - 1));
                 caissesDep.insereQueue(caisseDeplacee);
             }
         }
@@ -914,41 +909,41 @@ class IAResolveur extends IA {
         boolean a = false;
         if(depart == 0){
             if(!estCaseHorsMap(caisse.getL(), caisse.getC() - 1) && aMur(caisse.getL(), caisse.getC() - 1)){
-                a=estBloqueGaucheDjiskstra(caisse, 0, caisses);
+                a= estBloqueGaucheDijkstra(caisse, 0, caisses);
                 return a;
             }
             if(!estCaseHorsMap(caisse.getL(), caisse.getC() + 1) && aMur(caisse.getL(), caisse.getC() + 1)){
-                a= estBloqueDroiteDjiskstra(caisse, 0, caisses);
+                a= estBloqueDroiteDijkstra(caisse, 0, caisses);
                 return a;
             }
         }
         if(depart == 1){
             if(!estCaseHorsMap(caisse.getL(), caisse.getC() - 1) && aMur(caisse.getL(), caisse.getC() - 1)){
-                a=estBloqueGaucheDjiskstra(caisse, 1, caisses);
+                a= estBloqueGaucheDijkstra(caisse, 1, caisses);
                 return a;
             }
             if(!estCaseHorsMap(caisse.getL(), caisse.getC() + 1) && aMur(caisse.getL(), caisse.getC() + 1)){
-                a= estBloqueDroiteDjiskstra(caisse, 1, caisses);
+                a= estBloqueDroiteDijkstra(caisse, 1, caisses);
                 return a;
             }
         }
         if(depart == 2){
             if(!estCaseHorsMap(caisse.getL() - 1, caisse.getC()) && aMur(caisse.getL() - 1, caisse.getC())){
-                a= estBloqueEnHautDjiskstra(caisse, 0, caisses);
+                a= estBloqueEnHautDijkstra(caisse, 0, caisses);
                 return a;
             }
             if(!estCaseHorsMap(caisse.getL() + 1, caisse.getC()) && aMur(caisse.getL() + 1, caisse.getC())){
-                a= estBloqueEnBasDjiskstra(caisse, 0, caisses);
+                a= estBloqueEnBasDijkstra(caisse, 0, caisses);
                 return a;
             }
         }
         if(depart == 3){
             if(!estCaseHorsMap(caisse.getL() - 1, caisse.getC()) && aMur(caisse.getL() - 1, caisse.getC())){
-                a= estBloqueEnHautDjiskstra(caisse, 1, caisses);
+                a= estBloqueEnHautDijkstra(caisse, 1, caisses);
                 return a;
             }
             if(!estCaseHorsMap(caisse.getL() + 1, caisse.getC()) && aMur(caisse.getL() + 1, caisse.getC())){
-                a= estBloqueEnBasDjiskstra(caisse, 1, caisses);
+                a= estBloqueEnBasDijkstra(caisse, 1, caisses);
                 return a;
             }
         }
@@ -1114,23 +1109,10 @@ class IAResolveur extends IA {
         return (l < 0 || l > this.l-1 || c < 0 || c > this.c-1);
     }
 
-    boolean estCaseBloquante(int l, int c, byte[][] caisses){
-        if(!estCaseHorsMap(l-1,c)&&!estCaseHorsMap(l,c-1)&&!estCaseHorsMap(l,c+1)&&!estCaseHorsMap(l+1,c)) {
-            if((!estCaseLibre(l - 1, c, caisses) && (!estCaseLibre(l, c - 1, caisses) || !estCaseLibre(l, c + 1, caisses))) ||
-                    (!estCaseLibre(l + 1, c, caisses) && (!estCaseLibre(l, c - 1, caisses) || !estCaseLibre(l, c + 1, caisses)))){
-            }
-        }
-        return false;
-    }
-
     public Position posDerriere(Position pousseur,Position caisse){
         int diff_l = caisse.l-pousseur.l;
         int diff_c = caisse.c-pousseur.c;
         return new Position(pousseur.l+diff_l*2, pousseur.c+diff_c*2);
-    }
-
-    public boolean estButDerriere(Position pousseur,Position caisse){
-        return estBut(posDerriere(pousseur,caisse));
     }
 
     boolean estCaseLibre(int l, int c, byte[][] caisses){

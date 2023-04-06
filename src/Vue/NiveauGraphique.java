@@ -94,8 +94,11 @@ public class NiveauGraphique extends JComponent implements Observateur {
 			for (int colonne = 0; colonne < n.colonnes(); colonne++) {
 				int x = colonne * largeurCase;
 				int y = ligne * hauteurCase;
-				if(ligne>1 && colonne>1)
+				/*
+				if(ligne>1 && colonne>1){
 					drawable.drawString((ligne-2)+","+(colonne-2), x-7-largeurCase/2, y+4-hauteurCase/2);
+				}
+				 */
 				// Décalage éventuel
 				Vecteur decal = decalages[ligne][colonne];
 				if (decal != null) {
