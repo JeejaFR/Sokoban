@@ -511,11 +511,10 @@ class IAResolveur extends IA {
     public SequenceListe<Position> aEtoileCaisseBut(Position posCaisse, Position posPousseur, Position posBut, byte[][] caisses){
         if(posCaisse.egal(posBut)) return null;
 
-        Position future = pousse(posCaisse, posPousseur);
+        System.out.println("pousseur : " + posPousseur.affiche());
         System.out.println("caisse : " + posCaisse.affiche());
-        System.out.println("future : " + future.affiche());
-        PositionPoids caisse = new PositionPoids(future.getL(), future.getC(), 0);
-        PositionPoids pousseur = new PositionPoids(posCaisse.getL(), posCaisse.getC(), 0);
+        PositionPoids caisse = new PositionPoids(posCaisse.getL(), posCaisse.getC(), 0);
+        PositionPoids pousseur = new PositionPoids(posPousseur.getL(), posPousseur.getC(), 0);
 
         boolean fin = false;
         int[][] distance = new int[l][c];
@@ -717,21 +716,8 @@ class IAResolveur extends IA {
         SequenceListe<Position> sequence = new SequenceListe<>();
         //pour chaque but, on vérifie s'il existe un chemin de la caisse à ce but
         for(int i = 0; i < buts.size(); i++) {
-            //cheminCaisse = aEtoileCaisseBut(posCaisse, posPousseur, buts.get(i), caisses);
-            cheminCaisse.insereQueue(new Position(2, 7));
-            cheminCaisse.insereQueue(new Position(3, 7));
-            cheminCaisse.insereQueue(new Position(4, 7));
-            cheminCaisse.insereQueue(new Position(5, 7));
-            cheminCaisse.insereQueue(new Position(5, 8));
-            cheminCaisse.insereQueue(new Position(5, 9));
-            cheminCaisse.insereQueue(new Position(5, 10));
-            cheminCaisse.insereQueue(new Position(6, 10));
-            cheminCaisse.insereQueue(new Position(7, 10));
-            cheminCaisse.insereQueue(new Position(8, 10));
-            cheminCaisse.insereQueue(new Position(8, 11));
-            cheminCaisse.insereQueue(new Position(8, 12));
-            cheminCaisse.insereQueue(new Position(8, 13));
-            cheminCaisse.insereQueue(new Position(8, 14));
+            cheminCaisse = aEtoileCaisseBut(posCaisse, posPousseur, buts.get(i), caisses);
+
 
             if (cheminCaisse != null) {
                 while (!cheminCaisse.estVide()) {
@@ -860,13 +846,36 @@ class IAResolveur extends IA {
         return Math.min(Math.min(posNord, posSud), Math.min(posEst, posOuest));
     }
 
+    boolean estBloqueeSiPousse(Position caisse, int depart, byte[][] caisses){
+        //0 : haut vers bas
+        //1 : bas vers haut
+        //2 : gauche vers droite
+        //3 : droite vers gauche
+        if(depart == 0){
+            if(aMur(caisse.getL() + 1, caisse.getC())){
+                return estBloqueEnBasDjiskstra(caisse, 1) && estBloqueEnHautDjiskstra(caisse, 0);
+            }
+        }
+        if(depart == 2){
+            if(aMur(caisse.getL() - 1, caisse.getC())){
+                return estBloqueEnHautDjiskstra(caisse, 0);
+            }
+            if(aMur(caisse.getL() + 1, caisse.getC())){
+                return estBloqueEnBasDjiskstra(caisse, 0);
+            }
+        }
+        return false;
+    }
+
     public SequenceListe<PositionPoids> casesAccessiblesManatthan(PositionPoids posCourante, Position pousseur, Position but, byte[][] caisses){
         SequenceListe<PositionPoids> casesAccessibles = new SequenceListe<>();
         int minimum = INFINI;
-        if(estCaseLibre(posCourante.getL()+1,posCourante.getC(), caisses)&&!estCaseBloquante_V2(posCourante.getL(), posCourante.getC(), posCourante.getL()+1, posCourante.getC(), caisses, pousseur)){
-            Position position = new Position(posCourante.getL()+1,posCourante.getC());
-            minimum = distanceManatthan(position,but);
-            casesAccessibles.insereTete(new PositionPoids(position.getL(),position.getC(),minimum));
+
+        //depart =  0
+        if(estCaseLibre(posCourante.getL() + 1, posCourante.getC(), caisses) && !estCaseBloquante_V2(posCourante.getL(), posCourante.getC(), posCourante.getL() + 1, posCourante.getC(), caisses, pousseur)) {
+            Position position = new Position(posCourante.getL() + 1, posCourante.getC());
+            minimum = distanceManatthan(position, but);
+            casesAccessibles.insereTete(new PositionPoids(position.getL(), position.getC(), minimum));
         }
         if(estCaseLibre(posCourante.getL()-1,posCourante.getC(), caisses)&&!estCaseBloquante_V2(posCourante.getL(), posCourante.getC(), posCourante.getL()-1, posCourante.getC(), caisses, pousseur)){
             Position position = new Position(posCourante.getL()-1,posCourante.getC());
@@ -1019,6 +1028,10 @@ class IAResolveur extends IA {
         }else{
             return false;
         }
+    }
+
+    boolean aMur(int l, int c) {
+        return (carte[l][c] & MUR) != 0;
     }
 
     boolean aMurOuHorsMap(int l, int c) {
