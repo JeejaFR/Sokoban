@@ -644,49 +644,49 @@ class IAResolveur extends IA {
         return sequence;
     }
 
-    boolean estBloqueEnHautDjiskstra(Position caisseFutur,int gauche){
-        if(!aMurOuHorsMap(caisseFutur.getL()-1,caisseFutur.getC())) return false;
+    boolean estBloqueEnHautDjiskstra(Position caisseFutur,int gauche,byte[][] caisses){
+        if(estCaseLibre(caisseFutur.getL()-1,caisseFutur.getC(),caisses)) return false;
         int i=0;
         if(gauche==1){
-            while(!aMurOuHorsMap(l,c-i)){
-                if(!aMurOuHorsMap(l-1,c-i)) return false;
+            while(!estCaseLibre(l,c-i,caisses)){
+                if(estCaseLibre(l-1,c-i,caisses)&&estCaseLibre(l+1,c-i,caisses)) return false;
             }
             return true;
         }else{
-            while(!aMurOuHorsMap(l,c+i)){
-                if(!aMurOuHorsMap(l-1,c+i)) return false;
+            while(!estCaseLibre(l,c+i,caisses)){
+                if(estCaseLibre(l-1,c+i,caisses)&&estCaseLibre(l+1,c+i,caisses)) return false;
             }
             return true;
         }
     }
 
     boolean estBloqueEnBasDjiskstra(Position caisseFutur,int gauche){
-        if(!aMurOuHorsMap(caisseFutur.getL()+1,caisseFutur.getC())) return false;
+        if(estCaseLibre(caisseFutur.getL()+1,caisseFutur.getC(),caisses)) return false;
         int i=0;
         if(gauche==1){
-            while(!aMurOuHorsMap(l,c-i)){
-                if(!aMurOuHorsMap(l+1,c-i)) return false;
+            while(!estCaseLibre(l,c-i,caisses)){
+                if(estCaseLibre(l+1,c-i,caisses)&&estCaseLibre(l-1,c-i,caisses)) return false;
             }
             return true;
         }else{
-            while(!aMurOuHorsMap(l,c+i)){
-                if(!aMurOuHorsMap(l+1,c+i)) return false;
+            while(!estCaseLibre(l,c+i,caisses)){
+                if(estCaseLibre(l+1,c+i,caisses)&&estCaseLibre(l-1,c+i,caisses)) return false;
             }
             return true;
         }
     }
 
     boolean estBloqueDroiteDjiskstra(Position caisseFutur,int haut){
-        if(!aMurOuHorsMap(caisseFutur.getL(),caisseFutur.getC()+1)) return false;
+        if(estCaseLibre(caisseFutur.getL(),caisseFutur.getC()+1,caisses)) return false;
         int i=0;
         if(haut==1){
-            while(!aMurOuHorsMap(l-i,c)){
-                if(!aMurOuHorsMap(l-i,c+1)) return false;
+            while(!estCaseLibre(l-i,c,caisses)){
+                if(estCaseLibre(l-i,c+1,caisses)&&estCaseLibre(l-i,c-1,caisses)) return false;
             }
             return true;
         }else{
-            while(!aMurOuHorsMap(l+i,c)){
-                if(!aMurOuHorsMap(l+i,c+1)) return false;
+            while(!estCaseLibre(l+i,c,caisses)){
+                if(estCaseLibre(l+i,c+1,caisses)&&estCaseLibre(l+i,c-1,caisses)) return false;
             }
             return true;
         }
@@ -694,21 +694,20 @@ class IAResolveur extends IA {
 
 
     boolean estBloqueGaucheDjiskstra(Position caisseFutur,int haut){
-        if(!aMurOuHorsMap(caisseFutur.getL(),caisseFutur.getC()-1)) return false;
+        if(estCaseLibre(caisseFutur.getL(),caisseFutur.getC()-1,caisses)) return false;
         int i=0;
         if(haut==1){
-            while(!aMurOuHorsMap(l-i,c)){
-                if(!aMurOuHorsMap(l-i,c-1)) return false;
+            while(!estCaseLibre(l-i,c,caisses)){
+                if(estCaseLibre(l-i,c-1,caisses)&&estCaseLibre(l-i,c+1,caisses)) return false;
             }
             return true;
         }else{
-            while(!aMurOuHorsMap(l+i,c)){
-                if(!aMurOuHorsMap(l+i,c-1)) return false;
+            while(!estCaseLibre(l+i,c,caisses)){
+                if(estCaseLibre(l+i,c-1,caisses)&&estCaseLibre(l+i,c+1,caisses)) return false;
             }
             return true;
         }
     }
-
 
 
 
