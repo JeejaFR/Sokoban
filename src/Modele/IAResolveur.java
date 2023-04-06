@@ -170,6 +170,8 @@ class IAResolveur extends IA {
         SequenceListe<ArrayList<Position>> caissesDepl = new SequenceListe<ArrayList<Position>>();
         ArrayList<Position> caisseDeplCourante = new ArrayList<Position>();
         SequenceListe<Position> cheminCourant = new SequenceListe<Position>();
+        SequenceListe<Position> cheminCopie = new SequenceListe<Position>();
+        SequenceListe<SequenceListe<Position>> chemins_caisse_buts = new SequenceListe<SequenceListe<Position>>();
         FAPListe<ArbreChemins> queue = new FAPListe<ArbreChemins>();
         ArbreChemins arbreCourant = null;
         Instance instanceCourante = null;
@@ -177,6 +179,7 @@ class IAResolveur extends IA {
         Position posCaissePresent = null;
         byte[][] butDansCoin = initialiseButDansCoin();
         int nombreCaisseDansCoin = 0;
+        int poids = 0; int ancien_poids = 0;
 
         ajouterInstance(posPousseur, caisses, instances);
         Instance instanceDepart = new Instance(posPousseur, caisses);
@@ -210,12 +213,12 @@ class IAResolveur extends IA {
                 posCaisseFutur = cheminCourant.extraitQueue();//dernière position du chemin courant (future position de la caisse déplacée)
                 posCaissePresent = cheminCourant.extraitQueue();//avant-dernière position du chemin courant (position de la caisse à déplacer)
 
-                int nombreCaisseDansCoinAvant = nombreCaisseCoin(butDansCoin,caisses);
-                butDansCoin = actualiseButDansCoin(posCaisseFutur.getL(),posCaisseFutur.getC(),butDansCoin);
+                //int nombreCaisseDansCoinAvant = nombreCaisseCoin(butDansCoin,caisses);
+                //butDansCoin = actualiseButDansCoin(posCaisseFutur.getL(),posCaisseFutur.getC(),butDansCoin);
 
                 byte[][] caissesNew = pousserCaisse(posCaissePresent, posCaisseFutur, caisses);
 
-                //renvoie les chemins possibles de la caisse actuelle jusqu'à chaque but
+                /*
                 SequenceListe<SequenceListe<Position>> chemins_caisse_buts = cheminsCaisseButs(posCaissePresent, posCaisseFutur, caissesNew, buts);
                 if(!chemins_caisse_buts.estVide()) {
                     SequenceListe<Position> cheminCourant_2 = chemins_caisse_buts.extraitTete();
@@ -223,16 +226,16 @@ class IAResolveur extends IA {
                         System.out.println("==================== cheminCourant_2 est null ====================");
                     }else{
                         cheminCourant.insereQueue(posCaissePresent);
-                        cheminCourant.insereQueue(posCaisseFutur);
                         chemin.add(cheminCourant);
                     }
+                    cheminCourant_2.insereTete(posCaissePresent);
                     chemin.add(cheminCourant_2);
                     return chemin;
                 }else{
                     return null;
                 }
-                /*
-                int nombreCaisseDansCoinApres = nombreCaisseCoin(butDansCoin,caissesNew);
+                 */
+                //int nombreCaisseDansCoinApres = nombreCaisseCoin(butDansCoin,caissesNew);
 
                 Position posPousseurNew = posCaissePresent;//position de la caisse avant qu'elle soit poussée
 
@@ -241,7 +244,7 @@ class IAResolveur extends IA {
                     instanceCourante = new Instance(posPousseurNew, caissesNew);
                     int nb_caisses_sur_but = nbCaissesSurBut(caissesNew);
 
-                    if(nb_caisses_sur_but == nb_caisses) {
+                    if(nb_caisses_sur_but == nb_caisses){
                         System.out.println(niveau.nom()+" : =================== Toutes les caisses sont sur les buts ===================");
                         arbreCourant = new ArbreChemins(instanceCourante, cheminCourant, arbreCheminsTete, 0);
                         while (!instanceCourante.estInstance(instanceDepart)) {
@@ -258,14 +261,33 @@ class IAResolveur extends IA {
                         return cheminInverse;
                     } else {
                         ajouterInstance(posPousseurNew, caissesNew, instances);
+                        cheminCopie = new SequenceListe<Position>();
+                        cheminCopie = cheminCourant;//SequenceListe<Position>
+                        chemins_caisse_buts = cheminsCaisseButs(posCaissePresent, posCaisseFutur, caissesNew, buts);
+                        while(!chemins_caisse_buts.estVide()){
+                            System.out.println("chemins_caisse_buts taille: " + chemins_caisse_buts.taille());
+                            SequenceListe<Position> cheminCourant_2 = chemins_caisse_buts.extraitTete();
+                            if(!cheminCourant_2.estVide()) {
+                                cheminCourant_2.insereTete(posCaissePresent);
+                                //cheminCopie.insereQueue(posCaissePresent);
+                                while(!cheminCourant_2.estVide()){//on ajoute le nouveau chemin de la caisse au but au chemin actuel
+                                    cheminCopie.insereQueue(cheminCourant_2.extraitTete());
+                                }
+                                System.out.println("cheminCopie : ");
+                                afficheChemin(cheminCopie);
+                                poids = Math.abs(nb_caisses - nb_caisses_sur_but - 1);
+                                ArbreChemins arbreEnfile = new ArbreChemins(instanceCourante, cheminCopie, arbreCheminsTete, poids);
+                                queue.insere(arbreEnfile);
+                            }
+                        }
 
-                        int poids = nb_caisses - nb_caisses_sur_but;
+                        poids = nb_caisses - nb_caisses_sur_but;
                         /*
                         if(nombreCaisseDansCoinAvant<nombreCaisseDansCoinApres){
                             poids-=(nombreCaisseDansCoinApres*5);
                         }
-
-                        int ancien_poids = arbreCheminsAvant.getPoids();
+                         */
+                        ancien_poids = arbreCheminsAvant.getPoids();
                         ArbreChemins arbreEnfile = new ArbreChemins(instanceCourante, cheminCourant, arbreCheminsTete, poids);
                         if (poids < ancien_poids) {
                             queue.insere(arbreEnfile);
@@ -273,7 +295,7 @@ class IAResolveur extends IA {
                             queue.insereQueue(arbreEnfile);
                         }
                     }
-                }*/
+                }
             }//pas de solution pour ce chemin
         }
         return null;
@@ -519,8 +541,8 @@ class IAResolveur extends IA {
     public SequenceListe<Position> aEtoileCaisseBut(Position posCaisse, Position posPousseur, Position posBut, byte[][] caisses){
         if(posCaisse.egal(posBut)) return null;
 
-        System.out.println("pousseur : " + posPousseur.affiche());
-        System.out.println("caisse : " + posCaisse.affiche());
+        //System.out.println("pousseur : " + posPousseur.affiche());
+        //System.out.println("caisse : " + posCaisse.affiche());
         PositionPoids caisse = new PositionPoids(posCaisse.getL(), posCaisse.getC(), 0);
         PositionPoids pousseur = new PositionPoids(posPousseur.getL(), posPousseur.getC(), 0);
 
@@ -577,7 +599,6 @@ class IAResolveur extends IA {
                 }
             }
         }
-        afficheDistances(distance);
         if(distance[posBut.getL()][posBut.getC()] == INFINI) return null;
         //on a maintenant le tableau des distances de la caisse jusqu'au but
         SequenceListe<Position> sequence = new SequenceListe<>();
@@ -639,8 +660,6 @@ class IAResolveur extends IA {
                 }
             }
         }
-        System.out.println("distance pousseur - destination");
-        afficheDistances(distance);
         //on a maintenant le tableau des distances du pousseur jusqu'à la destination
         SequenceListe<Position> sequence = new SequenceListe<>();
         PositionPoids caseSuivante = parcourtDistances(dest, distance);
@@ -757,11 +776,13 @@ class IAResolveur extends IA {
                 while(!cheminCaisse.estVide()){
                     Position courante = cheminCaisse.extraitTete();
                     PosDestination = posDerriere(courante, posCaisse);
+                    /*
                     System.out.println("/////////");
                     System.out.println("pos pousseur : " + posPousseur.affiche());
                     System.out.println("caisse : " + posCaisse.affiche());
                     System.out.println("futur pos caisse : " + courante.affiche());
                     System.out.println("la ou le pousseur doit aller : " + PosDestination.affiche());
+                     */
                     byte[][] caisses_actuel = new byte[caisses.length][caisses[0].length];
                     caisses_actuel[posCaisse.getL()][posCaisse.getC()] = CAISSE;
                     if(!posPousseur.egal(PosDestination)){
@@ -770,16 +791,16 @@ class IAResolveur extends IA {
 
                             while (!cheminPousseur.estVide()) {
                                 Position pos = cheminPousseur.extraitTete();
-                                System.out.println("chemin : " + pos.affiche());
+                                //System.out.println("chemin : " + pos.affiche());
                                 cheminCourantCaisseBut.insereQueue(pos);
                             }
                         }else {
-                            System.out.println(">>>>> la case ou le pousseur doit aller est bloquée <<<<<");
+                            //System.out.println(">>>>> la case ou le pousseur doit aller est bloquée <<<<<");
                             cheminCourantCaisseBut = null;
                             break;
                         }
                     }
-                    System.out.println("chemin 1 : " + posCaisse.affiche());
+                    //System.out.println("chemin 1 : " + posCaisse.affiche());
                     cheminCourantCaisseBut.insereQueue(posCaisse);
                     posPousseur = new Position(posCaisse.getL(), posCaisse.getC());
                     posCaisse = new Position(courante.getL(), courante.getC());
@@ -892,41 +913,41 @@ class IAResolveur extends IA {
         //3 : vers gauche
         boolean a = false;
         if(depart == 0){
-            if(aMur(caisse.getL(), caisse.getC() - 1)){
+            if(!estCaseHorsMap(caisse.getL(), caisse.getC() - 1) && aMur(caisse.getL(), caisse.getC() - 1)){
                 a=estBloqueGaucheDjiskstra(caisse, 0, caisses);
                 return a;
             }
-            if(aMur(caisse.getL(), caisse.getC() + 1)){
+            if(!estCaseHorsMap(caisse.getL(), caisse.getC() + 1) && aMur(caisse.getL(), caisse.getC() + 1)){
                 a= estBloqueDroiteDjiskstra(caisse, 0, caisses);
                 return a;
             }
         }
         if(depart == 1){
-            if(aMur(caisse.getL(), caisse.getC() - 1)){
+            if(!estCaseHorsMap(caisse.getL(), caisse.getC() - 1) && aMur(caisse.getL(), caisse.getC() - 1)){
                 a=estBloqueGaucheDjiskstra(caisse, 1, caisses);
                 return a;
             }
-            if(aMur(caisse.getL(), caisse.getC() + 1)){
+            if(!estCaseHorsMap(caisse.getL(), caisse.getC() + 1) && aMur(caisse.getL(), caisse.getC() + 1)){
                 a= estBloqueDroiteDjiskstra(caisse, 1, caisses);
                 return a;
             }
         }
         if(depart == 2){
-            if(aMur(caisse.getL() - 1, caisse.getC())){
+            if(!estCaseHorsMap(caisse.getL() - 1, caisse.getC()) && aMur(caisse.getL() - 1, caisse.getC())){
                 a= estBloqueEnHautDjiskstra(caisse, 0, caisses);
                 return a;
             }
-            if(aMur(caisse.getL() + 1, caisse.getC())){
+            if(!estCaseHorsMap(caisse.getL() + 1, caisse.getC()) && aMur(caisse.getL() + 1, caisse.getC())){
                 a= estBloqueEnBasDjiskstra(caisse, 0, caisses);
                 return a;
             }
         }
         if(depart == 3){
-            if(aMur(caisse.getL() - 1, caisse.getC())){
+            if(!estCaseHorsMap(caisse.getL() - 1, caisse.getC()) && aMur(caisse.getL() - 1, caisse.getC())){
                 a= estBloqueEnHautDjiskstra(caisse, 1, caisses);
                 return a;
             }
-            if(aMur(caisse.getL() + 1, caisse.getC())){
+            if(!estCaseHorsMap(caisse.getL() + 1, caisse.getC()) && aMur(caisse.getL() + 1, caisse.getC())){
                 a= estBloqueEnBasDjiskstra(caisse, 1, caisses);
                 return a;
             }
