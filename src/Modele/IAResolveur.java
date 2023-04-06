@@ -219,11 +219,12 @@ class IAResolveur extends IA {
                 SequenceListe<SequenceListe<Position>> chemins_caisse_buts = cheminsCaisseButs(posCaissePresent, posCaisseFutur, caissesNew, buts);
                 if(!chemins_caisse_buts.estVide()) {
                     SequenceListe<Position> cheminCourant_2 = chemins_caisse_buts.extraitTete();
-                    if(cheminCourant_2 == null || cheminCourant_2.estVide()){
+                    if(cheminCourant_2.estVide()){
                         System.out.println("==================== cheminCourant_2 est null ====================");
                     }else{
-                        cheminCourant_2.insereTete(posCaissePresent);
-                        cheminCourant_2.insereTete(posPousseur);
+                        cheminCourant.insereQueue(posCaissePresent);
+                        cheminCourant.insereQueue(posCaisseFutur);
+                        chemin.add(cheminCourant);
                     }
                     chemin.add(cheminCourant_2);
                     return chemin;
@@ -596,8 +597,6 @@ class IAResolveur extends IA {
     }
 
     public SequenceListe<Position> dijkstraPousseurDerriereCaisse(Position posPousseur, Position dest, byte[][] caisses){
-        System.out.println("A caisses : ");
-        afficheCaisses(caisses);
         PositionPoids p = new PositionPoids(posPousseur.getL(), posPousseur.getC(), 0);
         boolean fin = false;
         int[][] distance = new int[l][c];
@@ -613,6 +612,7 @@ class IAResolveur extends IA {
             }
         }
         distance[posPousseur.getL()][posPousseur.getC()] = 0;
+        visite[posPousseur.getL()][posPousseur.getC()] = true;
         SequenceListe<PositionPoids> queue = new SequenceListe<>();
         queue.insereTete(p);
 
@@ -639,7 +639,7 @@ class IAResolveur extends IA {
                 }
             }
         }
-        System.out.println("distance pousseur à destination");
+        System.out.println("distance pousseur - destination");
         afficheDistances(distance);
         //on a maintenant le tableau des distances du pousseur jusqu'à la destination
         SequenceListe<Position> sequence = new SequenceListe<>();
