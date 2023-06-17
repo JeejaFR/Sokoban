@@ -1,9 +1,8 @@
 # Sokoban
 
-Ce projet en collaboration avec JeeJaFR est un jeu Sokoban codé par notre professeur. Le projet original codé
-en totale collaboration avec JeejaFR est disponible ici : [github.com/JeejaFR/Sokoban](https://github.com/JeejaFR/Sokoban)
+Ceci est un projet réalisé en binôme avec Cengokill. Le code du jeu nous est fourni par notre professeur.
 
-Le but de ce projet pour les étudiants était de créer un algorithme de recherche de chemin pour le jeu Sokoban.
+Le but de ce projet pour les étudiants était d'ajouter au jeu un algorithme de recherche de chemin pour le jeu Sokoban.
 
 Le pousseur peut se déplacer sur toutes les cases libres. Son but est de pousser toutes les caisses sur chaque but d'un niveau.
 Lorsque toutes les caisses ont été positionnées sur tous les buts, le niveau est réussi et le jeu passe au niveau suivant.
